@@ -276,11 +276,13 @@
 </script>
 <header>
   <div>
-    <h1>🎮 立鲸人生成长系统 <span class="kbd" style="font-size:10px">v2.1</span></h1>
+    <h1>🎮 华力人生成长系统 <span class="kbd" style="font-size:10px">v2.2</span></h1>
     <div class="meta" id="meta">加载中…</div>
   </div>
   <div class="btns">
     <button class="ghost" title="切换主题" onclick="toggleTheme()">🌓</button>
+    <button title="从云端拉取最新状态" onclick="syncFromServer().then(()=>toast('☁️ 已同步'))">☁️ 同步</button>
+    <button title="复制当前状态(发给AI上传)" onclick="syncToCloud()">📤 上报</button>
     <button title="导出全部数据备份" onclick="exportAll()">💾 备份</button>
     <button title="导入JSON恢复" onclick="importAll()">📥 导入</button>
     <button onclick="exportMD()">📋 日报</button>
@@ -1013,10 +1015,11 @@ T-612 | 附加分 | 整理/优化个人系统/工具 | 效率飞轮·持续改�
   }
   function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
 
-  // ═══════ 服务端同步：QoderWork 自动确认已完成任务 ═══════
+  // ═══════ 服务端同步：统一从线上拉取，不管在哪个域名运行 ═══════
+  const SYNC_URL = 'https://zhonghuali-simon.github.io/huali-life/sync.json';
   async function syncFromServer(){
     try{
-      const res = await fetch('./sync.json?t='+Date.now());
+      const res = await fetch(SYNC_URL + '?t='+Date.now());
       if (!res.ok) return;
       const data = await res.json();
       const todayData = data[today()];
@@ -1054,6 +1057,24 @@ T-612 | 附加分 | 整理/优化个人系统/工具 | 效率飞轮·持续改�
         toast(`🤖 已自动同步 ${synced} 项`);
       }
     }catch(e){}
+  }
+
+  // 导出当前状态供上报（复制到剪贴板）
+  function syncToCloud(){
+    const snapshot = {
+      date: S.date,
+      coin: S.coin,
+      done: S.tasks.filter(t=>t.done).map(t=>t.id),
+      cumu: S.cumu,
+      streak: S.streak,
+      bodyStreak: S.bodyStreak
+    };
+    const text = JSON.stringify(snapshot, null, 2);
+    navigator.clipboard.writeText(text).then(()=>{
+      toast('📋 状态已复制，发给AI即可同步到云端');
+    }).catch(()=>{
+      prompt('复制以下内容发给AI同步:', text);
+    });
   }
 
   function settleDay(dateKey){
