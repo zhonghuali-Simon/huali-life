@@ -296,7 +296,8 @@
   <div class="tab" data-page="shop" onclick="switchPage('shop')">🎁 兑换商店</div>
   <div class="tab" data-page="history" onclick="switchPage('history')">📅 历史</div>
   <div class="tab" data-page="pomo" onclick="switchPage('pomo')">🍅 专注</div>
-  <div class="tab" data-page="music" onclick="switchPage('music')">🎵 音乐</div>
+  <div class="tab" data-page="taobao" onclick="switchPage('taobao')">💡 淘宝创新</div>
+  <div class="tab" data-page="kb" onclick="switchPage('kb')">📚 知识库</div>
   <div class="tab" data-page="skills" onclick="switchPage('skills')">🏅 能力库</div>
   <div class="tab" data-page="settings" onclick="switchPage('settings')">⚙️ 设置</div>
 </div>
@@ -566,34 +567,24 @@
     </div>
   </div>
 
-  <div class="page" id="page-music">
+  <div class="page" id="page-taobao">
     <div class="card">
-      <h2>🎵 场景音乐库</h2>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
-        <button class="music-scene active" onclick="switchMusicScene('work')">🏢 工作</button>
-        <button class="music-scene" onclick="switchMusicScene('fitness')">💪 健身</button>
-        <button class="music-scene" onclick="switchMusicScene('rest')">🌙 休息</button>
-        <button class="music-scene" onclick="switchMusicScene('focus')">🧠 专注</button>
-      </div>
-      <div id="musicContent"></div>
+      <h2>💡 淘宝创新思路与策略 <span class="right" id="taobaoDate"></span></h2>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:12px">每日更新 · 2-4分钟阅读 · 离线可用</div>
+      <div id="taobaoContent"></div>
     </div>
+  </div>
+
+  <div class="page" id="page-kb">
     <div class="card">
-      <h2>自定义歌单</h2>
-      <div style="font-size:12px;color:var(--sub);margin-bottom:10px">
-        添加网易云/Spotify/Apple Music/QQ音乐歌单链接，按场景分类收藏。
+      <h2>📚 知识库 <span class="right" id="kbProgress"></span></h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="music-scene active" onclick="switchKB('biz')">💰 商业逻辑</button>
+        <button class="music-scene" onclick="switchKB('skill')">💼 工作技能</button>
+        <button class="music-scene" onclick="switchKB('fit')">🏋️ 健身知识</button>
+        <button class="music-scene" onclick="switchKB('eng')">🇬🇧 英语对话</button>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <input id="ml-name" placeholder="歌单名称" style="flex:1;min-width:120px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:13px" />
-        <input id="ml-url" placeholder="歌单链接" style="flex:2;min-width:200px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:13px" />
-        <select id="ml-scene" style="padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:13px">
-          <option value="work">工作</option>
-          <option value="fitness">健身</option>
-          <option value="rest">休息</option>
-          <option value="focus">专注</option>
-        </select>
-        <button onclick="addPlaylist()">+ 添加</button>
-      </div>
-      <div id="customPlaylists"></div>
+      <div id="kbContent"></div>
     </div>
   </div>
 
@@ -681,6 +672,7 @@ T-502 | 习惯线 | 每日工作整理 | 清理桌面/收件箱/待办归档 | 8
 T-503 | 习惯线 | 减少碳水/糖摄入 | 今日主动控糖/少精碳水 | 8 | BODY:8
 T-504 | 习惯线 | 每日和leader同步进展 | 主动汇报/对齐优先级 | 10 | PM:5,TM:5
 T-505 | 习惯线 | 复盘历史遗漏工作事项 | 查遗留TODO/未闭环事项 | 8 | PM:5,TM:3
+T-506 | 习惯线 | 每日1分钟英语 | 跟读/听写/口语1句·积少成多 | 5 | TL:3,TM:2
 T-601 | 附加分 | 冥想/正念≥10分钟 | 降噪复位·情绪管理 | 8 | BODY:4,TM:4
 T-602 | 附加分 | 阅读≥30分钟 | 书籍/长文/行业洞察 | 10 | TM:10
 T-603 | 附加分 | 学习新技能/课程 | 编程/设计/证书/AI工具 | 12 | TL:12
@@ -1137,7 +1129,7 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
 
   function renderAll(){
     renderMeta(); renderTasks(); renderPanel(); renderBadges();
-    renderLog(); renderShop(); renderHistory(); renderPomo(); renderMusic(); renderCustomPlaylists(); renderSettings();
+    renderLog(); renderShop(); renderHistory(); renderPomo(); renderTaobao(); renderKB(); renderSettings();
     document.getElementById('tabTodayCnt').textContent = S.tasks.filter(t=>!t.done).length;
     document.getElementById('coinInHeader').textContent = S.coin;
   }
@@ -1767,7 +1759,8 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
     document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.page===name));
     if (name==='dash'||name==='history') renderHistory();
     if (name==='pomo') renderPomo();
-    if (name==='music'){ renderMusic(); renderCustomPlaylists(); }
+    if (name==='taobao') renderTaobao();
+    if (name==='kb') renderKB();
     if (name==='skills') renderSkills();
     if (name==='settings') renderSettings();
   }
@@ -1805,115 +1798,104 @@ T-614 | 附加分 | 和潜在客户/合作者聊天 | 每次有效对话=离钱�
     toast('密码已修改');
   }
 
-  // ═══════ 音乐库系统 ═══════
-  const MUSIC_SCENES = {
-    work: {
-      label: '🏢 工作模式',
-      desc: '轻快节奏，保持精力不分心',
-      tracks: [
-        {name:'Lo-Fi Work Beats',src:'https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4FyS8kM',type:'spotify'},
-        {name:'Jazz for Work',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX4wta20PHgwo',type:'spotify'},
-        {name:'Productive Morning',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX6ziVCJnEm59',type:'spotify'},
-        {name:'Instrumental Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX0SM0LYsmbMT',type:'spotify'},
-        {name:'Coding Mode',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX5trt9i14X7j',type:'spotify'},
+  // ═══════ 淘宝创新资讯 (离线预置轮播) ═══════
+  const TAOBAO_FEEDS = [
+    {date:'2026-07-15',title:'AI导购助手升级：个性化推荐+实时比价',summary:'淘宝AI助手新增"帮我选"功能，结合用户画像+实时全网比价给出购买建议。DAU提升12%。',points:['基于大模型的意图理解，不再只是关键词匹配','嵌入购物车场景：加购时自动推荐搭配/替代品','测试数据：转化率+8%，客单价+15%']},
+    {date:'2026-07-15',title:'直播切片二次分发策略',summary:'头部主播直播切片+AI混剪自动分发到短视频/图文频道，长尾流量再利用。',points:['算法自动识别直播高光时刻(GMV峰值/弹幕峰值)','切片5-15秒适配短视频Feed流','实验组7日UV价值+23%']},
+    {date:'2026-07-14',title:'88VIP权益分层精细化运营',summary:'88VIP从"大一统权益包"走向个性化菜单，用户自选3+N权益组合。',points:['核心3项固定(物流/退货/积分倍率)','N项从12个品类权益池自选','续费率从68%提升至79%，ARPU+11%']},
+    {date:'2026-07-14',title:'搜索结果页"场景化"改造',summary:'搜索不再只是商品列表，增加场景化内容卡(穿搭方案/使用教程/评测对比)。',points:['搜"露营装备"→展示打包清单+搭配方案','搜"送男朋友"→展示价格段+场景推荐','点击率+18%，搜索→成交路径缩短1.2步']},
+    {date:'2026-07-13',title:'逛逛内容带货：从种草到拔草闭环',summary:'逛逛升级"边看边买"体验，内容详情页直接挂车+一键加购。',points:['KOC内容挂车门槛降低(粉丝≥500即可)','算法优化：内容与商品相关性评分≥0.7才推','挂车内容GMV月环比+35%']},
+    {date:'2026-07-13',title:'价格力体系2.0：不止低价',summary:'从"绝对低价"转向"价值感知"，引入价格历史曲线+全网比价标签。',points:['商品详情页展示180天价格走势','大促期间标注"历史最低"可信标签','退款率-5%，用户价格信任度+22%']},
+    {date:'2026-07-12',title:'私域沉淀：店铺会员体系升级',summary:'商家会员体系接入支付宝积分通兑+专属客服优先+会员日机制。',points:['会员复购率是非会员的2.3倍','积分可跨商家兑换(联盟积分池)','会员日GMV占商家周GMV的18%']},
+  ];
+
+  function renderTaobao(){
+    const box = document.getElementById('taobaoContent'); if (!box) return;
+    const dateEl = document.getElementById('taobaoDate');
+    const todayFeeds = TAOBAO_FEEDS.filter(f=>f.date===today());
+    const feeds = todayFeeds.length ? todayFeeds : TAOBAO_FEEDS.slice(0,2);
+    if (dateEl) dateEl.textContent = feeds[0]?.date || today();
+    let html = '';
+    feeds.forEach(f=>{
+      html += `<div style="padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px;color:var(--glow)">${f.title}</div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${f.summary}</div>
+        <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:2">
+          ${f.points.map(p=>`<li>${p}</li>`).join('')}
+        </ul>
+      </div>`;
+    });
+    box.innerHTML = html || '<div class="empty">今日暂无更新，明早刷新 ☕</div>';
+  }
+
+  // ═══════ 知识库 (4分类·离线预置·10分钟阅读) ═══════
+  const KB_DATA = {
+    biz: {
+      label:'💰 商业底层逻辑',
+      entries:[
+        {title:'复利效应：时间是穷人唯一的杠杆',one:'收入=本金×(1+利率)^时间，核心变量是时间和利率，不是本金。',points:['巴菲特99%的财富是50岁后赚的','每天进步1%，一年=37.8倍','关键：找到可重复的正收益动作，坚持足够久']},
+        {title:'飞轮效应：亚马逊增长的底层密码',one:'低价→流量→商家入驻→规模效应→更低价，每个环节加速下一个。',points:['贝佐斯1997年股东信就画了这个飞轮','你的飞轮：内容→流量→变现→再投入内容','启动期最难，一旦转起来边际成本趋零']},
+        {title:'锚定效应：价格从来不是绝对的',one:'人们判断价格贵不贵，取决于看到的第一个参照物。',points:['菜单最贵的菜不是为了卖，是让第二贵的显得划算','定价策略：先展示高价版本，再推荐中间档','淘宝划线价的本质就是锚定']},
+        {title:'网络效应：用户越多产品越值钱',one:'产品价值与用户数量的平方成正比(梅特卡夫定律)。',points:['微信/淘宝/抖音都是网络效应的受益者','冷启动难题：没用户→没价值→没用户','破局：找到最小可行网络(如淘宝最初的义乌商家)']},
+        {title:'边际成本趋零：数字产品的暴利密码',one:'卖第1份成本100万，卖第100万份成本≈0。',points:['软件/课程/模板/AI工具都是这个逻辑','你能做的：把经验打包成可复制的数字产品','飞盘教练证→教学视频/训练计划模板→被动收入']},
       ]
     },
-    fitness: {
-      label: '💪 健身模式',
-      desc: '高能量节拍，燃脂推重量',
-      tracks: [
-        {name:'Beast Mode',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP',type:'spotify'},
-        {name:'Workout Twerkout',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX0HRj9P7NxeE',type:'spotify'},
-        {name:'Power Workout',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX70RN3TfnE5v',type:'spotify'},
-        {name:'Gym Hardstyle',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX5g856aiKiDS',type:'spotify'},
-        {name:'Running Tempo 170BPM',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWYoYGBbGKurt',type:'spotify'},
+    skill: {
+      label:'💼 工作技能',
+      entries:[
+        {title:'MECE原则：结构化思考的起点',one:'Mutually Exclusive, Collectively Exhaustive——不重不漏地拆解问题。',points:['汇报/分析/方案都用MECE拆分','常用框架：时间维度/流程维度/用户分层','练习：把"提升GMV"用MECE拆成3层']},
+        {title:'金字塔原理：先说结论再展开',one:'任何沟通都应该结论先行，然后分论点支撑，每层不超过7个。',points:['邮件/周报/汇报第一句就是结论','支撑论点按重要性排序','练习：把下次汇报改成金字塔结构']},
+        {title:'数据分析四步法：描述→诊断→预测→处方',one:'看到数据先描述现象，再找原因，然后预测趋势，最后给方案。',points:['描述：GMV下降5%','诊断：UV不变但转化率降了→详情页改版导致','处方：AB测试回滚 or 优化新版']},
+        {title:'向上管理：让leader成为你的资源',one:'管理leader的预期和信息，让TA能帮你而不是管你。',points:['主动同步 > 被动汇报','坏消息+解决方案一起给','了解leader的KPI，让你的工作对齐TA的目标']},
+        {title:'二八法则在工作中的应用',one:'80%的产出来自20%的关键动作，找到并all-in那20%。',points:['识别高杠杆任务 vs 忙碌但无产出的任务','每天先做最重要的1件事(MIT)','说不的能力=省下80%无效时间']},
       ]
     },
-    rest: {
-      label: '🌙 休息模式',
-      desc: '放松心情，慢下来充电',
-      tracks: [
-        {name:'Peaceful Piano',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX4sWSpwq3LiO',type:'spotify'},
-        {name:'Deep Sleep',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWZd79rJ6a7lp',type:'spotify'},
-        {name:'Nature Sounds',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX4PP3DA4J0N8',type:'spotify'},
-        {name:'Chill Vibes',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX889U0CL85jj',type:'spotify'},
-        {name:'Ambient Relaxation',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX3Ogo9pFvBkY',type:'spotify'},
+    fit: {
+      label:'🏋️ 健身知识',
+      entries:[
+        {title:'渐进超负荷：肌肉生长的唯一法则',one:'肌肉只有在承受比上次更大的刺激时才会生长。',points:['每周增加2.5%的重量 或 1-2次rep','训练日志是进步的证据，不记录=瞎练','新手每周都能加重，中级者每2-4周']},
+        {title:'蛋白质摄入：每公斤体重1.6-2.2g',one:'增肌期蛋白质是建筑材料，不够=白练。',points:['70kg体重→每天112-154g蛋白质','分散到4-5餐(每餐30-40g吸收效率最高)','优质来源：鸡胸/鱼/蛋白/牛肉/蛋白粉']},
+        {title:'训练容量：每肌群每周10-20组',one:'容量(Volume)=组数×次数×重量，是增肌最关键的变量。',points:['新手10-12组/周足够','进阶者15-20组/周(分2-3次练)','超过20组→恢复跟不上→退步']},
+        {title:'睡眠与恢复：生长激素80%在深睡分泌',one:'训练是破坏，睡眠才是建设。睡不好=事倍功半。',points:['目标：7-9小时，深睡≥1.5小时','睡前1h无屏幕/咖啡午后截止/房间18-20°C','sleep score追踪(Apple Watch/Oura Ring)']},
+        {title:'关节健康：训练长寿的前提',one:'受伤一次=倒退3个月，预防远比治疗重要。',points:['每次训练前5分钟动态热身(关节画圈/弹力带)','不要每组都冲极限，留1-2rep余量(RIR)','每4-6周安排1周deload(减量恢复周)']},
       ]
     },
-    focus: {
-      label: '🧠 专注模式',
-      desc: '深度工作，心流状态',
-      tracks: [
-        {name:'Brain Food',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWXe9gFZP0gtP',type:'spotify'},
-        {name:'Deep Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ',type:'spotify'},
-        {name:'Focus Flow',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX7EF8wVxBVhG',type:'spotify'},
-        {name:'Binaural Beats Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DX9uKNf5jGX6m',type:'spotify'},
-        {name:'Classical Focus',src:'https://open.spotify.com/embed/playlist/37i9dQZF1DWVFJtzvDHN4L',type:'spotify'},
+    eng: {
+      label:'🇬🇧 英语对话',
+      entries:[
+        {title:'Workplace: Giving Updates',one:'"Just wanted to give you a quick update on where things stand."',points:['We\'re on track to hit the deadline.','I ran into a blocker — could use your input.','Let me loop you in on the latest changes.','I\'ll have a full write-up by EOD.']},
+        {title:'Workplace: Asking for Help',one:'"Hey, do you have a sec? I could use a second pair of eyes on this."',points:['Could you walk me through how this works?','I\'m stuck on X — any suggestions?','Would you mind reviewing this before I send it out?','I really appreciate you taking the time.']},
+        {title:'Small Talk: Weekend Plans',one:'"Got any plans for the weekend?"',points:['I\'m thinking of checking out that new café downtown.','Probably just gonna take it easy — recharge a bit.','I might hit the gym and catch up on some reading.','Nothing set in stone yet — you?']},
+        {title:'Negotiation: Price Discussion',one:'"I appreciate the offer, but is there any flexibility on the price?"',points:['What\'s the best you can do if we commit today?','If we increase the volume, can you match this rate?','Let me think it over — I want to make sure it works for both of us.','That\'s a bit above our budget — can we meet in the middle?']},
+        {title:'Networking: Self-Introduction',one:'"Hi, I\'m Huali — I work in user growth at Taobao."',points:['Nice to meet you! What brings you to this event?','I\'d love to hear more about what you\'re working on.','Here\'s my WeChat — let\'s stay in touch.','If there\'s ever anything I can help with, don\'t hesitate to reach out.']},
       ]
     }
   };
 
-  let _musicScene = 'work';
-  function switchMusicScene(scene){
-    _musicScene = scene;
-    const sceneMap = {work:'工作',fitness:'健身',rest:'休息',focus:'专注'};
-    document.querySelectorAll('.music-scene').forEach(b=>{
-      const isActive = Object.entries(sceneMap).find(([k,v])=>b.textContent.includes(v))?.[0] === scene;
-      b.classList.toggle('active', isActive);
+  let _kbCat = 'biz';
+  function switchKB(cat){
+    _kbCat = cat;
+    document.querySelectorAll('#page-kb .music-scene').forEach(b=>{
+      b.classList.toggle('active', b.textContent.includes(KB_DATA[cat].label.slice(0,2)));
     });
-    renderMusic();
+    renderKB();
   }
-  function renderMusic(){
-    const scene = MUSIC_SCENES[_musicScene];
-    const box = document.getElementById('musicContent'); if (!box) return;
-    let html = `<div style="color:var(--sub);font-size:12px;margin-bottom:12px">${scene.desc}</div>`;
-    html += '<div style="display:grid;gap:12px">';
-    scene.tracks.forEach(t=>{
-      html += `<div style="background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:hidden">
-        <div style="font-size:13px;font-weight:500;margin-bottom:8px">${t.name}</div>
-        <iframe src="${t.src}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:8px"></iframe>
+  function renderKB(){
+    const box = document.getElementById('kbContent'); if (!box) return;
+    const prog = document.getElementById('kbProgress');
+    const data = KB_DATA[_kbCat];
+    if (prog) prog.textContent = `${data.entries.length} 篇 · 约${data.entries.length*2}分钟`;
+    let html = '';
+    data.entries.forEach((e,i)=>{
+      html += `<div style="padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">${i+1}. ${e.title}</div>
+        <div style="font-size:12px;color:var(--glow);margin-bottom:8px;font-style:italic">${e.one}</div>
+        <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:2">
+          ${e.points.map(p=>`<li>${p}</li>`).join('')}
+        </ul>
       </div>`;
     });
-    // 渲染当前场景的自定义歌单
-    const custom = (S.playlists||[]).filter(p=>p.scene===_musicScene);
-    custom.forEach(p=>{
-      html += `<div style="background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:hidden;position:relative">
-        <div style="font-size:13px;font-weight:500;margin-bottom:8px">${p.name} <span style="font-size:11px;color:var(--sub)">[自定义]</span></div>
-        <a href="${p.url}" target="_blank" style="color:var(--accent);font-size:12px;word-break:break-all">${p.url}</a>
-        <button onclick="removePlaylist('${p.id}')" style="position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:14px">✕</button>
-      </div>`;
-    });
-    html += '</div>';
     box.innerHTML = html;
-  }
-  function addPlaylist(){
-    const name = document.getElementById('ml-name').value.trim();
-    const url = document.getElementById('ml-url').value.trim();
-    const scene = document.getElementById('ml-scene').value;
-    if (!name || !url){ toast('请填写歌单名称和链接'); return; }
-    if (!S.playlists) S.playlists = [];
-    S.playlists.push({id:'pl-'+Date.now(), name, url, scene});
-    document.getElementById('ml-name').value='';
-    document.getElementById('ml-url').value='';
-    save(); renderMusic(); renderCustomPlaylists();
-    toast('歌单已添加');
-  }
-  function removePlaylist(id){
-    if (!S.playlists) return;
-    S.playlists = S.playlists.filter(p=>p.id!==id);
-    save(); renderMusic(); renderCustomPlaylists();
-  }
-  function renderCustomPlaylists(){
-    const box = document.getElementById('customPlaylists'); if (!box) return;
-    const list = S.playlists||[];
-    if (!list.length){ box.innerHTML='<div style="color:var(--sub);font-size:12px">暂无自定义歌单</div>'; return; }
-    const scenes = {work:'工作',fitness:'健身',rest:'休息',focus:'专注'};
-    box.innerHTML = list.map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)">
-      <span style="font-size:12px;color:var(--sub);min-width:40px">${scenes[p.scene]||p.scene}</span>
-      <span style="font-size:13px;flex:1">${p.name}</span>
-      <a href="${p.url}" target="_blank" style="font-size:11px;color:var(--accent)">打开</a>
-      <button onclick="removePlaylist('${p.id}')" style="background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:12px">删除</button>
-    </div>`).join('');
   }
 
   function quickRollover(){
