@@ -6357,6 +6357,204 @@
           ],
           "_date": "2026-07-27"
         }
+      ],
+      "look": [
+        {
+          "title": "运动后的通勤穿搭：从健身房到办公室的形象切换",
+          "one": "结论：健身后直接去公司或见客户，不一定非要换正装；用'分层穿搭+速干面料+一双干净鞋'就能兼顾功能与体面。",
+          "points": [
+            "上衣：选一件修身但不过紧的速干Polo或长袖T恤，避免汗渍贴身和oversize带来的邋遢感",
+            "下装：深色修身运动裤或机能裤比篮球短裤更像'有计划的穿搭'，且不影响训练动作",
+            "外套：一件剪裁利落的轻薄夹克/衬衫外套是切换场景的关键，能盖住训练痕迹、提升正式感",
+            "鞋包：包里常备一双干净的小白鞋或德训鞋，训练鞋只留在健身房，避免把泥和汗带进办公室",
+            "细节：训练后用湿巾清理面部、补一点止汗膏，气质管理比衣服本身更能决定他人观感"
+          ],
+          "_date": "2026-07-27"
+        },
+        {
+          "title": "胡须轮廓管理：一张干净下颌线的修剪逻辑",
+          "one": "结论：胡须不是'有没有'的问题，而是'轮廓清不清晰'；修出明确的下颌线和鬓角边界，比简单剃光更能修饰脸型、提升气场。",
+          "points": [
+            "脸型适配：圆脸适合留一点下巴胡须拉长视觉线条；长脸则应控制下巴长度、加重鬓角以横向拉宽",
+            "工具选择：电动理发器配3-6mm卡尺做整体，再用剃刀精修轮廓，每周维护2-3次即可保持清爽",
+            "关键三线：下颌线、唇线、鬓角线三条边界必须干净，任何模糊都会显得'忘了刮'",
+            "密度渐变：脸颊到胡须的密度要做自然过渡，避免出现断层或'一夜没修'的色差",
+            "护理习惯：胡须也需要清洗和胡须油软化，干枯分叉的胡子会拉低整体质感"
+          ],
+          "_date": "2026-07-27"
+        }
+      ],
+      "eng": [
+        {
+          "title": "Fitness: Designing a 12-Week Body Recomposition Plan 设计12周体态改造计划",
+          "one": {
+            "en": "Let's build a 12-week plan that focuses on body recomposition—losing fat while building muscle, not just chasing the scale.",
+            "zh": "我们来做一个12周的体态改造计划，重点是减脂同时增肌，而不是只盯着体重秤。",
+            "words": [
+              {
+                "w": "body recomposition",
+                "ipa": "/ˈbɒd.i ˌriː.kɒm.pəˈzɪʃ.ən/",
+                "def": "身体成分重塑（减脂+增肌）"
+              },
+              {
+                "w": "chasing the scale",
+                "ipa": "/ˈtʃeɪ.sɪŋ ðə skeɪl/",
+                "def": "只追求体重数字"
+              }
+            ]
+          },
+          "points": [
+            {
+              "en": "We'll start with a full-body strength session three times a week to build a solid foundation.",
+              "zh": "我们先用每周三次全身力量训练打好基础。",
+              "words": [
+                {
+                  "w": "full-body strength session",
+                  "ipa": "/fʊl ˈbɒd.i streŋθ ˈseʃ.ən/",
+                  "def": "全身力量训练课"
+                },
+                {
+                  "w": "foundation",
+                  "ipa": "/faʊnˈdeɪ.ʃən/",
+                  "def": "基础"
+                }
+              ]
+            },
+            {
+              "en": "On non-lifting days, you'll do 30–40 minutes of Zone 2 cardio to protect muscle while burning fat.",
+              "zh": "不做力量训练的日子，做30-40分钟Zone 2有氧，在燃脂同时保护肌肉。",
+              "words": [
+                {
+                  "w": "Zone 2 cardio",
+                  "ipa": "/zəʊn tuː ˈkɑː.di.əʊ/",
+                  "def": "第二心率区间有氧"
+                },
+                {
+                  "w": "protect muscle",
+                  "ipa": "/prəˈtekt ˈmʌs.əl/",
+                  "def": "保护肌肉"
+                }
+              ]
+            },
+            {
+              "en": "Protein target is 1.8 to 2.2 grams per kilogram of body weight—let's keep it consistent every meal.",
+              "zh": "蛋白质目标是每公斤体重1.8到2.2克，每餐都要稳定摄入。",
+              "words": [
+                {
+                  "w": "protein target",
+                  "ipa": "/ˈprəʊ.tiːn ˈtɑː.gɪt/",
+                  "def": "蛋白质目标"
+                },
+                {
+                  "w": "consistent",
+                  "ipa": "/kənˈsɪs.tənt/",
+                  "def": "一致的/稳定的"
+                }
+              ]
+            },
+            {
+              "en": "Every four weeks we'll retest your body composition and adjust calories up or down by 100–200.",
+              "zh": "每四周重新测一次身体成分，把热量上下调整100-200大卡。",
+              "words": [
+                {
+                  "w": "body composition",
+                  "ipa": "/ˈbɒd.i ˌkɒm.pəˈzɪʃ.ən/",
+                  "def": "身体成分"
+                },
+                {
+                  "w": "adjust calories",
+                  "ipa": "/əˈdʒʌst ˈkæl.ər.iz/",
+                  "def": "调整热量"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Business: Negotiating a Coach Revenue-Sharing Model 谈判教练分成模式",
+          "one": {
+            "en": "Before we hire coaches, we need a revenue-sharing model that keeps them motivated without killing the studio's margin.",
+            "zh": "在招聘教练之前，我们需要一套既能激励教练、又不压垮工作室利润的分成模式。",
+            "words": [
+              {
+                "w": "revenue-sharing model",
+                "ipa": "/ˈrev.ən.juː ˈʃeə.rɪŋ ˈmɒd.əl/",
+                "def": "收入分成模式"
+              },
+              {
+                "w": "margin",
+                "ipa": "/ˈmɑː.dʒɪn/",
+                "def": "利润率/利润空间"
+              }
+            ]
+          },
+          "points": [
+            {
+              "en": "Option A is a pure commission split, say 60% to the coach and 40% to the studio on every session.",
+              "zh": "方案A是纯提成制，比如每节课教练拿60%，工作室拿40%。",
+              "words": [
+                {
+                  "w": "commission split",
+                  "ipa": "/kəˈmɪʃ.ən splɪt/",
+                  "def": "佣金分成"
+                },
+                {
+                  "w": "session",
+                  "ipa": "/ˈseʃ.ən/",
+                  "def": "（一节）课"
+                }
+              ]
+            },
+            {
+              "en": "Option B is a base salary plus a lower per-session bonus—better for coaches who need income stability.",
+              "zh": "方案B是底薪加较低的课时奖金，适合需要收入稳定的教练。",
+              "words": [
+                {
+                  "w": "base salary",
+                  "ipa": "/beɪs ˈsæl.ər.i/",
+                  "def": "底薪"
+                },
+                {
+                  "w": "income stability",
+                  "ipa": "/ˈɪn.kʌm stəˈbɪl.ɪ.ti/",
+                  "def": "收入稳定性"
+                }
+              ]
+            },
+            {
+              "en": "We should also cap the studio's marketing and rental cost share so the model stays profitable below 60% coach utilization.",
+              "zh": "我们还要设定工作室的营销和房租成本分摊上限，这样即使在教练利用率不到60%时也能盈利。",
+              "words": [
+                {
+                  "w": "cap",
+                  "ipa": "/kæp/",
+                  "def": "上限/封顶"
+                },
+                {
+                  "w": "utilization",
+                  "ipa": "/ˌjuː.tɪ.laɪˈzeɪ.ʃən/",
+                  "def": "利用率"
+                }
+              ]
+            },
+            {
+              "en": "Let's run a three-month pilot with one full-time coach and review both coach satisfaction and studio net profit.",
+              "zh": "我们先和一位全职教练试运行三个月，同时评估教练满意度和工作室净利润。",
+              "words": [
+                {
+                  "w": "pilot",
+                  "ipa": "/ˈpaɪ.lət/",
+                  "def": "试点/试运行"
+                },
+                {
+                  "w": "net profit",
+                  "ipa": "/net ˈprɒf.ɪt/",
+                  "def": "净利润"
+                }
+              ]
+            }
+          ]
+        }
       ]
     },
     "autoCheckin": {
@@ -6559,6 +6757,184 @@
         "优先级P2：把飞盘社群的连接能力迁移到健身房会员社群，用'主题运动+认知分享'把用户变成传播节点。",
         "优先级P2：建立个人度量仪表盘，追踪输入/输出/影响力三个指标，每周末复盘一次。",
         "优先级P3：探索'华力'个人IP的长期定位——专家、创始人、KOL的组合比例，根据前90天反馈动态调整。"
+      ]
+    },
+    "stockToday": {
+      "date": "2026-07-27",
+      "us": {
+        "label": "🇺🇸 美股收盘(7-24)",
+        "indices": [
+          {
+            "name": "道琼斯",
+            "val": "45,380",
+            "chg": "+0.18%",
+            "up": true
+          },
+          {
+            "name": "纳斯达克",
+            "val": "20,920",
+            "chg": "+0.55%",
+            "up": true
+          },
+          {
+            "name": "标普500",
+            "val": "6,405",
+            "chg": "+0.32%",
+            "up": true
+          }
+        ],
+        "hot": [
+          "结论：科技巨头财报季收尾，AI资本开支兑现度成为核心变量",
+          "英伟达/AMD高位震荡，数据中心收入指引决定后续估值空间",
+          "中概股分化，阿里稳健、拼多多受国内消费预期压制",
+          "论据：10年期美债收益率持稳于4.25%，风险偏好维持中性"
+        ]
+      },
+      "kr": {
+        "label": "🇰🇷 韩股开盘(7-27)",
+        "indices": [
+          {
+            "name": "KOSPI",
+            "val": "2,882",
+            "chg": "+0.21%",
+            "up": true
+          },
+          {
+            "name": "KOSDAQ",
+            "val": "858",
+            "chg": "+0.15%",
+            "up": true
+          }
+        ],
+        "hot": [
+          "结论：半导体权重股早盘小幅高开，但资金观望本周美联储利率决议",
+          "三星/SK海力士HBM订单能见度延续至明年，存储周期仍处上行通道",
+          "论据：跟随上周五美股科技股反弹，韩元走弱限制指数上行空间"
+        ]
+      },
+      "a": {
+        "label": "🇨🇳 A股热门板块(7-27)",
+        "hot": [
+          {
+            "name": "人形机器人/具身智能",
+            "note": "结论:产业政策密集出台+工厂场景落地预期，主题弹性大;论据:北京/上海发布机器人产业行动计划，核心零部件订单环比改善"
+          },
+          {
+            "name": "智能驾驶/车路云",
+            "note": "结论:高阶智驾渗透率提升，车路云一体化试点扩容;论据:头部车企城市NOA里程数环比翻倍，路侧设备招标回暖"
+          },
+          {
+            "name": "商业航天/低空经济",
+            "note": "结论:卫星互联网和低空物流进入商业化前夜;论据:可回收火箭试验进度超预期，低空航线审批加速"
+          },
+          {
+            "name": "消费电子/苹果链",
+            "note": "结论:iPhone新品备货周期启动，产业链景气度回升;论据:上游钛合金/潜望镜模组订单开始放量"
+          },
+          {
+            "name": "电力/特高压",
+            "note": "结论:夏季用电高峰+新能源外送需求，电网投资确定性高;论据:特高压直流项目核准提速，国网招标金额同比高增"
+          }
+        ]
+      },
+      "notes": "仅供参考·非投资建议。周一盯盘要点:①周末消息面消化 ②北向资金流向 ③主线题材能否从情绪驱动转向业绩验证。本周关注美联储利率决议与国内PMI。"
+    },
+    "tbToday": {
+      "taobao": [
+        {
+          "type": "📰 新闻",
+          "title": "淘宝闪购接入连锁商超与便利店，'万物到家'心智再进一步",
+          "summary": "淘宝闪购把连锁商超、便利店、药店纳入即时零售供给，SKU从生鲜外卖向'日常刚需'全面扩展。",
+          "points": [
+            "与美团闪购正面争夺本地生活入口",
+            "供给密度提升后，履约时效进入'30分钟稳态'",
+            "对DSP：本地生活人群标签和LBS定向将成为新流量池"
+          ]
+        },
+        {
+          "type": "💡 思路",
+          "title": "AI摘要重构淘宝搜索结果页，DSP文案要写给AI看",
+          "summary": "淘宝正在内测AI搜索摘要，把用户问题直接生成答案并推荐商品，传统关键词优化逻辑面临迭代。",
+          "points": [
+            "商品标题和详情要从'关键词堆砌'转向'场景化语义'",
+            "DSP素材可测试'问题-解决方案'型文案，匹配AI摘要偏好",
+            "长尾问答词（如'练后吃什么蛋白棒'）可能成为新蓝海"
+          ]
+        },
+        {
+          "type": "📰 新闻",
+          "title": "淘宝直播推出'主播AI分身'，降低中小商家开播门槛",
+          "summary": "商家可上传素材生成数字人主播，实现7×24小时低成本开播，直播电商进入'人机协作'阶段。",
+          "points": [
+            "数字人适合标准化讲解和深夜时段",
+            "真人主播聚焦互动与转化高峰",
+            "健身/运动品牌可用AI分身做课程与产品介绍"
+          ]
+        }
+      ],
+      "internet": [
+        {
+          "type": "📰 新闻",
+          "title": "Meta发布Llama 4企业版，开源大模型商业化提速",
+          "summary": "Meta推出面向企业的Llama 4订阅服务，并提供更严格的数据隐私保障，直接挑战OpenAI和Anthropic。",
+          "points": [
+            "企业级AI市场从'模型能力'转向'安全+成本'",
+            "开源路线降低部署门槛，吸引金融、医疗等敏感行业",
+            "中小创业者可用开源模型搭建垂直应用"
+          ]
+        },
+        {
+          "type": "📰 新闻",
+          "title": "苹果下调Vision Pro全年产量预期，空间计算硬件遇冷",
+          "summary": "由于内容生态和高价抑制需求，苹果将Vision Pro 2026年产量目标大幅下调，空间计算普及尚需杀手级应用。",
+          "points": [
+            "硬件创新需要'刚需场景'支撑，而非仅技术炫技",
+            "AI眼镜被视为更轻量、更易普及的替代入口",
+            "内容创作者不必all in空间视频，先观察用户真实付费意愿"
+          ]
+        },
+        {
+          "type": "💡 思路",
+          "title": "AI Agent从'聊天'进入'执行'，个人工作流将被重构",
+          "summary": "多款AI Agent开始能自主调用日历、邮件、CRM等工具完成任务，'一句话跑完一个工作流'成为现实。",
+          "points": [
+            "重复性工作（排课、发通知、数据整理）最先被替代",
+            "人类价值转向判断、创意和关系维护",
+            "华力可把Agent用于健身房约课提醒和会员跟进"
+          ]
+        }
+      ],
+      "crossover": [
+        {
+          "type": "💡 思路·跨界",
+          "title": "健身私教课 × 淘宝直播：把体验课变成可预约的'直播团购'",
+          "summary": "借鉴本地生活直播团购，把私教体验课搬到淘宝直播间，用户边看边预约到店，降低首次决策门槛。",
+          "points": [
+            "直播间用真实上课片段做信任背书",
+            "限时秒杀体验课制造紧迫感",
+            "结合LBS定向，只推给门店周边3公里人群"
+          ]
+        },
+        {
+          "type": "💡 思路·跨界",
+          "title": "AI分身 × 教练IP：用数字人7×24小时做健身科普",
+          "summary": "用AI分身在小红书/视频号/淘宝直播持续输出'184cm教练的健身问答'，真人华力专注高质量深度内容。",
+          "points": [
+            "数字人回答100个高频小白问题，沉淀SEO/搜索资产",
+            "真人出镜讲案例、带训练、做转化",
+            "先用AI分身测试选题反馈，再投入真人拍摄"
+          ]
+        },
+        {
+          "type": "💡 思路·跨界",
+          "title": "即时零售 × 运动装备：'装备半小时达'解决临时缺装备痛点",
+          "summary": "结合淘宝闪购履约网络，用户在健身房/飞盘场发现缺装备可即时下单，30分钟送达。",
+          "points": [
+            "场景：忘带护腕、袜子湿透、蛋白棒吃完",
+            "与周边运动用品店或前置仓合作",
+            "华力可在内容里植入'紧急装备清单+闪购链接'"
+          ]
+        }
       ]
     }
   }
