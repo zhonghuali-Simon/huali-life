@@ -2656,6 +2656,8 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     // 渲染一个句子（支持字符串或{en,zh,words}对象）
     const sid = ()=>'s'+Math.random().toString(36).slice(2,7);
     function renderSentence(s, kind){
+      // 防御：空值直接返回空,避免坏数据导致整页崩溃
+      if (s===null || s===undefined) return kind==='one' ? '' : '';
       // kind: 'one' (标题句·大字·粗体·高亮色) or 'point' (要点·小字)
       if (typeof s === 'string'){
         const cls = kind==='one'
@@ -2663,6 +2665,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
           : 'style="font-size:12px;line-height:2"';
         return kind==='one' ? `<div ${cls}>${s}</div>` : `<li>${s}</li>`;
       }
+      if (typeof s !== 'object') return '';
       // 结构化英语句子
       const id = sid();
       const wordHtml = (s.words||[]).map(w=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:2px 8px;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.15);border-radius:0;clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px);font-size:11px"><b style="color:var(--glow2)">${w.w}</b> <span style="color:var(--sub);font-family:monospace">${w.ipa||''}</span> <span style="color:var(--text)">· ${w.def}</span></span>`).join('');
@@ -2795,7 +2798,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
         <div style="font-size:13px;font-weight:600;margin-bottom:6px">${i+1}. ${e.title}</div>
         ${renderSentence(e.one,'one')}
         <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:2">
-          ${e.points.map(p=>renderSentence(p,'point')).join('')}
+          ${(e.points||[]).map(p=>renderSentence(p,'point')).join('')}
         </ul>
         <div style="margin-top:10px;padding:8px 10px;background:rgba(${p.bg},.05);border-left:2px solid ${p.color}">
           <div style="font-size:11px;color:${p.color};margin-bottom:4px;font-weight:600">${p.icon} ${p.q1}</div>
