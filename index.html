@@ -1355,8 +1355,9 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
         if (!S.kbArchive) S.kbArchive = {};
         ensureKBArchive();
         const arc = S.kbArchive[STOCK_DATA.date || today()];
-        if (arc && arc.kb){
-          Object.entries(hist.kbAppend).forEach(([cat, entries])=>{
+        const histKa = normKbAppend(hist.kbAppend);
+        if (arc && arc.kb && histKa){
+          Object.entries(histKa).forEach(([cat, entries])=>{
             if (!arc.kb[cat]) return;
             const exist = new Set(arc.kb[cat].entries.map(e=>e.title));
             (entries||[]).forEach(e=>{ if (!exist.has(e.title)){ arc.kb[cat].entries.push({...e, _date: e._date||dk}); contentChanged++; } });
@@ -1371,6 +1372,23 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
         else if (tplChanged>0) toast(`🔄 任务已更新为最新`);
       }
     }catch(e){}
+  }
+
+  // 归一化 kbAppend：兼容 对象(按分类) 和 数组(每条带category字段) 两种格式，统一返回按分类的对象
+  function normKbAppend(ka){
+    if (!ka) return null;
+    if (Array.isArray(ka)){
+      const g={};
+      ka.forEach(it=>{
+        if (!it || typeof it!=='object') return;
+        const cat = it.category || it.cat; if (!cat) return;
+        const {category,cat:_c, ...rest} = it;
+        (g[cat] = g[cat]||[]).push(rest);
+      });
+      return g;
+    }
+    if (typeof ka==='object') return ka;
+    return null;
   }
 
   // 合并云端下发的每日内容：淘宝创新(tbToday覆盖当天) + 知识库(kbAppend按分类去重追加)
@@ -1400,12 +1418,13 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
       if (prev !== next){ S.bsArchive[d] = JSON.parse(next); changed++; _bsDate = d; }
     }
     // 知识库：按分类追加新条目(用title去重)，并给每条打上当日日期标记
-    if (todayData.kbAppend && typeof todayData.kbAppend==='object'){
+    if (todayData.kbAppend){
       if (!S.kbArchive) S.kbArchive = {};
       ensureKBArchive();
       const arc = S.kbArchive[STOCK_DATA.date||d];
-      if (arc && arc.kb){
-        Object.entries(todayData.kbAppend).forEach(([cat, entries])=>{
+      const kaObj = normKbAppend(todayData.kbAppend);
+      if (arc && arc.kb && kaObj){
+        Object.entries(kaObj).forEach(([cat, entries])=>{
           if (!arc.kb[cat]) return;
           const exist = new Set(arc.kb[cat].entries.map(e=>e.title));
           (entries||[]).forEach(e=>{ if (!exist.has(e.title)){ arc.kb[cat].entries.push({...e, _date: e._date||d}); changed++; } });
