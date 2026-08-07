@@ -1219,6 +1219,9 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
         const dd = defaultState(); for (const k of Object.keys(dd)) if (S[k]===undefined) S[k]=dd[k];
         localStorage.setItem(KEY, JSON.stringify(S));
         renderAll();
+        // 云端快照可能是旧设备的,不含今天新下发的脑洞/知识库/淘宝创新;覆盖后必须立刻回源重并一次
+        _cloudPulling = false;
+        try{ await syncFromServer(); }catch(e){}
         if(!silent) toast('☁️ 已从云端拉取最新（其他设备的更新）','gold');
         cloudStatus('⬇️ 已拉取云端更新 · '+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}));
       } else {
@@ -3601,8 +3604,8 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   setInterval(syncFromServer, 5*60*1000);
   // 真·双向云同步：启动时连接并拉取其它设备的最新状态
   setTimeout(()=>cloudInit(false), 800);
-  // 页面重新获得焦点时同步（切回标签页/唤醒电脑）：既拉任务内容，也拉云端用户状态
-  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden){ syncFromServer(); cloudPull(true); } });
+  // 页面重新获得焦点时同步（切回标签页/唤醒电脑）：先拉云端用户状态,再回源并入当日内容(顺序不能反,否则旧快照会盖掉今天的内容)
+  document.addEventListener('visibilitychange', async ()=>{ if (!document.hidden){ await cloudPull(true); syncFromServer(); } });
   window.addEventListener('focus', ()=>{ cloudPull(true); });
 </script>
 </body>
