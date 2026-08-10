@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # 一键部署到 GitHub Pages
-# 用法：bash deploy.sh <你的GitHub用户名> [仓库名]
+# 用法：bash deploy.sh [GitHub用户名] [仓库名]  —— 不传参数即使用默认值
 set -e
 
-USER="${1:-}"
-REPO="${2:-lijing-life}"
+USER="${1:-zhonghuali-Simon}"
+REPO="${2:-huali-life}"
 
 if [ -z "$USER" ]; then
-  echo "用法: bash deploy.sh <你的GitHub用户名> [仓库名，默认 lijing-life]"
+  echo "用法: bash deploy.sh [GitHub用户名，默认 zhonghuali-Simon] [仓库名，默认 huali-life]"
   echo ""
   echo "前置条件："
   echo "  1. 已在 GitHub 上创建同名仓库（可选，命令会尝试用 gh 创建）"
@@ -22,7 +22,7 @@ if [ ! -d .git ]; then
 fi
 
 git add .
-git commit -m "update: 立鲸人生成长系统" || echo "无变更"
+git commit -m "${3:-update: 立鲸人生成长系统}" || echo "无变更"
 
 # 优先用 gh CLI 创建 + push
 if command -v gh >/dev/null 2>&1; then
