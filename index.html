@@ -3811,9 +3811,53 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     });
     box.innerHTML=html;
   }
+  // cron 下发的结构会演进（keyPoints 字符串数组 / rounds 带 theme+dialog / qa 只有 q,a / summary 是对象）
+  // 渲染器只认旧的扁平结构，这里统一归一化，新旧两种都能渲染，避免一处字段变形就整页空白
+  function bsNormalize(m){
+    if (!m || typeof m !== 'object') return m;
+    const o = Object.assign({}, m);
+    // keyPoints: ['文本'] -> [{point,why}]
+    if (Array.isArray(o.keyPoints)){
+      o.keyPoints = o.keyPoints.map(kp => (typeof kp === 'string') ? {point: kp, why: ''} : kp);
+    }
+    // rounds: [{round,theme,dialog:[{role,says}]}] -> [{role,text}]，theme 作为分隔小标题
+    if (Array.isArray(o.rounds) && o.rounds.some(r => r && Array.isArray(r.dialog))){
+      const flat = [];
+      o.rounds.forEach(r => {
+        if (!r) return;
+        if (Array.isArray(r.dialog)){
+          if (r.theme) flat.push({_theme: (r.round ? ('第'+r.round+'轮 · ') : '') + r.theme});
+          r.dialog.forEach(d => { if (d) flat.push({role: d.role, text: d.says != null ? d.says : d.text}); });
+        } else {
+          flat.push({role: r.role, text: r.text});
+        }
+      });
+      o.rounds = flat;
+    }
+    // qa: 缺 from/by 时补默认称谓
+    if (Array.isArray(o.qa)){
+      o.qa = o.qa.map(x => Object.assign({from: '现场', by: '圆桌'}, x));
+    }
+    // summary: {conclusion,nextStep,pitfall} -> 字符串数组
+    if (o.summary && !Array.isArray(o.summary)){
+      if (typeof o.summary === 'string'){
+        o.summary = [o.summary];
+      } else {
+        const s = o.summary, arr = [];
+        if (s.conclusion) arr.push('结论：' + s.conclusion);
+        if (s.nextStep)   arr.push('下一步：' + s.nextStep);
+        if (s.pitfall)    arr.push('避坑：' + s.pitfall);
+        Object.keys(s).forEach(k => {
+          if (['conclusion','nextStep','pitfall'].indexOf(k) < 0 && typeof s[k] === 'string') arr.push(s[k]);
+        });
+        o.summary = arr;
+      }
+    }
+    return o;
+  }
   function bsRenderMeetings(meetings){
     let html='';
-    meetings.forEach((m,mi)=>{
+    (meetings||[]).map(bsNormalize).forEach((m,mi)=>{
     if (mi>0) html+=`<div style="margin:24px 0;border-top:2px dashed rgba(0,255,159,.2);padding-top:16px"></div>`;
     if (meetings.length>1) html+=`<div style="font-size:11px;color:var(--glow);letter-spacing:1px;margin-bottom:8px">🧠 第${mi+1}场 / 共${meetings.length}场</div>`;
     const roleMap = buildRoleMap(m.roles);
@@ -3834,17 +3878,23 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
       m.keyPoints.forEach((kp,i)=>{
         html+=`<div style="padding:10px 12px;margin-bottom:8px;background:rgba(0,229,255,.05);border-left:3px solid var(--glow2);clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)">
           <div style="font-size:13px;font-weight:600;color:var(--glow2)">${i+1}. ${kp.point}</div>
-          <div style="font-size:12px;color:var(--sub);margin-top:3px">为什么重要：${kp.why}</div></div>`;
+          ${kp.why?`<div style="font-size:12px;color:var(--sub);margin-top:3px">为什么重要：${kp.why}</div>`:''}</div>`;
       });
       html+=`<div style="height:8px"></div>`;
     }
     // 讨论气泡
     html+=`<div style="font-size:11px;color:var(--sub);margin-bottom:8px;letter-spacing:1px">💬 圆桌讨论 · 观点碰撞与相互提问</div>`;
-    (m.rounds||[]).forEach(rd=>{ const st=bsStyleFor(rd.role, roleMap);
+    (m.rounds||[]).forEach(rd=>{
+      if (!rd) return;
+      if (rd._theme){
+        html+=`<div style="margin:14px 0 10px;font-size:11px;font-weight:700;color:var(--glow2);letter-spacing:1px;padding-left:8px;border-left:2px solid var(--glow2)">${rd._theme}</div>`;
+        return;
+      }
+      const st=bsStyleFor(rd.role, roleMap);
       html+=`<div style="display:flex;gap:10px;margin-bottom:12px">
         <div style="flex-shrink:0;width:34px;height:34px;border-radius:50%;background:${st.color}22;border:1px solid ${st.color}66;display:flex;align-items:center;justify-content:center;font-size:16px">${st.emoji}</div>
-        <div style="flex:1"><div style="font-size:11px;color:${st.color};font-weight:600;margin-bottom:3px">${rd.role}</div>
-        <div style="font-size:13px;line-height:1.7;color:var(--text);background:rgba(255,255,255,.02);border:1px solid rgba(0,255,159,.06);padding:8px 12px;border-radius:0 10px 10px 10px">${rd.text}</div></div></div>`;
+        <div style="flex:1"><div style="font-size:11px;color:${st.color};font-weight:600;margin-bottom:3px">${rd.role||''}</div>
+        <div style="font-size:13px;line-height:1.7;color:var(--text);background:rgba(255,255,255,.02);border:1px solid rgba(0,255,159,.06);padding:8px 12px;border-radius:0 10px 10px 10px">${rd.text||''}</div></div></div>`;
     });
     // 新启发脑洞
     if (m.sparks && m.sparks.length){
