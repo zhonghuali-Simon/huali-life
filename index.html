@@ -4025,8 +4025,12 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   setInterval(renderMeta, 60000);
   // 自动更新：每5分钟拉取一次最新任务，无需手动点按钮
   setInterval(syncFromServer, 5*60*1000);
-  // 真·双向云同步：启动时连接并拉取其它设备的最新状态
-  setTimeout(()=>cloudInit(false), 800);
+  // 真·双向云同步：启动时连接并拉取其它设备的最新状态，随后立刻回源并入当日内容
+  // 顺序不能反：先 cloudInit(可能用云端快照覆盖本地)，再 syncFromServer(把今天下发的任务/脑洞/知识库并进来)
+  setTimeout(async ()=>{
+    try{ await cloudInit(false); }catch(e){}
+    try{ await syncFromServer(); }catch(e){}
+  }, 800);
   // 页面重新获得焦点时同步（切回标签页/唤醒电脑）：先拉云端用户状态,再回源并入当日内容(顺序不能反,否则旧快照会盖掉今天的内容)
   document.addEventListener('visibilitychange', async ()=>{ if (!document.hidden){ await cloudPull(true); syncFromServer(); } });
   window.addEventListener('focus', ()=>{ cloudPull(true); });
