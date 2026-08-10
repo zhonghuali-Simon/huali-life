@@ -327,7 +327,7 @@
     <div class="grid">
       <div>
         <div class="card">
-          <h2>今日任务清单 <span style="display:flex;align-items:center;gap:8px"><button onclick="refreshTasks()" title="拉取最新任务(每5分钟也会自动更新)" style="padding:4px 10px;font-size:11px">🔄 刷新任务</button><span class="right" id="taskProgress">0/0 · 0分</span></span></h2>
+          <h2>今日任务清单 <span style="display:flex;align-items:center;gap:8px"><span id="syncBadge" style="font-size:11px;opacity:.9"></span><button onclick="refreshTasks()" title="拉取最新任务(每5分钟也会自动更新)" style="padding:4px 10px;font-size:11px">🔄 刷新任务</button><span class="right" id="taskProgress">0/0 · 0分</span></span></h2>
           <div class="task-nav" id="taskNav"></div>
           <div id="taskList"></div>
           <div class="task-group-title">➕ 新增任务（自动按难度打分）</div>
@@ -877,9 +877,8 @@ T-103 | 工作线 | 🔥过期待办清理（D001-D024及T系列） | 钉钉待�
 T-104 | 工作线 | [O3-项目管理] AAC项目执行节奏文档终稿 | 钉钉待办55834850594/55692503640·基于前期讨论补充里程碑节点、责任人分工、风险点·形成可执行版本 | 18 | PM:10,DA:8
 T-105 | 工作线 | 闲鱼结算处理 | 滕云开/奕丹今日@跟进·核对闲鱼渠道当期结算数据与回刷进度·处理差异单并同步财务/BD | 18 | DA:10,PM:8
 T-106 | 工作线 | [O2-KR2] 私域社群SOP终稿完善 | 钉钉待办55834838659/55671558839·完善拉群链路流程图、运营规范细则、奖惩机制条款 | 18 | PM:10,DA:8
-T-108 | 工作线 | 闲鱼结算处理 | 核对闲鱼渠道当期结算数据·处理差异单与异常口径·推进结算流程闭环并同步财务/BD | 18 | DA:10,PM:8
-T-109 | 工作线 | iOS任务gap排查与补齐 | 对比iOS侧任务目标与实际完成量·定位gap来源(投放/素材/链路/口径)·输出补齐动作与责任人 | 20 | DA:12,PM:8
-T-110 | 工作线 | UC侧反馈闲鱼数据部分广告位 | 承接UC侧反馈·核对闲鱼数据中相关广告位表现与口径差异·给出结论与后续动作并回复对方 | 15 | PM:9,DA:6
+T-142 | 工作线 | iOS任务gap排查与补齐 | 对比iOS侧任务目标与实际完成量·定位gap来源(投放/素材/链路/口径)·输出补齐动作与责任人 | 20 | DA:12,PM:8
+T-143 | 工作线 | UC侧反馈闲鱼数据部分广告位 | 承接UC侧反馈·核对闲鱼数据中相关广告位表现与口径差异·给出结论与后续动作并回复对方 | 15 | PM:9,DA:6
 T-000 | 签到 | 每日签到 | 打开系统开启新的一天·连续签到有惊喜 | 5 | TM:5
 T-201 | 收入线·短期 | 飞盘教练：约课/带课/复盘 | 每次带课189元·周末优先 | 20 | RI:15,BODY:5
 T-202 | 收入线·短期 | 出个汗·私教体验课邀约 | 企微/小红书DM≥3人 | 12 | RI:10,PM:2
@@ -1412,26 +1411,77 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     const mt = todayData && todayData.manualTasks;
     if (!Array.isArray(mt) || !mt.length) return tplString || '';
     const base = tplString || '';
-    const have = new Set(base.split('\n').map(r=>String(r).split('|')[0].trim()).filter(Boolean));
+    const baseRows = base.split('\n').filter(r=>String(r).trim());
+    const have = new Set(baseRows.map(r=>String(r).split('|')[0].trim()).filter(Boolean));
+    // 标题也去重：cron 会循环复用 T-101~T-107，可能生成和人工任务同名的一条，避免页面上出现两条一样的
+    const norm = s=>String(s||'').replace(/\s+/g,'').replace(/[·・()（）【】\[\]]/g,'');
+    const haveTitles = new Set(baseRows.map(r=>{
+      const p = String(r).split('|');
+      return p.length>2 ? norm(p[2]) : '';
+    }).filter(Boolean));
     const add = mt.filter(r=>{
-      const id = String(r||'').split('|')[0].trim();
-      return id && !have.has(id);
+      const p = String(r||'').split('|');
+      const id = p[0].trim();
+      if (!id || have.has(id)) return false;
+      const ti = p.length>2 ? norm(p[2]) : '';
+      return !(ti && haveTitles.has(ti));
     });
     return add.length ? (base ? base + '\n' + add.join('\n') : add.join('\n')) : base;
   }
 
   // ═══════ 服务端同步：统一从线上拉取，不管在哪个域名运行 ═══════
   const SYNC_URL = 'https://raw.githubusercontent.com/zhonghuali-Simon/huali-life/main/sync.json';
-  // 健壮拉取：优先raw.githubusercontent(推送后秒生效无CDN缓存),再试同源相对路径
+  // 多源兜底：同源相对路径(在Pages上最快) → GitHub Pages 绝对地址(本地file://打开时靠它) →
+  // jsDelivr CDN(内网常能通) → raw.githubusercontent(部分内网被墙)。任一成功即返回。
+  const SYNC_SOURCES = [
+    ['同源',   ()=>'./sync.json?t='+Date.now()],
+    ['Pages',  ()=>'https://zhonghuali-simon.github.io/huali-life/sync.json?t='+Date.now()],
+    ['jsDelivr', ()=>'https://cdn.jsdelivr.net/gh/zhonghuali-Simon/huali-life@main/sync.json?t='+Date.now()],
+    ['raw',    ()=>SYNC_URL+'?t='+Date.now()]
+  ];
+  // 同步状态：给界面显示"到底同步上了没有"，避免静默失败让人以为内容没更新
+  const SYNC_STATE = {ok:false, source:'', at:0, tried:[]};
+  async function fetchOnce(url, ms){
+    const ac = (typeof AbortController!=='undefined') ? new AbortController() : null;
+    const timer = ac ? setTimeout(()=>ac.abort(), ms||8000) : 0;
+    try{
+      const res = await fetch(url, ac ? {cache:'no-store', signal:ac.signal} : {cache:'no-store'});
+      if (!res.ok) return null;
+      return await res.json();
+    }catch(e){ return null; }
+    finally{ if (timer) clearTimeout(timer); }
+  }
   async function fetchSync(){
-    const urls = [SYNC_URL+'?t='+Date.now(), './sync.json?t='+Date.now()];
-    for (const u of urls){
-      try{
-        const res = await fetch(u, {cache:'no-store'});
-        if (res.ok) return await res.json();
-      }catch(e){ /* 尝试下一个 */ }
+    SYNC_STATE.tried = [];
+    for (const [name, mk] of SYNC_SOURCES){
+      const data = await fetchOnce(mk(), 8000);
+      if (data && typeof data === 'object'){
+        SYNC_STATE.ok = true; SYNC_STATE.source = name; SYNC_STATE.at = Date.now();
+        renderSyncBadge();
+        return data;
+      }
+      SYNC_STATE.tried.push(name);
     }
+    SYNC_STATE.ok = false; SYNC_STATE.source = ''; SYNC_STATE.at = Date.now();
+    renderSyncBadge();
     return null;
+  }
+  // 在「今日任务清单」标题栏显示同步状态，一眼看出是数据没更新还是根本没连上
+  function renderSyncBadge(){
+    const el = document.getElementById('syncBadge');
+    if (!el) return;
+    if (!SYNC_STATE.at){ el.textContent=''; el.title=''; return; }
+    const t = new Date(SYNC_STATE.at);
+    const hm = String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    if (SYNC_STATE.ok){
+      el.textContent = '☁️ '+hm+' 已同步';
+      el.style.color = 'var(--glow)';
+      el.title = '数据源：'+SYNC_STATE.source;
+    } else {
+      el.textContent = '⚠️ '+hm+' 同步失败';
+      el.style.color = '#ff6b6b';
+      el.title = '已尝试：'+SYNC_STATE.tried.join(' / ')+'，均不可达。可能是网络限制，换网络或稍后重试。';
+    }
   }
   async function syncFromServer(){
     try{
@@ -1598,7 +1648,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   async function refreshTasks(){
     toast('🔄 正在拉取最新任务…');
     const data = await fetchSync();
-    if (!data){ toast('⚠️ 拉取失败，稍后会自动重试'); return; }
+    if (!data){ toast('⚠️ 拉取失败（已试 '+(SYNC_STATE.tried.join('/')||'全部源')+'），可能是网络受限', 'gold'); return; }
     const todayData = data[today()];
     let r = {added:0,updated:0,removed:0};
     if (todayData && (todayData.tpl || (todayData.manualTasks||[]).length)){
