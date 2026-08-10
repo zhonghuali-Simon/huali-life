@@ -631,6 +631,7 @@
         <button class="music-scene active" onclick="switchTbCat('taobao')">🛒 淘宝创新</button>
         <button class="music-scene" onclick="switchTbCat('internet')">🌐 互联网动态</button>
         <button class="music-scene" onclick="switchTbCat('crossover')">✨ 跨界结合</button>
+        <button class="music-scene" onclick="switchTbCat('fitness')">🏋️ 健身事业</button>
       </div>
       <div id="taobaoContent"></div>
     </div>
@@ -1590,11 +1591,13 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     if (!todayData) return 0;
     let changed = 0;
     const d = today();
-    // 淘宝创新：当天3类内容(覆盖)
+    // 淘宝创新：当天4类内容(覆盖)。写入前先做一次健身内容分流，避免服务端把副业内容写进淘宝分类
     if (todayData.tbToday && typeof todayData.tbToday==='object'){
       if (!S.tbArchive) S.tbArchive = {};
+      const incoming = JSON.parse(JSON.stringify(todayData.tbToday));
+      _tbSplitDay(incoming);
       const prev = JSON.stringify(S.tbArchive[d]||{});
-      const next = JSON.stringify(todayData.tbToday);
+      const next = JSON.stringify(incoming);
       if (prev !== next){ S.tbArchive[d] = JSON.parse(next); changed++; _tbDate = d; }
     }
     // 股市资讯：当天行情(覆盖)
@@ -2693,7 +2696,40 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   };
 
   let _tbDate = null, _tbCat = 'taobao';
+  const TB_CATS = ['taobao','internet','crossover','fitness'];
+  const TB_CAT_LABEL = {taobao:'淘宝创新',internet:'互联网动态',crossover:'跨界结合',fitness:'健身事业'};
   function tbDates(){ return Object.keys(S.tbArchive||{}).sort().reverse(); }
+
+  // 健身/户外/自媒体副业内容不该混在淘宝运营分类里，一次性把历史归档拆干净。
+  // 判定只看健身副业专属词，避免误伤「淘宝运动户外类目运营」这类真·淘宝内容。
+  const _FIT_RE = /出个汗|Sughan|私教|教练|健身房|体测|体态|增肌|减脂|训练营|飞盘|瑜伽|普拉提|蛋白粉|撸铁|体验课|到店核销|会员卡|户外露营|徒步|自媒体|个人IP|涨粉|口播/i;
+  function _isFitItem(it){
+    if (!it) return false;
+    const s = [it.title, it.summary, (it.points||[]).join(' ')].join(' ');
+    return _FIT_RE.test(s);
+  }
+  function _tbSplitDay(day){
+    if (!day || typeof day !== 'object') return 0;
+    let moved = 0;
+    if (!Array.isArray(day.fitness)) day.fitness = [];
+    ['taobao','internet','crossover'].forEach(cat=>{
+      if (!Array.isArray(day[cat])) return;
+      const keep = [], move = [];
+      day[cat].forEach(it => (_isFitItem(it) ? move : keep).push(it));
+      if (move.length){ day[cat] = keep; day.fitness = day.fitness.concat(move); moved += move.length; }
+    });
+    return moved;
+  }
+  function migrateTbFitness(){
+    if (S.cfg && S.cfg.tbFitSplit) return 0;
+    let moved = 0;
+    Object.keys(S.tbArchive||{}).forEach(d=>{ moved += _tbSplitDay(S.tbArchive[d]); });
+    if (!S.cfg) S.cfg = {};
+    S.cfg.tbFitSplit = 1;
+    save();
+    return moved;
+  }
+
   function ensureTbArchive(){
     if (!S.tbArchive) S.tbArchive = {};
     // 把内置的所有历史条目都归档进本地(仅首次)，之后每日新增内容通过sync或cron追加
@@ -2705,6 +2741,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     if (latest && (!S.tbArchive[latest] || !S.tbArchive[latest].crossover)){
       S.tbArchive[latest] = JSON.parse(JSON.stringify(TAOBAO_DATA[latest]));
     }
+    migrateTbFitness();
     save();
     if (!_tbDate) _tbDate = tbDates()[0];
   }
@@ -2718,7 +2755,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   function gotoTodayTb(){ _tbDate = tbDates()[0]; renderTbDateSel(); renderTaobao(); }
   function switchTbCat(cat){
     _tbCat = cat;
-    const emojiKey = {taobao:'🛒',internet:'🌐',crossover:'✨'}[cat];
+    const emojiKey = {taobao:'🛒',internet:'🌐',crossover:'✨',fitness:'🏋️'}[cat];
     document.querySelectorAll('#page-taobao .music-scene').forEach(b=>{
       b.classList.toggle('active', b.textContent.includes(emojiKey));
     });
@@ -2733,19 +2770,20 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     const items = day[_tbCat] || [];
     if (rt) rt.textContent = `${_tbDate||''} · ${items.length}条`;
     renderTbDateSel();
-    if (!items.length){ box.innerHTML = `<div class="empty">该日暂无「${{taobao:'淘宝创新',internet:'互联网动态',crossover:'跨界结合'}[_tbCat]}」内容</div>`; return; }
+    if (!items.length){ box.innerHTML = `<div class="empty">该日暂无「${TB_CAT_LABEL[_tbCat]}」内容</div>`; return; }
     let html = '';
     // 类别顶部说明标签
     const catInfo = {
-      taobao:{color:'#00ff9f',bg:'0,255,159',label:'新闻·真实动态',icon:'📰',desc:'来自淘宝内部/公开渠道的实际发生的动作和数据'},
+      taobao:{color:'#00ff9f',bg:'0,255,159',label:'新闻·真实动态',icon:'📰',desc:'淘宝运营/用户增长的实际动作与数据：拉新召回、唤端、渠道投放、私域、活动机制'},
       internet:{color:'#00e5ff',bg:'0,229,255',label:'新闻·行业动态',icon:'🌐',desc:'互联网行业公开的真实新闻和业务动向'},
-      crossover:{color:'#ffd740',bg:'255,215,64',label:'思路·可能性',icon:'💡',desc:'AI/我基于观察生成的跨界结合思路，非实际发生的新闻，供参考'}
+      crossover:{color:'#ffd740',bg:'255,215,64',label:'思路·可能性',icon:'💡',desc:'淘宝×我手上的用增场景能怎么打，非实际发生的新闻，供参考'},
+      fitness:{color:'#ff6ec7',bg:'255,110,199',label:'副业·个人事业',icon:'🏋️',desc:'出个汗健身副业、户外生活、自媒体账号的思考，与本职淘宝工作分开看'}
     }[_tbCat];
     if (catInfo){
       html += `<div style="margin-bottom:12px;padding:8px 12px;background:rgba(${catInfo.bg},.06);border-left:3px solid ${catInfo.color}"><div style="font-size:11px;color:${catInfo.color};font-weight:600;margin-bottom:2px">${catInfo.icon} ${catInfo.label}</div><div style="font-size:11px;color:var(--sub)">${catInfo.desc}</div></div>`;
     }
     items.forEach(f=>{
-      const itemType = f.type || (_tbCat==='crossover'?'💡 思路':'📰 新闻');
+      const itemType = f.type || ({crossover:'💡 思路',fitness:'🏋️ 副业'}[_tbCat] || '📰 新闻');
       html += `<div style="padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
           <span style="font-size:10px;padding:2px 8px;background:rgba(${catInfo.bg},.12);color:${catInfo.color};border:1px solid rgba(${catInfo.bg},.25)">${itemType}</span>
