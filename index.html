@@ -223,6 +223,17 @@
   .task-nav .task-chip.full{border-color:var(--ok);color:var(--ok)}
   .task-nav .nav-hint{font-size:10px;color:var(--sub);opacity:.7;margin-left:auto;white-space:nowrap}
 
+  /* 全局悬浮·回到顶部（右下角，滚动过程中随时可点） */
+  .to-top{position:fixed;right:14px;bottom:72px;z-index:90;width:42px;height:42px;padding:0;
+    display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;cursor:pointer;
+    background:rgba(10,10,15,.86);color:var(--glow);border:1px solid rgba(0,255,159,.45);
+    backdrop-filter:blur(10px);box-shadow:0 0 14px rgba(0,255,159,.18);
+    opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .25s,transform .25s,visibility .25s;
+    clip-path:polygon(9px 0%,100% 0%,100% calc(100% - 9px),calc(100% - 9px) 100%,0% 100%,0% 9px)}
+  .to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+  .to-top:hover{background:rgba(0,255,159,.14);box-shadow:0 0 22px rgba(0,255,159,.32)}
+  body.light .to-top{background:rgba(255,255,255,.9);box-shadow:0 2px 12px rgba(0,0,0,.12)}
+
   /* 慢扫描线动画 */
   @keyframes scanDown{0%{top:-100%}100%{top:200%}}
   .card::before{animation:none}
@@ -813,6 +824,7 @@
 
 </div>
 
+<button class="to-top" id="toTopBtn" onclick="gotoTaskTop()" title="回到顶部" aria-label="回到顶部">▲</button>
 <div class="toast" id="toast"></div>
 <div class="badge-pop" id="badgePop" onclick="this.classList.remove('show')">
   <div class="box">
@@ -1750,7 +1762,6 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
       return `<button class="music-scene task-chip${full?' full':''}" id="tchip-${i}" onclick="gotoTaskGroup(${i})" title="跳到「${g}」">${taskGroupIco(g)} ${label}<span class="cnt">${dn}/${all.length}</span></button>`;
     }).join('');
     nav.innerHTML = chips
-      + `<button class="music-scene task-chip" onclick="gotoTaskTop()" title="回到顶部">⤴ 顶部</button>`
       + `<span class="nav-hint">点分类电梯直达 · 也可直接向下浏览</span>`;
     updateTaskSpy();
   }
@@ -1776,15 +1787,24 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     setTaskChipActive(idx);
   }
   let _taskSpyBound = false, _taskSpyRaf = 0;
+  function updateToTop(){
+    const b = document.getElementById('toTopBtn'); if (!b) return;
+    const y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    b.classList.toggle('show', y > 300);
+  }
   function bindTaskSpy(){
     if (_taskSpyBound) return;
     _taskSpyBound = true;
     window.addEventListener('scroll', ()=>{
-      const p = document.getElementById('page-today');
-      if (!p || !p.classList.contains('active')) return;
       if (_taskSpyRaf) return;
-      _taskSpyRaf = requestAnimationFrame(()=>{ _taskSpyRaf = 0; updateTaskSpy(); });
+      _taskSpyRaf = requestAnimationFrame(()=>{
+        _taskSpyRaf = 0;
+        updateToTop();
+        const p = document.getElementById('page-today');
+        if (p && p.classList.contains('active')) updateTaskSpy();
+      });
     }, {passive:true});
+    updateToTop();
   }
   function calcTodayPts(){
     return S.tasks.filter(x=>x.done).reduce((a,b)=>a+b.pts,0)
