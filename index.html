@@ -294,6 +294,7 @@
   <div class="tab" data-page="pomo" onclick="switchPage('pomo')">🍅 专注</div>
   <div class="tab" data-page="challenge" onclick="switchPage('challenge')">🎯 挑战</div>
   <div style="align-self:center;color:var(--sub);opacity:.3;padding:0 4px">|</div>
+  <div class="tab" data-page="run" onclick="switchPage('run')">🏃 长跑仪表盘</div>
   <div class="tab" data-page="dash" onclick="switchPage('dash')">📊 战力看板</div>
   <div class="tab" data-page="shop" onclick="switchPage('shop')">🎁 兑换商店</div>
   <div class="tab" data-page="skills" onclick="switchPage('skills')">🏅 能力库</div>
@@ -425,7 +426,7 @@
     <div class="card">
       <h2>行为奖励商店 🎁 <span class="right">💰 <span id="coinInHeader">0</span> 星币</span></h2>
       <div style="font-size:12px;color:var(--sub);margin-bottom:12px">
-        满足条件 + 花费星币 → 解锁奖励。兑换后自己去执行，仪式感就是意义本身。<br>
+        星币足够即可自由兑换，不设解锁条件。兑换后自己去执行，仪式感就是意义本身。<br>
         <b>精选推荐</b>：展示你当前最可能兑换的奖励 · 点击底部「更多奖励」查看完整分类库
       </div>
       <div class="shop-grid" id="shopGrid"></div>
@@ -684,6 +685,47 @@
     </div>
   </div>
 
+  <div class="page" id="page-run">
+    <div class="card">
+      <h2>🏃 人生长跑 · 十年赛道 <span class="right" id="runRight"></span></h2>
+      <div id="runHero"></div>
+      <div class="stat-grid" id="runStats" style="margin-top:14px"></div>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>赛道配速 · 红绿灯 <span class="right" id="runPaceRight"></span></h2>
+          <div id="runTracks"></div>
+        </div>
+        <div class="card">
+          <h2>不掉线记录 · 近56天 <span class="right" id="runChainRight"></span></h2>
+          <div id="runChain" class="cal-heat"></div>
+          <div id="runChainHint" style="font-size:11px;color:var(--sub);margin-top:10px"></div>
+        </div>
+        <div class="card">
+          <h2>周配速曲线 · 近8周 <span class="right" id="runWeekRight"></span></h2>
+          <div id="runWeekChart" style="height:120px"></div>
+          <div style="font-size:11px;color:var(--sub);margin-top:8px">看的是曲线平不平，不是高不高。忽高忽低=靠爆发；平稳上抬=真复利。</div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h2>透支红线 <span class="right" id="runAlertRight"></span></h2>
+          <div id="runAlerts"></div>
+        </div>
+        <div class="card">
+          <h2>补给站 <span class="right" id="runFuelRight"></span></h2>
+          <div id="runFuel"></div>
+          <button class="primary" onclick="lrAddFuel()" style="width:100%;margin-top:10px">⛽ 记录一次补给</button>
+        </div>
+        <div class="card">
+          <h2>长跑心法</h2>
+          <div id="runCreed"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="page" id="page-settings">
     <div class="card">
       <h2>🔗 真·双向云同步（手机↔电脑实时互通）<span class="right" id="cloudOnBadge" style="font-size:12px">○ 未开启</span></h2>
@@ -776,12 +818,45 @@
   const DIMS = ['PM','DA','TL','TM','RI','BODY'];
   const DIM_LABEL = {PM:'项目管理',DA:'数据&AI',TL:'技能成长',TM:'认知提升',RI:'收入增长',BODY:'体魄'};
 
+  // ═══════════ 人生长跑 · 全局参数（调这里就能改整套判定标准）═══════════
+  const LR = {
+    horizon: 3650,        // 长跑视野：十年 = 3650 天
+    ptsPerKm: 20,         // 换算：20 分成长积分 = 1 公里里程
+    minDayPts: 10,        // 不掉线门槛：单日≥10分即算「今天在跑」（低门槛保不断线）
+    window: 28,           // 配速观察窗（天）
+    green: 0.9,           // 绿灯：达目标配速 90%
+    yellow: 0.6,          // 黄灯：达目标配速 60%
+    surge: 2.0,           // 透支判定：近3日均分 > 目标×2 且体魄为0
+    fuelPerMonth: 2,      // 补给标准：每30天≥2次（体验型奖励/彻底休息）
+    weekBonus: 50,        // 整周7天零掉线奖励（星币）
+  };
+  // 四条赛道：复用现有6维度数据，不需要额外录入
+  const LR_TRACKS = [
+    {id:'body',   ico:'🫀', name:'体魄底盘', dims:['BODY'],    target:12, cls:'BODY', star:'40岁保持25岁体能，无慢病'},
+    {id:'craft',  ico:'⚙️', name:'主业操盘', dims:['PM','DA'], target:20, cls:'PM',   star:'从执行者 → 可复制方法论的操盘手'},
+    {id:'mind',   ico:'🧠', name:'心智复利', dims:['TM','TL'], target:10, cls:'TM',   star:'每月1本书 + 判断力持续升级'},
+    {id:'wealth', ico:'💰', name:'财富自由', dims:['RI'],      target:8,  cls:'RI',   star:'被动现金流覆盖基本生活'},
+  ];
+  const LR_DAY_TARGET = LR_TRACKS.reduce((a,t)=>a+t.target,0);   // 目标日均 50 分
+  const LR_MILESTONES = [
+    {km:5,name:'起跑 5K'},{km:10,name:'破壳 10K'},{km:21.1,name:'半程马拉松'},{km:42.2,name:'全程马拉松'},
+    {km:50,name:'50K 越野'},{km:100,name:'百公里'},{km:168,name:'戈壁 168'},{km:250,name:'四大极地'},
+    {km:422,name:'十个全马'},{km:1000,name:'千公里俱乐部'},{km:2000,name:'两千公里'},{km:3650,name:'十年之路'},
+  ];
+  const LR_CREED = [
+    ['配速 > 冲刺','能持续十年的节奏才是真节奏。透支换来的进度，早晚要还。'],
+    ['复利 > 单次赢','健康、能力、信誉、关系、资产，每天+1%，十年后是指数级。'],
+    ['补给 > 硬扛','恢复不是浪费，是长跑的一部分。补给站不去，后半程必崩。'],
+    ['只看自己的心率','别人冲刺不代表你要跟。长跑唯一的对手是十年后的自己。'],
+  ];
+
   const DEFAULT_TPL = `T-101 | 工作线 | 每日检查渠道消耗+核心数据巡检 | 各渠道消耗/异动/日报数据每日必看·07:30渠道数据监控告警群已推送召回/IPVUV/闪购GAB/CVR/U3唤端等指标·10:00前完成核心数据巡检 | 10 | DA:6,PM:4
 T-102 | 工作线 | [爱晴]ipvuv考核改ltv7 before/after对齐与影响评估 | 爱晴在「小立小米小熙&小爱有限公司」同步ipvuv考核将改为ltv7 before/after·需确认口径变更范围/数据取数/对渠道结算影响·今日与爱晴对齐 | 20 | DA:12,PM:8
 T-103 | 工作线 | 🔥过期待办清理（D001-D024及T系列） | 钉钉待办55835022225·逐条检查D001-D024及T系列过期待办·含直管同学待办反馈(55973352561)/达人结算审批/BPMS审批/奇异果新渠道回复等今日聊天与日历触发项·标记完成或重新设定截止时间 | 18 | PM:10,DA:8
 T-104 | 工作线 | [O3-项目管理] AAC项目执行节奏文档终稿 | 钉钉待办55834850594·补充里程碑节点、责任人分工、风险点·今日20:00前 | 18 | PM:10,DA:8
 T-105 | 工作线 | [O2-KR2] 私域社群SOP终稿完善 | 钉钉待办55834838659·完善拉群链路流程图、运营规范细则、奖惩机制条款·今日20:00前 | 18 | PM:10,DA:8
-T-107 | 工作线 | [爱晴]准备8月10日对下下午分享材料 | 爱晴单聊同步8月10日11:00-12:00对下下午分享·需准备分享PPT/案例/口径并提前与爱晴对齐 | 15 | PM:8,TM:7
+T-106 | 工作线 | [爱晴]8月10日对下下午分享执行与复盘 | 爱晴单聊同步8月10日11:00-12:00对下下午分享·今日完成现场分享/答疑/材料归档·会后与爱晴对齐反馈 | 15 | PM:8,TM:7
+T-107 | 工作线 | [#157]奇异果新渠道保留决策回复 | 钉钉待办/群聊触发奇异果新渠道保留决策·今日给出保留/放弃结论及数据依据·同步相关同学 | 12 | PM:7,DA:5
 T-000 | 签到 | 每日签到 | 打开系统开启新的一天·连续签到有惊喜 | 5 | TM:5
 T-201 | 收入线·短期 | 飞盘教练：约课/带课/复盘 | 每次带课189元·周末优先 | 20 | RI:15,BODY:5
 T-202 | 收入线·短期 | 出个汗·私教体验课邀约 | 企微/小红书DM≥3人 | 12 | RI:10,PM:2
@@ -893,6 +968,16 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     {id:'一周不间断',ico:'🏆',tier:'传奇',rule:s=>(s.streak||0)>=7,desc:'连续7日全勤',bonus:70,dim:'PM'},
     {id:'金库',ico:'💰',tier:'传奇',rule:s=>(s.coin||0)>=500,desc:'累计星币破500',bonus:30,dim:'RI'},
     {id:'马拉松',ico:'🎖️',tier:'传奇',rule:s=>(s.bodyStreak||0)>=30,desc:'健身连击30天',bonus:100,dim:'BODY'},
+
+    // ————— 长跑赛道（十年配速 · 奖励"不掉线"而非"爆发"）—————
+    {id:'开跑',ico:'🏁',tier:'入门',rule:s=>calcTodayPts()>=LR.minDayPts,desc:'单日≥10分：今天没掉线',bonus:3,dim:'PM'},
+    {id:'不掉线7天',ico:'🏃',tier:'常规',rule:s=>lrOnline(7).on>=7,desc:'连续7天每日都过最低门槛',bonus:10,dim:'PM'},
+    {id:'会补给的人',ico:'⛽',tier:'常规',rule:s=>lrFuelIn(30)>=LR.fuelPerMonth,desc:'近30天补给≥2次（恢复也是训练）',bonus:10,dim:'BODY'},
+    {id:'均衡跑者',ico:'⚖️',tier:'进阶',rule:s=>LR_TRACKS.every(t=>lrTrackAvg(t,LR.window)>=t.target*LR.yellow),desc:'近28天四条赛道均不低于目标60%',bonus:30,dim:'PM'},
+    {id:'半马里程',ico:'🎽',tier:'精英',rule:s=>lrKm()>=21.1,desc:'累计里程破半马 21.1km',bonus:40,dim:'PM'},
+    {id:'不掉线30天',ico:'🥈',tier:'精英',rule:s=>lrOnline(30).on>=27,desc:'近30天掉线≤3天',bonus:60,dim:'PM'},
+    {id:'全马里程',ico:'🏅',tier:'传奇',rule:s=>lrKm()>=42.2,desc:'累计里程破全马 42.2km',bonus:80,dim:'PM'},
+    {id:'不掉线90天',ico:'🥇',tier:'传奇',rule:s=>lrOnline(90).on>=81,desc:'近90天掉线≤9天',bonus:150,dim:'PM'},
   ];
 
   const SHOP = [
@@ -1106,6 +1191,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
       kbArchive:{}, kbReadDate:today(), kbReadSec:0, kbReadMin:0, kbReadPts:0,
       tbArchive:{}, kbMonetize:{}, challenges:[], pkClaimedDays:[], stockDaily:{}, bsArchive:{},
       siteSecToday:0, siteSecTotal:0, siteSecDate:today(), taskOverrides:{},
+      runStart:null, runFuel:[], runWeekClaimed:[],
       cfg:{sfx:false,pop:true,light:false},
     };
   }
@@ -1564,7 +1650,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     renderMeta(); renderTasks(); renderPanel(); renderBadges();
     renderLog(); renderShop(); renderHistory(); renderPomo(); renderTaobao(); renderKB(); renderStock(); renderSettings();
     renderAntiBadges(); renderRadarChart(); renderTrend30(); renderGroupPie();
-    renderChallenges(); renderPK();
+    renderChallenges(); renderPK(); renderRun();
     document.getElementById('tabTodayCnt').textContent = S.tasks.filter(t=>!t.done).length;
     document.getElementById('coinInHeader').textContent = S.coin;
   }
@@ -1690,17 +1776,18 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   }
   function shopItemCard(item){
     const own = S.inventory.filter(x=>x.id===item.id).length;
-    const passed = item.cond ? item.cond(S) : true;
-    const canBuy = passed && S.coin>=item.cost;
+    // 自由兑换：只看星币是否足够，不再设解锁条件门槛
+    const canBuy = S.coin>=item.cost;
+    const lack = Math.max(0, item.cost - S.coin);
     const progress = Math.min(100, S.coin/item.cost*100);
-    return `<div class="shop-item ${own?'owned':''} ${!passed?'locked':''}">
+    return `<div class="shop-item ${own?'owned':''}">
       <div class="icon">${item.ico}</div>
       <div class="name">${item.name} <span class="tag" style="font-size:10px;margin-left:4px">${item.cat}</span></div>
       <div class="cond">${item.desc||''}${own?` · <b style="color:var(--ok)">已兑 ${own} 次</b>`:''}</div>
-      <div class="cost">💰 ${item.cost} 星币${!passed?' · 🔒 未达条件':''}</div>
+      <div class="cost">💰 ${item.cost} 星币</div>
       <div class="progress"><div class="p-fill" style="width:${progress}%"></div></div>
       <button ${canBuy?'class="primary"':''} onclick="buy('${item.id}')" ${!canBuy?'disabled':''}>
-        ${canBuy?'✅ 兑换':(passed?'星币不足':'条件未达')}
+        ${canBuy?'✅ 兑换':`还差 ${lack} 星币`}
       </button>
     </div>`;
   }
@@ -2290,9 +2377,8 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   }
   function buy(id){
     const item = SHOP.find(x=>x.id===id) || (S.customRewards||[]).find(x=>x.id===id); if (!item) return;
-    const passed = item.cond ? item.cond(S) : true;
-    if (!passed){ toast('条件未达', 'danger'); return; }
-    if (S.coin < item.cost){ toast('星币不足', 'danger'); return; }
+    // 自由兑换：不再校验解锁条件，星币足够即可
+    if (S.coin < item.cost){ toast(`星币不足 · 还差 ${item.cost - S.coin}`, 'danger'); return; }
     if (!confirm(`确认花费 ${item.cost} 星币兑换「${item.name}」？`)) return;
     const before = JSON.parse(JSON.stringify({coin:S.coin, coinSpent:S.coinSpent, inventory:S.inventory}));
     S.coin -= item.cost;
@@ -2339,6 +2425,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     if (name==='dash'){ renderAntiBadges(); renderRadarChart(); renderTrend30(); renderGroupPie(); }
     if (name==='challenge'){ renderChallenges(); renderPK(); }
     if (name==='brainstorm'){ renderBrainstorm(); startKbReadTimer(); updateKbTimerHint(); }
+    if (name==='run') renderRun();
     if (name==='skills') renderSkills();
     if (name==='settings') renderSettings();
   }
@@ -3205,6 +3292,21 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     }},
     {id:'ab-nokb',ico:'📵',check:()=>{
       return (S.kbReadMin||0)===0 && (S.tasks.filter(t=>t.done).length>=3) ? '今日已工作但未打开知识库(记得学习)' : null;
+    }},
+    // ——— 长跑透支红线 ———
+    {id:'ab-offline',ico:'📉',check:()=>{
+      const n=lrOfflineStreak();
+      return n>=3 ? `已连续${n}天掉线(单日<${LR.minDayPts}分)，长跑最怕的是断线不是慢` : null;
+    }},
+    {id:'ab-surge',ico:'🔥',check:()=>{
+      const a=lrAvg(3);
+      if (a<=LR_DAY_TARGET*LR.surge) return null;
+      const tr=LR_TRACKS.find(t=>t.id==='body');
+      return lrTrackAvg(tr,3)===0 ? `近3天日均${Math.round(a)}分却零体魄，典型透支冲刺，建议主动降速` : null;
+    }},
+    {id:'ab-nofuel',ico:'⛽',check:()=>{
+      const f=lrFuelIn(30);
+      return f<LR.fuelPerMonth ? `近30天只补给${f}次(标准${LR.fuelPerMonth}次)，补给站告急` : null;
     }}
   ];
   function renderAntiBadges(){
@@ -3581,6 +3683,229 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     }
     }); // end meetings.forEach
     return html;
+  }
+
+  // ═══════════ 人生长跑仪表盘 · 计算与渲染 ═══════════
+  function lrKey(i){ return new Date(Date.now()-i*86400000).toISOString().slice(0,10); }
+  function lrDayDims(dk){
+    if (dk===today()){
+      const o={};
+      (S.tasks||[]).filter(t=>t.done).forEach(t=>{ for (const [k,v] of Object.entries(t.dims||{})) o[k]=(o[k]||0)+v; });
+      return o;
+    }
+    const h=(S.history||{})[dk];
+    return (h&&h.dims)||{};
+  }
+  function lrDayPts(dk){
+    if (dk===today()) return calcTodayPts();
+    const h=(S.history||{})[dk];
+    return (h&&h.pts)||0;
+  }
+  function lrTrackPts(dk,tr){
+    const d=lrDayDims(dk);
+    return (tr.dims||[]).reduce((a,k)=>a+(d[k]||0),0);
+  }
+  function lrTrackAvg(tr,win){
+    if (!tr) return 0;
+    let s=0; for (let i=0;i<win;i++) s+=lrTrackPts(lrKey(i),tr);
+    return s/win;
+  }
+  function lrRunStart(){
+    if (!S.runStart){
+      const keys=Object.keys(S.history||{}).sort();
+      S.runStart = keys[0] || today();
+    }
+    return S.runStart;
+  }
+  function lrDaysRun(){
+    const st=new Date(lrRunStart()+'T00:00:00');
+    return Math.max(1, Math.round((Date.now()-st.getTime())/86400000)+1);
+  }
+  function lrTotalPts(){ return DIMS.reduce((a,d)=>a+(S.cumu[d]||0),0); }
+  function lrKm(){ return lrTotalPts()/LR.ptsPerKm; }
+  function lrNextMilestone(){
+    const km=lrKm();
+    return LR_MILESTONES.find(m=>m.km>km) || LR_MILESTONES[LR_MILESTONES.length-1];
+  }
+  // 不掉线率：窗口内单日≥门槛的天数
+  function lrOnline(win){
+    let on=0;
+    for (let i=0;i<win;i++) if (lrDayPts(lrKey(i))>=LR.minDayPts) on++;
+    return {on, total:win, rate:win?on/win:0};
+  }
+  // 当前连续掉线天数（从昨天往前数，今天还在跑不算断）
+  function lrOfflineStreak(){
+    let n=0;
+    for (let i=1;i<=90;i++){ if (lrDayPts(lrKey(i))>=LR.minDayPts) break; n++; }
+    return n;
+  }
+  function lrBestChain(){
+    let best=0, cur=0;
+    for (let i=180;i>=0;i--){
+      if (lrDayPts(lrKey(i))>=LR.minDayPts){ cur++; if (cur>best) best=cur; } else cur=0;
+    }
+    return best;
+  }
+  function lrAvg(win){ let s=0; for (let i=0;i<win;i++) s+=lrDayPts(lrKey(i)); return win?s/win:0; }
+  function lrWeeks(n){
+    const out=[];
+    for (let w=n-1;w>=0;w--){ let s=0; for (let d=0;d<7;d++) s+=lrDayPts(lrKey(w*7+d)); out.push(s); }
+    return out;
+  }
+  // 配速稳定度 = 1 - 变异系数：越高说明靠节奏而非爆发
+  function lrStability(){
+    const use=lrWeeks(8).filter(v=>v>0);
+    if (use.length<3) return null;
+    const m=use.reduce((a,b)=>a+b,0)/use.length;
+    if (!m) return null;
+    const sd=Math.sqrt(use.reduce((a,b)=>a+(b-m)*(b-m),0)/use.length);
+    return Math.max(0, Math.min(100, Math.round((1-sd/m)*100)));
+  }
+  function lrLight(ratio){ return ratio>=LR.green ? 'green' : (ratio>=LR.yellow ? 'yellow' : 'red'); }
+  const LR_LIGHT_COLOR = {green:'var(--ok)', yellow:'var(--warn)', red:'var(--danger)'};
+  const LR_LIGHT_TXT = {green:'绿灯 · 在配速', yellow:'黄灯 · 停滞', red:'红灯 · 掉队'};
+  // 补给记录：显式打点 + 兼容商店兑换记录里带的日期
+  function lrFuelDates(){
+    const arr=(S.runFuel||[]).map(x=>String(x).slice(0,10));
+    (S.inventory||[]).forEach(x=>{
+      const v = x && (x.date||x.at||x.time||x.ts);
+      if (v) arr.push(typeof v==='number' ? new Date(v).toISOString().slice(0,10) : String(v).slice(0,10));
+    });
+    return arr;
+  }
+  function lrFuelIn(days){
+    const from=lrKey(Math.max(0,days-1));
+    return lrFuelDates().filter(d=>d>=from).length;
+  }
+  function lrAddFuel(){
+    if (!S.runFuel) S.runFuel=[];
+    S.runFuel.push(today());
+    pushLog('⛽ 记录一次补给（恢复 / 体验型奖励）');
+    save(); renderRun(); renderLog();
+    toast('⛽ 补给已记录 · 长跑靠的就是这个', 'gold');
+  }
+  // 整周零掉线奖励：上一个完整周（周一~周日）全部达标则自动结算一次
+  function lrSettleWeek(){
+    const dow=(new Date().getDay()+6)%7;   // 0=周一
+    const sunOffset=dow+1;                 // 上周日距今天数
+    const wk=[];
+    for (let i=sunOffset;i<sunOffset+7;i++) wk.push(lrKey(i));
+    const tag=wk[wk.length-1];             // 上周一，作为已结算标记
+    if (!S.runWeekClaimed) S.runWeekClaimed=[];
+    if (S.runWeekClaimed.indexOf(tag)>=0) return;
+    if (!wk.every(dk=>lrDayPts(dk)>=LR.minDayPts)) return;
+    S.runWeekClaimed.push(tag);
+    S.coin += LR.weekBonus;
+    S.cumu.TM = (S.cumu.TM||0) + Math.floor(LR.weekBonus/10);
+    pushLog(`🏃 上周7天零掉线 +${LR.weekBonus} 星币`, LR.weekBonus);
+    save();
+    toast(`🏃 上周整周不掉线！+${LR.weekBonus} 星币`, 'gold');
+  }
+  function lrAlerts(){
+    const out=[];
+    const bodyTr=LR_TRACKS.find(t=>t.id==='body');
+    const off=lrOfflineStreak();
+    if (off>=2) out.push({ico:'📉',msg:`已连续 ${off} 天掉线 → 今天先跑最低门槛 ${LR.minDayPts} 分，别追进度`});
+    const o7=lrOnline(7);
+    if (o7.total-o7.on>=3) out.push({ico:'⛓️',msg:`近7天掉线 ${o7.total-o7.on} 天 → 掉线率过高，先降目标保住不断线`});
+    const b14=lrTrackAvg(bodyTr,14)*14;
+    if (b14 < bodyTr.target*14*LR.yellow) out.push({ico:'🫀',msg:`近14天体魄仅 ${Math.round(b14)} 分（目标 ${bodyTr.target*14}）→ 底盘失压，砍一个主业目标换训练`});
+    let tot7=0; const per={};
+    LR_TRACKS.forEach(t=>{ const s=lrTrackAvg(t,7)*7; per[t.id]=s; tot7+=s; });
+    if (tot7>=50){
+      const top=LR_TRACKS.slice().sort((a,b)=>per[b.id]-per[a.id])[0];
+      const share=per[top.id]/tot7;
+      if (share>0.55) out.push({ico:'🦵',msg:`近7天 ${Math.round(share*100)}% 的分都在「${top.name}」→ 单腿冲刺，其它赛道正在被牺牲`});
+    }
+    const a3=lrAvg(3);
+    if (a3 > LR_DAY_TARGET*LR.surge && lrTrackAvg(bodyTr,3)===0){
+      out.push({ico:'🔥',msg:`近3天日均 ${Math.round(a3)} 分（目标 ${LR_DAY_TARGET}）却零体魄 → 透支冲刺，建议主动降速`});
+    }
+    const f30=lrFuelIn(30);
+    if (f30 < LR.fuelPerMonth) out.push({ico:'⛽',msg:`近30天只补给 ${f30} 次（标准 ${LR.fuelPerMonth} 次）→ 去兑一个体验型奖励，补给是刚需不是奖赏`});
+    return out;
+  }
+  function renderRun(){
+    const hero=document.getElementById('runHero'); if (!hero) return;
+    lrRunStart(); lrSettleWeek();
+    const km=lrKm(), days=lrDaysRun();
+    const pct=Math.min(100, days/LR.horizon*100);
+    const ms=lrNextMilestone(), msPct=Math.min(100, km/ms.km*100);
+    const o28=lrOnline(LR.window), o7=lrOnline(7);
+    const avg28=lrAvg(LR.window), pace=avg28/LR_DAY_TARGET, light=lrLight(pace);
+    const stab=lrStability();
+    const eta = avg28>0 ? Math.ceil(Math.max(0,(ms.km-km))*LR.ptsPerKm/avg28) : null;
+    const rateColor = o28.rate>=0.8?'var(--ok)':(o28.rate>=0.6?'var(--warn)':'var(--danger)');
+
+    hero.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:11px;color:var(--sub);letter-spacing:2px">十年长跑 · 第 ${days} 天 / ${LR.horizon}</div>
+          <div style="font-size:32px;font-weight:700;color:var(--glow);text-shadow:0 0 14px rgba(0,255,159,.4);font-variant-numeric:tabular-nums;line-height:1.2">${km.toFixed(1)}<span style="font-size:14px;color:var(--sub);margin-left:6px">km 累计里程</span></div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--sub);line-height:1.9">
+          起跑 ${lrRunStart()} · ${LR.ptsPerKm} 分 = 1 km<br>
+          下一站 <b style="color:var(--gold)">${ms.name}</b> · 还差 ${Math.max(0,ms.km-km).toFixed(1)} km${eta!==null?` · 约 ${eta} 天`:''}
+        </div>
+      </div>
+      <div class="ability-row" style="margin-top:14px"><span class="name">十年进度</span><span class="bar"><span class="fill PM" style="width:${pct}%"></span></span><span class="val">${pct.toFixed(1)}%</span></div>
+      <div class="ability-row"><span class="name">${ms.name}</span><span class="bar"><span class="fill TL" style="width:${msPct}%"></span></span><span class="val">${msPct.toFixed(0)}%</span></div>`;
+
+    document.getElementById('runRight').textContent = `${km.toFixed(1)} km · 第 ${days} 天`;
+    document.getElementById('runStats').innerHTML = `
+      <div class="stat"><div class="k">不掉线率 28天</div><div class="v" style="color:${rateColor}">${Math.round(o28.rate*100)}%</div><div class="sub">${o28.on}/${o28.total} 天 · 门槛 ${LR.minDayPts} 分</div></div>
+      <div class="stat"><div class="k">当前配速</div><div class="v" style="color:${LR_LIGHT_COLOR[light]}">${Math.round(avg28)}</div><div class="sub">分/天 · 目标 ${LR_DAY_TARGET} · ${LR_LIGHT_TXT[light]}</div></div>
+      <div class="stat"><div class="k">配速稳定度</div><div class="v">${stab===null?'—':stab}</div><div class="sub">${stab===null?'数据不足':(stab>=70?'节奏稳，不靠爆发':'波动大，警惕透支')}</div></div>
+      <div class="stat"><div class="k">最长不掉线</div><div class="v">${lrBestChain()}</div><div class="sub">天 · 近7天 ${o7.on}/7</div></div>
+      <div class="stat"><div class="k">补给 30天</div><div class="v" style="color:${lrFuelIn(30)>=LR.fuelPerMonth?'var(--ok)':'var(--warn)'}">${lrFuelIn(30)}</div><div class="sub">标准 ${LR.fuelPerMonth} 次/月</div></div>`;
+
+    document.getElementById('runTracks').innerHTML = LR_TRACKS.map(t=>{
+      const a=lrTrackAvg(t,LR.window), r=t.target?a/t.target:0, lg=lrLight(r);
+      return `<div style="padding:10px 0;border-bottom:1px solid rgba(0,255,159,.06)">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap">
+          <span style="width:8px;height:8px;border-radius:99px;background:${LR_LIGHT_COLOR[lg]};box-shadow:0 0 8px ${LR_LIGHT_COLOR[lg]}"></span>
+          <span>${t.ico} <b>${t.name}</b></span>
+          <span class="tag" style="font-size:10px">${t.dims.join('+')}</span>
+          <span style="margin-left:auto;font-size:11px;color:${LR_LIGHT_COLOR[lg]}">${LR_LIGHT_TXT[lg]}</span>
+        </div>
+        <div class="ability-row" style="padding:6px 0 0"><span class="name">28天日均</span><span class="bar"><span class="fill ${t.cls}" style="width:${Math.min(100,r*100)}%"></span></span><span class="val">${a.toFixed(1)}/${t.target}</span></div>
+        <div style="font-size:11px;color:var(--sub);margin-top:2px">🎯 ${t.star}</div>
+      </div>`;
+    }).join('');
+    document.getElementById('runPaceRight').textContent = `目标 ${LR_DAY_TARGET} 分/天`;
+
+    let chain='';
+    for (let i=55;i>=0;i--){
+      const dk=lrKey(i), p=lrDayPts(dk);
+      const lv = p<=0 ? '' : (p<LR.minDayPts ? 'l1' : (p<LR_DAY_TARGET*0.6 ? 'l2' : (p<LR_DAY_TARGET ? 'l3' : 'l4')));
+      chain += `<div class="cal-day ${lv} ${dk===today()?'today':''}" title="${dk} · ${p} 分 · ${p>=LR.minDayPts?'在跑':'掉线'}">${dk.slice(8)}</div>`;
+    }
+    document.getElementById('runChain').innerHTML = chain;
+    document.getElementById('runChainRight').textContent = `当前连续掉线 ${lrOfflineStreak()} 天`;
+    document.getElementById('runChainHint').innerHTML = `浅格=有动作但没过 ${LR.minDayPts} 分门槛（仍记掉线）· 深格=达标在跑。长跑第一指标是<b style="color:var(--glow)">不掉线</b>，不是高分。`;
+
+    const wk=lrWeeks(8), mx=Math.max(LR_DAY_TARGET*7, ...wk);
+    document.getElementById('runWeekChart').innerHTML = `<div style="display:flex;align-items:flex-end;gap:6px;height:100%">${wk.map((v,i)=>{
+      const last=i===wk.length-1, h=Math.max(2, v/mx*100);
+      return `<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%" title="${v} 分">
+        <div style="font-size:9px;color:var(--sub)">${v}</div>
+        <div style="width:100%;height:${h}%;background:${last?'linear-gradient(180deg,var(--glow),rgba(0,255,159,.2))':'rgba(0,255,159,.18)'};border-top:2px solid ${last?'var(--glow)':'rgba(0,255,159,.4)'}"></div>
+        <div style="font-size:9px;color:var(--sub);margin-top:3px">${last?'本周':'W-'+(wk.length-1-i)}</div>
+      </div>`;
+    }).join('')}</div>`;
+    const cur=wk[wk.length-1]||0, prev=wk[wk.length-2]||0;
+    const dw = prev ? Math.round((cur-prev)/prev*100) : 0;
+    document.getElementById('runWeekRight').textContent = `本周 ${cur} 分 · 环比 ${dw>=0?'+':''}${dw}%`;
+
+    const al=lrAlerts();
+    document.getElementById('runAlerts').innerHTML = al.length
+      ? al.map(a=>`<div style="padding:8px 10px;margin-bottom:6px;background:rgba(255,32,96,.06);border:1px solid rgba(255,32,96,.15);border-left:3px solid var(--danger);clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)"><span style="font-size:14px;margin-right:6px">${a.ico}</span><span style="font-size:12px;color:var(--danger)">${a.msg}</span></div>`).join('')
+      : `<div style="font-size:12px;color:var(--ok);padding:8px 0">✅ 没有透支红线，配速健康，继续跑</div>`;
+    document.getElementById('runAlertRight').textContent = al.length ? `${al.length} 条` : '全清';
+
+    document.getElementById('runFuel').innerHTML = `<div style="font-size:12px;color:var(--sub);line-height:1.9">近30天补给 <b style="color:${lrFuelIn(30)>=LR.fuelPerMonth?'var(--ok)':'var(--warn)'}">${lrFuelIn(30)}</b> 次 · 近90天 ${lrFuelIn(90)} 次<br>补给 = 兑换一次体验型奖励，或彻底不干活的一天。长跑崩盘从来不是因为跑太慢，而是因为不补给。</div>`;
+    document.getElementById('runFuelRight').textContent = `标准 ${LR.fuelPerMonth} 次/月`;
+    document.getElementById('runCreed').innerHTML = LR_CREED.map(c=>`<div style="padding:8px 0;border-bottom:1px solid rgba(0,255,159,.06)"><div style="font-size:12px;font-weight:700;color:var(--glow)">${c[0]}</div><div style="font-size:11px;color:var(--sub);margin-top:2px">${c[1]}</div></div>`).join('');
   }
 
   load();
