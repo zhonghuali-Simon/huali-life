@@ -215,6 +215,14 @@
   .task-group-title{margin:16px 4px 8px;font-size:11px;color:var(--glow);letter-spacing:2px;font-weight:600;text-shadow:0 0 6px rgba(0,255,159,.3);text-transform:uppercase;padding-left:12px;border-left:3px solid var(--glow);position:relative}
   .task-group-title::before{content:'';position:absolute;left:-3px;top:-2px;width:3px;height:6px;background:var(--glow2);box-shadow:0 0 4px var(--glow2)}
 
+  /* 今日任务·分类电梯导航（吸顶在 header 70px + tabs 38px 之下） */
+  .task-nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 12px;padding:8px 2px;position:sticky;top:108px;z-index:12;background:rgba(10,10,15,.94);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,255,159,.12)}
+  body.light .task-nav{background:rgba(255,255,255,.92)}
+  .task-nav .task-chip{padding:5px 11px;font-size:11px;letter-spacing:.5px}
+  .task-nav .task-chip .cnt{margin-left:5px;font-size:10px;opacity:.7}
+  .task-nav .task-chip.full{border-color:var(--ok);color:var(--ok)}
+  .task-nav .nav-hint{font-size:10px;color:var(--sub);opacity:.7;margin-left:auto;white-space:nowrap}
+
   /* 慢扫描线动画 */
   @keyframes scanDown{0%{top:-100%}100%{top:200%}}
   .card::before{animation:none}
@@ -309,6 +317,7 @@
       <div>
         <div class="card">
           <h2>今日任务清单 <span style="display:flex;align-items:center;gap:8px"><button onclick="refreshTasks()" title="拉取最新任务(每5分钟也会自动更新)" style="padding:4px 10px;font-size:11px">🔄 刷新任务</button><span class="right" id="taskProgress">0/0 · 0分</span></span></h2>
+          <div class="task-nav" id="taskNav"></div>
           <div id="taskList"></div>
           <div class="task-group-title">➕ 新增任务（自动按难度打分）</div>
           <div class="quick-add">
@@ -1662,10 +1671,15 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     const box = document.getElementById('taskList');
     box.innerHTML = '';
     let cur = '';
+    const groupSeq = [];
     S.tasks.forEach((t,idx)=>{
       if (t.group !== cur){
         cur = t.group;
+        const gi = groupSeq.length;
+        groupSeq.push(cur);
         const h = document.createElement('div'); h.className='task-group-title';
+        h.id = 'tgrp-'+gi;
+        h.style.scrollMarginTop = '158px';
         const groupPts = S.tasks.filter(x=>x.group===cur).reduce((a,b)=>a+b.pts,0);
         const groupDone = S.tasks.filter(x=>x.group===cur&&x.done).reduce((a,b)=>a+b.pts,0);
         h.textContent = `${cur} · ${groupDone}/${groupPts} 分`;
@@ -1706,6 +1720,71 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
       sel.innerHTML = '<option value="">（不绑定）</option>'+
         S.tasks.filter(t=>!t.done).map(t=>`<option value="${t.id}" ${S.pomo.bindId===t.id?'selected':''}>${t.id} ${t.title}</option>`).join('');
     }
+    renderTaskNav(groupSeq);
+    bindTaskSpy();
+  }
+  // ===== 今日任务·分类电梯导航 =====
+  function taskGroupIco(name){
+    const n = name||'';
+    if (n.startsWith('工作线')) return '🏢';
+    if (n.startsWith('收入线')) return '💰';
+    if (n.startsWith('体魄线')) return '💪';
+    if (n.startsWith('学习线')) return '📚';
+    if (n.startsWith('习惯线')) return '🔁';
+    if (n.startsWith('兴趣线')) return '🎨';
+    if (n.startsWith('附加分')) return '⭐';
+    if (n.startsWith('临时线')) return '⚡';
+    if (n.startsWith('签到')) return '✅';
+    if (n.indexOf('3件小事')>=0) return '❤️';
+    return '📌';
+  }
+  function renderTaskNav(seq){
+    const nav = document.getElementById('taskNav'); if (!nav) return;
+    if (!seq || !seq.length){ nav.innerHTML = ''; nav.style.display='none'; return; }
+    nav.style.display = 'flex';
+    const chips = seq.map((g,i)=>{
+      const all = S.tasks.filter(x=>x.group===g);
+      const dn = all.filter(x=>x.done).length;
+      const full = all.length>0 && dn===all.length;
+      const label = g.replace(/^❤️\s*/,'');
+      return `<button class="music-scene task-chip${full?' full':''}" id="tchip-${i}" onclick="gotoTaskGroup(${i})" title="跳到「${g}」">${taskGroupIco(g)} ${label}<span class="cnt">${dn}/${all.length}</span></button>`;
+    }).join('');
+    nav.innerHTML = chips
+      + `<button class="music-scene task-chip" onclick="gotoTaskTop()" title="回到顶部">⤴ 顶部</button>`
+      + `<span class="nav-hint">点分类电梯直达 · 也可直接向下浏览</span>`;
+    updateTaskSpy();
+  }
+  function gotoTaskGroup(i){
+    const el = document.getElementById('tgrp-'+i);
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    setTaskChipActive(i);
+  }
+  function gotoTaskTop(){
+    window.scrollTo({top:0, behavior:'smooth'});
+    setTaskChipActive(0);
+  }
+  function setTaskChipActive(i){
+    document.querySelectorAll('#taskNav .task-chip').forEach(b=>b.classList.remove('active'));
+    const c = document.getElementById('tchip-'+i);
+    if (c) c.classList.add('active');
+  }
+  function updateTaskSpy(){
+    const heads = document.querySelectorAll('#taskList .task-group-title[id^="tgrp-"]');
+    if (!heads.length) return;
+    let idx = 0;
+    heads.forEach((h,i)=>{ if (h.getBoundingClientRect().top <= 170) idx = i; });
+    setTaskChipActive(idx);
+  }
+  let _taskSpyBound = false, _taskSpyRaf = 0;
+  function bindTaskSpy(){
+    if (_taskSpyBound) return;
+    _taskSpyBound = true;
+    window.addEventListener('scroll', ()=>{
+      const p = document.getElementById('page-today');
+      if (!p || !p.classList.contains('active')) return;
+      if (_taskSpyRaf) return;
+      _taskSpyRaf = requestAnimationFrame(()=>{ _taskSpyRaf = 0; updateTaskSpy(); });
+    }, {passive:true});
   }
   function calcTodayPts(){
     return S.tasks.filter(x=>x.done).reduce((a,b)=>a+b.pts,0)
