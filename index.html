@@ -877,6 +877,9 @@ T-103 | 工作线 | [爱晴]今日OKR录入 | 爱晴单聊同步今日完成OKR�
 T-104 | 工作线 | [爱晴]8月10日对下下午分享复盘 | 爱晴单聊同步8月10日11:00-12:00对下下午分享·今日完成现场分享/答疑/材料归档·会后与爱晴对齐反馈 | 15 | PM:8,TM:7
 T-105 | 工作线 | 🔥过期待办清理（D001-D024及T系列） | 钉钉待办55835022225·逐条检查D001-D024及T系列过期待办·含直管同学待办反馈(55973352561)/达人结算审批/BPMS审批/奇异果新渠道回复等今日聊天与日历触发项·标记完成或重新设定截止时间 | 18 | PM:10,DA:8
 T-106 | 工作线 | [O3-项目管理] AAC项目执行节奏文档终稿 | 钉钉待办55834850594·补充里程碑节点、责任人分工、风险点·今日20:00前 | 18 | PM:10,DA:8
+T-108 | 工作线 | 闲鱼结算处理 | 核对闲鱼渠道当期结算数据·处理差异单与异常口径·推进结算流程闭环并同步财务/BD | 18 | DA:10,PM:8
+T-109 | 工作线 | iOS任务gap排查与补齐 | 对比iOS侧任务目标与实际完成量·定位gap来源(投放/素材/链路/口径)·输出补齐动作与责任人 | 20 | DA:12,PM:8
+T-110 | 工作线 | UC侧反馈闲鱼数据部分广告位 | 承接UC侧反馈·核对闲鱼数据中相关广告位表现与口径差异·给出结论与后续动作并回复对方 | 15 | PM:9,DA:6
 T-000 | 签到 | 每日签到 | 打开系统开启新的一天·连续签到有惊喜 | 5 | TM:5
 T-201 | 收入线·短期 | 飞盘教练：约课/带课/复盘 | 每次带课189元·周末优先 | 20 | RI:15,BODY:5
 T-202 | 收入线·短期 | 出个汗·私教体验课邀约 | 企微/小红书DM≥3人 | 12 | RI:10,PM:2
@@ -1403,6 +1406,20 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     return {added, updated, removed};
   }
 
+  // 人工任务保护：sync.json 的 manualTasks 是人工追加任务的权威锚点。
+  // 即使自动刷新把这些行从 tpl 里剔除，客户端也会补回去，保证人工加的任务不被 cron 冲掉。
+  function withManualTasks(tplString, todayData){
+    const mt = todayData && todayData.manualTasks;
+    if (!Array.isArray(mt) || !mt.length) return tplString || '';
+    const base = tplString || '';
+    const have = new Set(base.split('\n').map(r=>String(r).split('|')[0].trim()).filter(Boolean));
+    const add = mt.filter(r=>{
+      const id = String(r||'').split('|')[0].trim();
+      return id && !have.has(id);
+    });
+    return add.length ? (base ? base + '\n' + add.join('\n') : add.join('\n')) : base;
+  }
+
   // ═══════ 服务端同步：统一从线上拉取，不管在哪个域名运行 ═══════
   const SYNC_URL = 'https://raw.githubusercontent.com/zhonghuali-Simon/huali-life/main/sync.json';
   // 健壮拉取：优先raw.githubusercontent(推送后秒生效无CDN缓存),再试同源相对路径
@@ -1447,11 +1464,11 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
           synced++;
         });
       }
-      // 同步模板更新：立即合并新增/更新未完成任务
+      // 同步模板更新：立即合并新增/更新未完成任务（人工任务始终补回）
       let tplChanged = 0;
-      if (todayData.tpl){
-        S.tpl = todayData.tpl;
-        const r = mergeTpl(todayData.tpl);
+      if (todayData.tpl || (todayData.manualTasks||[]).length){
+        S.tpl = withManualTasks(todayData.tpl, todayData);
+        const r = mergeTpl(S.tpl);
         tplChanged = r.added + r.updated + r.removed;
       }
       // 同步知识库/淘宝创新每日上新
@@ -1584,9 +1601,9 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     if (!data){ toast('⚠️ 拉取失败，稍后会自动重试'); return; }
     const todayData = data[today()];
     let r = {added:0,updated:0,removed:0};
-    if (todayData && todayData.tpl){
-      S.tpl = todayData.tpl;
-      r = mergeTpl(todayData.tpl);
+    if (todayData && (todayData.tpl || (todayData.manualTasks||[]).length)){
+      S.tpl = withManualTasks(todayData.tpl, todayData);
+      r = mergeTpl(S.tpl);
     }
     await syncFromServer();
     save(); renderAll();
