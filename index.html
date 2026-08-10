@@ -1733,13 +1733,24 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     if (S.log.length>200) S.log.shift();
   }
 
+  // 单个渲染器崩溃不能连累其它组件，更不能中断调用方（启动流程里的同步定时器就挂在 renderAll 后面）
+  function _safeRender(name, fn){
+    try{ fn(); }
+    catch(e){ console.warn('[renderAll] '+name+' 渲染失败（已隔离）:', e && e.message ? e.message : e); }
+  }
   function renderAll(){
-    renderMeta(); renderTasks(); renderPanel(); renderBadges();
-    renderLog(); renderShop(); renderHistory(); renderPomo(); renderTaobao(); renderKB(); renderStock(); renderSettings();
-    renderAntiBadges(); renderRadarChart(); renderTrend30(); renderGroupPie();
-    renderChallenges(); renderPK(); renderRun();
-    document.getElementById('tabTodayCnt').textContent = S.tasks.filter(t=>!t.done).length;
-    document.getElementById('coinInHeader').textContent = S.coin;
+    const R = {renderMeta:renderMeta,renderTasks:renderTasks,renderPanel:renderPanel,renderBadges:renderBadges,
+      renderLog:renderLog,renderShop:renderShop,renderHistory:renderHistory,renderPomo:renderPomo,
+      renderTaobao:renderTaobao,renderKB:renderKB,renderStock:renderStock,renderSettings:renderSettings,
+      renderAntiBadges:renderAntiBadges,renderRadarChart:renderRadarChart,renderTrend30:renderTrend30,
+      renderGroupPie:renderGroupPie,renderChallenges:renderChallenges,renderPK:renderPK,renderRun:renderRun};
+    for (const k in R) _safeRender(k, R[k]);
+    _safeRender('header', function(){
+      const a = document.getElementById('tabTodayCnt');
+      if (a) a.textContent = S.tasks.filter(t=>!t.done).length;
+      const b = document.getElementById('coinInHeader');
+      if (b) b.textContent = S.coin;
+    });
   }
   function renderMeta(){
     document.getElementById('meta').textContent = `${todayCn()} · 签到 ${S.streak} 天 · 健身连击 ${S.bodyStreak} 天 · 💰 ${S.coin}`;
@@ -2162,14 +2173,16 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   function renderPomo(){
     const p = S.pomo;
     const min = Math.floor(p.remain/60), sec = p.remain%60;
-    document.getElementById('pomoTimer').textContent = fmt(min)+':'+fmt(sec);
-    document.getElementById('pomoWorkMin').textContent = p.workMin;
-    document.getElementById('pomoWork').value = p.workMin;
-    document.getElementById('pomoBreak').value = p.breakMin;
-    document.getElementById('pomoBtn').textContent = p.running ? '暂停' : '开始';
-    document.getElementById('pomoState').textContent = p.running
+    const _t = (id,v)=>{ const el=document.getElementById(id); if (el) el.textContent = v; };
+    const _v = (id,v)=>{ const el=document.getElementById(id); if (el) el.value = v; };
+    _t('pomoTimer', fmt(min)+':'+fmt(sec));
+    _t('pomoWorkMin', p.workMin);
+    _v('pomoWork', p.workMin);
+    _v('pomoBreak', p.breakMin);
+    _t('pomoBtn', p.running ? '暂停' : '开始');
+    _t('pomoState', p.running
       ? (p.mode==='work'?'🔥 专注中… 屏蔽干扰':'☕ 休息中… 起来走走')
-      : `按开始，${p.mode==='work'?'认真工作':'休息'} ${p.mode==='work'?p.workMin:p.breakMin} 分钟`;
+      : `按开始，${p.mode==='work'?'认真工作':'休息'} ${p.mode==='work'?p.workMin:p.breakMin} 分钟`);
     const bindTask = p.bindId ? S.tasks.find(t=>t.id===p.bindId) : null;
     document.getElementById('pomoTask').textContent = bindTask ? `🎯 ${bindTask.id} ${bindTask.title}` : '未绑定任务';
     document.getElementById('pomoTodayCnt').textContent = (p.todayCnt||0)+' 轮';
@@ -3205,13 +3218,22 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     const arc = (S.kbArchive||{})[_kbViewDate];
     // 优先用云端每日更新的股市数据(S.stockDaily最新日)，回退存档/内置
     let d = (arc && arc.stock) ? arc.stock : STOCK_DATA;
+    // 云端下发的结构不一定完整，只采用「结构合法」的最新一天，避免坏数据打断整页渲染
+    const okSec = s => s && Array.isArray(s.indices);
     if (S.stockDaily && Object.keys(S.stockDaily).length){
-      const latest = Object.keys(S.stockDaily).sort().reverse()[0];
-      if (S.stockDaily[latest]) d = S.stockDaily[latest];
+      const days = Object.keys(S.stockDaily).sort().reverse();
+      for (const k of days){
+        const c = S.stockDaily[k];
+        if (c && okSec(c.us) && okSec(c.kr) && c.a){ d = c; break; }
+      }
     }
+    // 逐段兜底：任何一段缺失/格式不对都用内置数据顶上
+    const sec = (k)=> okSec(d && d[k]) ? d[k] : STOCK_DATA[k];
+    const us = sec('us'), kr = sec('kr');
+    const a = (d && d.a && Array.isArray(d.a.hot)) ? d.a : STOCK_DATA.a;
     const prog = document.getElementById('kbProgress');
-    if (prog) prog.textContent = `${d.date} 行情`;
-    const idxRow = (arr)=>arr.map(x=>{
+    if (prog) prog.textContent = `${(d && d.date) || STOCK_DATA.date} 行情`;
+    const idxRow = (arr)=>(Array.isArray(arr)?arr:[]).map(x=>{
       const col = x.up ? 'var(--glow)' : 'var(--danger)';
       return `<div style="flex:1;min-width:90px;background:rgba(0,255,159,.03);border:1px solid rgba(0,255,159,.08);padding:8px 10px;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)">
         <div style="font-size:11px;color:var(--sub)">${x.name}</div>
@@ -3219,28 +3241,29 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
         <div style="font-size:11px;color:${col}">${x.chg}</div>
       </div>`;
     }).join('');
+    const hotList = (arr)=>(Array.isArray(arr)?arr:[]).map(h=>`<li>${h}</li>`).join('');
     let html = '';
     // 美股
     html += `<div style="margin-bottom:14px">
-      <div style="font-size:12px;font-weight:600;color:var(--glow2);margin-bottom:8px">${d.us.label}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">${idxRow(d.us.indices)}</div>
-      <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:1.9">${d.us.hot.map(h=>`<li>${h}</li>`).join('')}</ul>
+      <div style="font-size:12px;font-weight:600;color:var(--glow2);margin-bottom:8px">${us.label||'美股'}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">${idxRow(us.indices)}</div>
+      <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:1.9">${hotList(us.hot)}</ul>
     </div>`;
     // 韩股
     html += `<div style="margin-bottom:14px;padding-top:12px;border-top:1px solid rgba(0,255,159,.06)">
-      <div style="font-size:12px;font-weight:600;color:var(--glow2);margin-bottom:8px">${d.kr.label}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">${idxRow(d.kr.indices)}</div>
-      <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:1.9">${d.kr.hot.map(h=>`<li>${h}</li>`).join('')}</ul>
+      <div style="font-size:12px;font-weight:600;color:var(--glow2);margin-bottom:8px">${kr.label||'韩股'}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">${idxRow(kr.indices)}</div>
+      <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:1.9">${hotList(kr.hot)}</ul>
     </div>`;
     // A股热门板块
     html += `<div style="margin-bottom:12px;padding-top:12px;border-top:1px solid rgba(0,255,159,.06)">
-      <div style="font-size:12px;font-weight:600;color:var(--glow2);margin-bottom:8px">${d.a.label}</div>
-      ${d.a.hot.map(s=>`<div style="padding:6px 0;border-bottom:1px solid rgba(0,255,159,.04)">
+      <div style="font-size:12px;font-weight:600;color:var(--glow2);margin-bottom:8px">${a.label||'A股'}</div>
+      ${(Array.isArray(a.hot)?a.hot:[]).map(s=>`<div style="padding:6px 0;border-bottom:1px solid rgba(0,255,159,.04)">
         <span style="font-size:13px;font-weight:600;color:var(--gold)">${s.name}</span>
         <span style="font-size:12px;color:var(--sub);margin-left:8px">${s.note}</span>
       </div>`).join('')}
     </div>`;
-    html += `<div style="font-size:11px;color:var(--sub);font-style:italic;padding-top:8px">💡 ${d.notes}</div>`;
+    html += `<div style="font-size:11px;color:var(--sub);font-style:italic;padding-top:8px">💡 ${(d && d.notes) || STOCK_DATA.notes}</div>`;
     box.innerHTML = html;
   }
 
@@ -4075,32 +4098,43 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
 
   load();
   document.body.classList.toggle('light', !!S.cfg.light);
-  // 首次加载后主动检查一次徽章（兼容新增徽章的已达成状态）
-  setTimeout(()=>{ checkBadges(); renderAll(); renderDiffHint(); }, 100);
-  renderAll();
-  // 自动拉取服务端同步数据
-  setTimeout(syncFromServer, 500);
-  startKbReadTimer();
+
+  // ⚠️ 顺序很重要：同步链路必须先注册。
+  // 曾经把 renderAll() 放在最前面，一旦某个渲染器抛异常，整段启动代码就中断，
+  // 下面的 setTimeout(syncFromServer) / setInterval 全部不会注册 —— 页面从此永远停在本地旧快照，刷新也无效。
+  const _boot = (name, fn)=>{ try{ fn(); }catch(e){ console.warn('[boot] '+name+' 失败（已隔离）:', e && e.message ? e.message : e); } };
+
+  // 1) 同步：立刻拉一次 + 每5分钟自动拉一次
+  _boot('sync-first', ()=>{ setTimeout(syncFromServer, 300); });
+  _boot('sync-interval', ()=>{ setInterval(syncFromServer, 5*60*1000); });
+  // 2) 真·双向云同步：先 cloudInit(可能用云端快照覆盖本地)，再 syncFromServer(把今天下发的任务/脑洞/知识库并进来)，顺序不能反
+  _boot('cloud', ()=>{
+    setTimeout(async ()=>{
+      try{ await cloudInit(false); }catch(e){}
+      try{ await syncFromServer(); }catch(e){}
+    }, 800);
+  });
+  // 3) 页面重新获得焦点时同步（切回标签页/唤醒电脑）
+  _boot('visibility', ()=>{
+    document.addEventListener('visibilitychange', async ()=>{ if (!document.hidden){ try{ await cloudPull(true); }catch(e){} syncFromServer(); } });
+    window.addEventListener('focus', ()=>{ try{ cloudPull(true); }catch(e){} });
+  });
+
+  // 4) 首屏渲染（即使崩了也不影响上面的同步）
+  _boot('renderAll', renderAll);
+  _boot('badges', ()=>{ setTimeout(()=>{ try{ checkBadges(); }catch(e){} try{ renderAll(); }catch(e){} try{ renderDiffHint(); }catch(e){} }, 100); });
+  _boot('kbTimer', startKbReadTimer);
   // 在站活跃时长统计（页面可见+近1分钟有操作才计）
-  setInterval(()=>{
-    if (document.hidden) return;
-    if ((Date.now()-_lastActivity) > IDLE_MS) return;
-    if (S.siteSecDate !== today()){ S.siteSecDate = today(); S.siteSecToday = 0; }
-    S.siteSecToday = (S.siteSecToday||0) + 1;
-    S.siteSecTotal = (S.siteSecTotal||0) + 1;
-  }, 1000);
-  setInterval(renderMeta, 60000);
-  // 自动更新：每5分钟拉取一次最新任务，无需手动点按钮
-  setInterval(syncFromServer, 5*60*1000);
-  // 真·双向云同步：启动时连接并拉取其它设备的最新状态，随后立刻回源并入当日内容
-  // 顺序不能反：先 cloudInit(可能用云端快照覆盖本地)，再 syncFromServer(把今天下发的任务/脑洞/知识库并进来)
-  setTimeout(async ()=>{
-    try{ await cloudInit(false); }catch(e){}
-    try{ await syncFromServer(); }catch(e){}
-  }, 800);
-  // 页面重新获得焦点时同步（切回标签页/唤醒电脑）：先拉云端用户状态,再回源并入当日内容(顺序不能反,否则旧快照会盖掉今天的内容)
-  document.addEventListener('visibilitychange', async ()=>{ if (!document.hidden){ await cloudPull(true); syncFromServer(); } });
-  window.addEventListener('focus', ()=>{ cloudPull(true); });
+  _boot('siteSec', ()=>{
+    setInterval(()=>{
+      if (document.hidden) return;
+      if ((Date.now()-_lastActivity) > IDLE_MS) return;
+      if (S.siteSecDate !== today()){ S.siteSecDate = today(); S.siteSecToday = 0; }
+      S.siteSecToday = (S.siteSecToday||0) + 1;
+      S.siteSecTotal = (S.siteSecTotal||0) + 1;
+    }, 1000);
+  });
+  _boot('metaTimer', ()=>{ setInterval(renderMeta, 60000); });
 </script>
 </body>
 </html>
