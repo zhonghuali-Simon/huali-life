@@ -2699,8 +2699,9 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
   function tbDates(){ return Object.keys(S.tbArchive||{}).sort().reverse(); }
 
   // 健身/户外/自媒体副业内容不该混在淘宝运营分类里，一次性把历史归档拆干净。
-  // 判定只看健身副业专属词，避免误伤「淘宝运动户外类目运营」这类真·淘宝内容。
-  const _FIT_RE = /出个汗|Sughan|私教|教练|健身房|体测|体态|增肌|减脂|训练营|飞盘|瑜伽|普拉提|蛋白粉|撸铁|体验课|到店核销|会员卡|户外露营|徒步|自媒体|个人IP|涨粉|口播/i;
+  // 宁可宽松：只要沾健身/到店/自媒体就归到「健身事业」，即使它讲的是淘宝广告产品，
+  // 因为那也是服务健身副业的思考，用户明确要求淘宝三类里一条健身内容都不要出现。
+  const _FIT_RE = /出个汗|Sughan|私教|教练|健身|运动健康|体测|体态|增肌|减脂|训练营|训练百科|飞盘|瑜伽|普拉提|蛋白粉|撸铁|体验课|到店|会员卡|露营|徒步|自媒体|个人IP|涨粉|口播/i;
   function _isFitItem(it){
     if (!it) return false;
     const s = [it.title, it.summary, (it.points||[]).join(' ')].join(' ');
@@ -2718,12 +2719,14 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     });
     return moved;
   }
+  // 分流规则每次收紧都要提升版本号，否则老设备上的历史归档不会用新规则重扫一遍
+  const TB_FIT_SPLIT_VER = 2;
   function migrateTbFitness(){
-    if (S.cfg && S.cfg.tbFitSplit) return 0;
+    if (S.cfg && (S.cfg.tbFitSplit|0) >= TB_FIT_SPLIT_VER) return 0;
     let moved = 0;
     Object.keys(S.tbArchive||{}).forEach(d=>{ moved += _tbSplitDay(S.tbArchive[d]); });
     if (!S.cfg) S.cfg = {};
-    S.cfg.tbFitSplit = 1;
+    S.cfg.tbFitSplit = TB_FIT_SPLIT_VER;
     save();
     return moved;
   }
