@@ -3820,6 +3820,17 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     return S.bsArchive;
   }
   function bsDates(){ return Object.keys(bsSource()).sort().reverse(); }
+  // 主业(DSP/用户增长)的场次优先看，个人成长/健身副业的往后排；同类保持原顺序（稳定排序）
+  const _BS_BIZ_RE = /DSP|用户增长|用增|淘宝|投放|渠道|拉新|召回|AAC|闪购|GAB|IPV|唤端|CPA|归因|广告|达人营销|闲鱼|预流失/i;
+  function bsIsBiz(m){
+    if (!m || typeof m !== 'object') return false;
+    return _BS_BIZ_RE.test(String(m.topic||'') + ' ' + String(m.goal||''));
+  }
+  function bsSortMeetings(list){
+    return (list||[]).map((m,i)=>({m:m,i:i}))
+      .sort((a,b)=>((bsIsBiz(b.m)?1:0)-(bsIsBiz(a.m)?1:0)) || (a.i-b.i))
+      .map(x=>x.m);
+  }
   function renderBsDateSel(){
     const sel=document.getElementById('bsDateSel'); if(!sel) return;
     const dates=bsDates(); const latest=dates[0];
@@ -3839,7 +3850,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     let html='';
     dates.forEach((dt,di)=>{
       const raw=src[dt];
-      const meetings = !raw ? [] : (Array.isArray(raw) ? raw : [raw]);
+      const meetings = bsSortMeetings(!raw ? [] : (Array.isArray(raw) ? raw : [raw]));
       const isToday = di===0;
       html += `<div id="bsday-${dt}" style="scroll-margin-top:74px;margin-bottom:30px;${isToday?'':'opacity:.97'}">`;
       html += `<div style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;padding-bottom:7px;border-bottom:1px ${isToday?'solid rgba(255,215,64,.35)':'dashed rgba(0,255,159,.22)'}">
@@ -3900,7 +3911,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     let html='';
     (meetings||[]).map(bsNormalize).forEach((m,mi)=>{
     if (mi>0) html+=`<div style="margin:24px 0;border-top:2px dashed rgba(0,255,159,.2);padding-top:16px"></div>`;
-    if (meetings.length>1) html+=`<div style="font-size:11px;color:var(--glow);letter-spacing:1px;margin-bottom:8px">🧠 第${mi+1}场 / 共${meetings.length}场</div>`;
+    if (meetings.length>1) html+=`<div style="font-size:11px;color:var(--glow);letter-spacing:1px;margin-bottom:8px">🧠 第${mi+1}场 / 共${meetings.length}场${bsIsBiz(m)?' <span style="padding:1px 7px;margin-left:4px;background:rgba(255,215,64,.14);color:var(--gold);border:1px solid rgba(255,215,64,.38);border-radius:9px;letter-spacing:0">DSP/用增</span>':''}</div>`;
     const roleMap = buildRoleMap(m.roles);
     // 议题卡
     html+=`<div style="padding:12px 14px;margin-bottom:14px;background:linear-gradient(135deg,rgba(0,255,159,.06),rgba(0,229,255,.04));border-left:3px solid var(--glow);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)">
