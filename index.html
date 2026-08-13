@@ -3916,7 +3916,7 @@ T-703 | ❤️ 3件小事 | 长期投资自己的1件小事 | 阅读/写作/技�
     // 议题卡
     html+=`<div style="padding:12px 14px;margin-bottom:14px;background:linear-gradient(135deg,rgba(0,255,159,.06),rgba(0,229,255,.04));border-left:3px solid var(--glow);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)">
       <div style="font-size:14px;font-weight:700;color:var(--glow);margin-bottom:4px">📋 议题：${m.topic}</div>
-      <div style="font-size:12px;color:var(--gold)">🎯 目标：${m.goal}</div></div>`;
+      ${m.goal?`<div style="font-size:12px;color:var(--gold)">🎯 目标：${m.goal}</div>`:''}</div>`;
     // 出席人设
     if (m.roles){
       html+=`<div style="font-size:11px;color:var(--sub);margin-bottom:6px;letter-spacing:1px">👥 出席人设（${m.roles.length}位·每个对应现实角色，可多元/多位同类）</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">`;
