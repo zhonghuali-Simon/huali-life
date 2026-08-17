@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>吃什么不后悔 — 出汗社·饮食避坑指南</title>
+<style>
+:root{--bg:#0a0a0f;--card:#0d1117;--glow:#00ff9f;--glow2:#00e5ff;--gold:#ffd740;--text:#e0ffe0;--sub:#5a8a6a;--danger:#ff2060;--food:#ff9100;--foodRGB:255,145,0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'JetBrains Mono',monospace,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,159,.02) 3px,rgba(0,255,159,.02) 4px);pointer-events:none;z-index:9999}
+.container{max-width:800px;margin:0 auto;padding:2rem 1.5rem}
+.hero{text-align:center;padding:3rem 1rem 2rem;border-bottom:1px solid rgba(0,255,159,.1);margin-bottom:2rem}
+.hero h1{font-size:1.8rem;color:var(--glow);text-shadow:0 0 20px rgba(0,255,159,.4);letter-spacing:2px;margin-bottom:.5rem}
+.hero .sub{font-size:.85rem;color:var(--sub);letter-spacing:1px}
+.hero .tag{display:inline-block;margin-top:1rem;padding:4px 14px;border:1px solid var(--food);color:var(--food);font-size:11px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.card{background:rgba(13,17,23,.75);backdrop-filter:blur(6px);border:1px solid rgba(0,255,159,.12);padding:18px 20px;margin-bottom:1.5rem;position:relative;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--glow),var(--glow2),transparent)}
+.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glow2),var(--glow))}
+.card h2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--sub);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(0,255,159,.08)}
+.card h2::before{content:'◆ ';color:var(--food)}
+.entry{padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)}
+.entry:last-child{border-bottom:none}
+.entry-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.entry-title span{color:var(--food);margin-right:6px}
+.entry-summary{font-size:12px;color:var(--glow);font-style:italic;margin-bottom:8px}
+.entry ul{font-size:12px;line-height:2;padding-left:16px;color:var(--text)}
+.entry ul li::marker{color:var(--food)}
+.tip-box{padding:8px 10px;background:rgba(var(--foodRGB),.05);border-left:2px solid var(--food);margin-top:10px;font-size:11px}
+.tip-box .q{color:var(--food);font-weight:600;margin-bottom:2px}
+.tip-box .a{color:var(--sub)}
+.badge{display:inline-block;padding:2px 8px;font-size:10px;border:1px solid;border-radius:2px;margin-left:6px;vertical-align:middle}
+.badge.red{border-color:var(--danger);color:var(--danger)}
+.badge.green{border-color:var(--glow);color:var(--glow)}
+.badge.gold{border-color:var(--gold);color:var(--gold)}
+.rank-list{counter-reset:rank}
+.rank-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(0,255,159,.08);font-size:12px}
+.rank-item:last-child{border-bottom:none}
+.rank-item::before{counter-increment:rank;content:counter(rank);color:var(--food);font-weight:700;font-size:14px;min-width:24px}
+.rank-item .name{flex:1;margin-left:8px}
+.rank-item .cal{color:var(--sub);font-size:11px}
+.pain-box{padding:10px 12px;background:rgba(255,32,96,.04);border-left:2px solid var(--danger);margin-bottom:12px;font-size:12px}
+.pain-box .pain-title{color:var(--danger);font-weight:600;margin-bottom:4px}
+.pain-box .pain-desc{color:var(--sub);font-size:11px}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+.plan-col{background:rgba(0,255,159,.03);border:1px solid rgba(0,255,159,.08);padding:10px;font-size:11px}
+.plan-col h4{font-size:11px;color:var(--food);margin-bottom:6px;text-align:center}
+.plan-col .meal{margin-bottom:6px}
+.plan-col .meal-name{color:var(--glow);font-weight:600;font-size:10px}
+.plan-col .meal-detail{color:var(--sub);font-size:10px}
+/* Formula grid */
+.formula-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+.formula-col{background:rgba(13,17,23,.6);border:1px solid rgba(0,255,159,.1);border-radius:8px;overflow:hidden}
+.formula-header{padding:8px 10px;font-size:12px;font-weight:700;text-align:center;color:#fff;letter-spacing:1px}
+.formula-items{padding:6px 8px}
+.formula-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px dashed rgba(0,255,159,.06);font-size:12px}
+.formula-item:last-child{border-bottom:none}
+.f-icon{font-size:16px;min-width:22px;text-align:center}
+.f-name{flex:1;color:var(--text)}
+.f-cal{color:var(--sub);font-size:10px;white-space:nowrap}
+.formula-note{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;padding:6px 10px;background:rgba(0,255,159,.03);border-radius:6px;border:1px solid rgba(0,255,159,.06)}
+.footer{text-align:center;padding:2rem 0;color:var(--sub);font-size:11px;border-top:1px solid rgba(0,255,159,.08);margin-top:2rem}
+@media(max-width:600px){.formula-grid{grid-template-columns:1fr}.plan-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <h1>🍽️ 吃什么不后悔</h1>
+  <div class="sub">出汗社 · 饮食避坑指南 · 职场人吃得明白系列</div>
+  <div class="tag">🔥 饭堂餐线 / 外卖 / 便利店 / 目标食谱 全场景覆盖</div>
+</div>
+
+<!-- 1. 饭堂餐线选择指南 -->
+<div class="card">
+  <h2>饭堂餐线怎么选 · 不看窗口看餐线</h2>
+  
+  <div class="pain-box">
+    <div class="pain-title">💢 职场人痛点</div>
+    <div class="pain-desc">饭堂窗口几十个，站在那不知道点什么。点错了怕胖，点少了下午饿，点多了晚上又后悔。</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>✅</span>优先选这些餐线 <span class="badge green">安全区</span></div>
+    <ul>
+      <li><strong>轻食/沙拉线</strong> — 鸡胸肉/藜麦/三文鱼/蔬菜碗，热量可控，蛋白质足 <span class="badge green">~350-450kcal</span></li>
+      <li><strong>蒸菜/清淡线</strong> — 清蒸鱼/白切鸡/蒸蛋/白灼虾，烹饪方式决定一切 <span class="badge green">~380-500kcal</span></li>
+      <li><strong>杂粮/粗粮线</strong> — 红薯/玉米/杂粮饭/燕麦，升糖慢，饱腹感强 <span class="badge green">优质碳水</span></li>
+      <li><strong>汤粉/面食线</strong> — 选清汤底，要求少面多肉，番茄牛肉面类 <span class="badge gold">~400-500kcal</span></li>
+      <li><strong>自选快餐线</strong> — 一荤两素，选蒸/炒/炖，避开油炸/干锅 <span class="badge gold">~450-550kcal</span></li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>⚠️</span>这些餐线要当心 <span class="badge red">危险区</span></div>
+    <ul>
+      <li><strong>油炸/煎炸线</strong> — 炸鸡腿/炸猪排/炸鱼排，热量直接翻倍 <span class="badge red">~700-900kcal</span></li>
+      <li><strong>重口味炒菜线</strong> — 红烧肉/糖醋里脊/干锅类，油糖炸弹 <span class="badge red">~600-850kcal</span></li>
+      <li><strong>炒粉/炒面线</strong> — 看着素菜多，油比你想的多3倍 <span class="badge red">~600-800kcal</span></li>
+      <li><strong>甜品/饮料线</strong> — 奶茶/果汁/蛋糕，一杯=一顿饭热量 <span class="badge red">~300-700kcal</span></li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💡</span>饭堂实战技巧</div>
+    <ul>
+      <li><strong>吃饭顺序</strong>：先喝汤→吃菜→吃肉→最后吃主食，血糖更稳下午不困</li>
+      <li><strong>主食减半</strong>：米饭打半份，或用红薯/玉米替代，省下的热量换蔬菜</li>
+      <li><strong>酱料另放</strong>：要求酱料单独装，蘸着吃比拌着吃热量低一半</li>
+      <li><strong>去皮去脂</strong>：鸡肉去皮、猪肉去肥肉、牛肉去筋膜，省100-200kcal</li>
+      <li><strong>加个蛋</strong>：不管吃什么，加个水煮蛋，蛋白质+饱腹感双丰收</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 记住这个口诀</div>
+      <div class="a">「蒸优于炒，清优于红烧，半份主食加倍菜，先菜后肉最后饭」</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 目标食谱 -->
+<div class="card">
+  <h2>按目标吃 · 减脂/增肌/健康 三餐食谱</h2>
+  
+  <div class="pain-box">
+    <div class="pain-title">💢 职场人痛点</div>
+    <div class="pain-desc">知道要吃得健康，但不知道怎么吃。减脂怕饿，增肌怕不够，健康怕麻烦。每天上班已经够累了，吃饭还要动脑子？</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔥</span>减脂食谱 <span class="badge red">目标：热量缺口300-500kcal/天</span></div>
+    <div class="entry-summary">核心：高蛋白+高纤维+低碳水，吃饱不挨饿</div>
+    <div class="plan-grid">
+      <div class="plan-col">
+        <h4>🌅 早餐<br>~300kcal</h4>
+        <div class="meal">
+          <div class="meal-name">方案A</div>
+          <div class="meal-detail">水煮蛋2个 + 无糖豆浆 + 半根玉米</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案B</div>
+          <div class="meal-detail">无糖酸奶 + 燕麦30g + 蓝莓一小把</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案C</div>
+          <div class="meal-detail">全麦面包1片 + 鸡蛋1个 + 黑咖啡</div>
+        </div>
+      </div>
+      <div class="plan-col">
+        <h4>☀️ 午餐<br>~400-450kcal</h4>
+        <div class="meal">
+          <div class="meal-name">饭堂版</div>
+          <div class="meal-detail">清蒸鱼/鸡胸 + 2份蔬菜 + 半份米饭</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">外卖版</div>
+          <div class="meal-detail">轻食沙拉（鸡胸/三文鱼）+ 杂粮饭团</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">便利店版</div>
+          <div class="meal-detail">鸡胸肉沙拉 + 杂粮饭团 + 无糖茶</div>
+        </div>
+      </div>
+      <div class="plan-col">
+        <h4>🌙 晚餐<br>~350-400kcal</h4>
+        <div class="meal">
+          <div class="meal-name">饭堂版</div>
+          <div class="meal-detail">白切鸡去皮 + 2份青菜 + 少量主食</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">外卖版</div>
+          <div class="meal-detail">麻辣烫（蔬菜+豆腐+虾，清汤底）</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">加班版</div>
+          <div class="meal-detail">关东煮（萝卜+魔芋+蛋）+ 酸奶</div>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="q">💡 减脂期加餐</div>
+      <div class="a">下午3-4点饿了：无糖酸奶/一小把坚果/1个苹果/1根黄瓜。别硬饿，硬饿的结果是晚上暴食。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💪</span>增肌食谱 <span class="badge gold">目标：热量盈余200-300kcal/天</span></div>
+    <div class="entry-summary">核心：高蛋白+足量碳水+训练后补充，吃够才能长</div>
+    <div class="plan-grid">
+      <div class="plan-col">
+        <h4>🌅 早餐<br>~450kcal</h4>
+        <div class="meal">
+          <div class="meal-name">方案A</div>
+          <div class="meal-detail">鸡蛋3个 + 全麦面包2片 + 牛奶 + 香蕉</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案B</div>
+          <div class="meal-detail">燕麦粥 + 蛋白粉1勺 + 坚果一把 + 蜂蜜</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案C</div>
+          <div class="meal-detail">鸡胸肉三明治 + 豆浆 + 苹果</div>
+        </div>
+      </div>
+      <div class="plan-col">
+        <h4>☀️ 午餐<br>~600-700kcal</h4>
+        <div class="meal">
+          <div class="meal-name">饭堂版</div>
+          <div class="meal-detail">双份肉（鸡胸+牛肉）+ 2份蔬菜 + 正常米饭</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">外卖版</div>
+          <div class="meal-detail">日式定食（三文鱼+米饭+味噌）+ 加个蛋</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">便利店版</div>
+          <div class="meal-detail">鸡胸肉便当 + 饭团 + 蛋白质饮料</div>
+        </div>
+      </div>
+      <div class="plan-col">
+        <h4>🌙 晚餐<br>~550-600kcal</h4>
+        <div class="meal">
+          <div class="meal-name">饭堂版</div>
+          <div class="meal-detail">番茄牛肉面（多肉少面）+ 加个蛋</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">外卖版</div>
+          <div class="meal-detail">黄焖鸡（去皮）+ 米饭 + 青菜</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">训练后</div>
+          <div class="meal-detail">蛋白粉+香蕉（训练后30min内）+ 正餐正常吃</div>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="q">💡 增肌期加餐</div>
+      <div class="a">上午10点+下午3点各加一次：蛋白粉/酸奶+坚果/鸡蛋+全麦面包。增肌不是暴饮暴食，是少食多餐。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🧘</span>健康维持食谱 <span class="badge green">目标：均衡营养，长期可持续</span></div>
+    <div class="entry-summary">核心：不刻意减也不刻意加，80%健康+20%放纵</div>
+    <div class="plan-grid">
+      <div class="plan-col">
+        <h4>🌅 早餐<br>~350-400kcal</h4>
+        <div class="meal">
+          <div class="meal-name">方案A</div>
+          <div class="meal-detail">鸡蛋1个 + 杂粮粥/燕麦 + 小份水果</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案B</div>
+          <div class="meal-detail">包子/馒头1个 + 豆浆 + 茶叶蛋</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案C</div>
+          <div class="meal-detail">随便吃，但避开油炸+含糖饮料</div>
+        </div>
+      </div>
+      <div class="plan-col">
+        <h4>☀️ 午餐<br>~500-600kcal</h4>
+        <div class="meal">
+          <div class="meal-name">饭堂版</div>
+          <div class="meal-detail">正常一荤两素，选蒸/炒/炖，米饭正常</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">外卖版</div>
+          <div class="meal-detail">想吃什么吃什么，但避开油炸+重口味</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">聪明吃法</div>
+          <div class="meal-detail">先菜后肉最后饭，酱料另放，主食不减</div>
+        </div>
+      </div>
+      <div class="plan-col">
+        <h4>🌙 晚餐<br>~450-550kcal</h4>
+        <div class="meal">
+          <div class="meal-name">饭堂版</div>
+          <div class="meal-detail">和午餐一样，正常吃，别因为「晚上」就少吃</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">外卖版</div>
+          <div class="meal-detail">清淡为主，麻辣烫/日式/中式简餐</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">加班版</div>
+          <div class="meal-detail">正常吃晚餐，别饿着睡，睡前2h别大餐</div>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="q">💡 健康期的秘密</div>
+      <div class="a">每周允许一顿「随便吃」，火锅/烧烤/奶茶都行。心理不崩溃，才能长期坚持。80%的时间吃好，20%的时间享受生活。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 万能点餐公式 -->
+<div class="card">
+  <h2>万能点餐公式 · 不用动脑直接套</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🥗</span>减脂期公式</div>
+    <div class="entry-summary">蛋白质 × 1 + 蔬菜 × 2 + 主食 × 0.5</div>
+    <ul>
+      <li>蛋白质：鸡胸/鱼/虾/牛肉/豆腐（一掌心大小）</li>
+      <li>蔬菜：西兰花/菠菜/生菜/番茄（两拳头）</li>
+      <li>主食：杂粮饭/红薯/玉米（半拳头，或直接跳过）</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 实操tip</div>
+      <div class="a">先吃菜和肉，最后吃主食。血糖更稳，下午不犯困。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💪</span>增肌期公式</div>
+    <div class="entry-summary">蛋白质 × 2 + 碳水 × 1.5 + 蔬菜 × 1</div>
+    <ul>
+      <li>蛋白质加倍：双份鸡胸/牛肉</li>
+      <li>碳水不能少：米饭/面条正常吃，训练后30分钟内补</li>
+      <li>加餐：香蕉+蛋白粉/酸奶+坚果</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🧘</span>维持期公式</div>
+    <div class="entry-summary">正常吃，但避开油炸和含糖</div>
+    <ul>
+      <li>不刻意减也不刻意加，吃饱为止</li>
+      <li>80%健康+20%放纵，长期可持续</li>
+      <li>每周允许一顿「随便吃」，心理不崩溃</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 4. 外卖红黑榜 -->
+<div class="card">
+  <h2>外卖红黑榜 · 园区实测</h2>
+  
+  <div class="pain-box">
+    <div class="pain-title">💢 职场人痛点</div>
+    <div class="pain-desc">饭堂吃腻了想换外卖，但外卖更坑。看着素菜多，油比菜多。以为健康，结果比饭堂还胖。</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>✅</span>推荐 <span class="badge green">安全区</span></div>
+    <ul>
+      <li><strong>轻食沙拉类</strong> — 超级碗/沙野轻食/米有沙拉，400-500kcal</li>
+      <li><strong>日式定食</strong> — 三文鱼/鸡胸定食，蛋白质高油少</li>
+      <li><strong>麻辣烫（清汤）</strong> — 选蔬菜+豆腐+肉丸，不喝汤</li>
+      <li><strong>黄焖鸡（去皮）</strong> — 意外地还行，米饭少吃点</li>
+      <li><strong>赛百味</strong> — 选鸡胸/金枪鱼，不加酱，全麦面包</li>
+      <li><strong>中式蒸菜</strong> — 清蒸鱼/蒸蛋/蒸排骨+米饭</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>避雷 <span class="badge red">危险区</span></div>
+    <ul>
+      <li><strong>麻辣香锅</strong> — 看着素菜多，油比菜多，800kcal起步</li>
+      <li><strong>炸鸡汉堡</strong> — 一顿1000kcal+，一下午白练</li>
+      <li><strong>炒饭/炒面</strong> — 油+碳水炸弹，600-800kcal</li>
+      <li><strong>奶茶</strong> — 一杯500-700kcal，等于一顿饭</li>
+      <li><strong>干锅类</strong> — 干锅花菜/土豆，油重到反光</li>
+      <li><strong>盖浇饭</strong> — 汤汁泡饭=油+碳水双杀</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💡</span>外卖点餐通用原则</div>
+    <ul>
+      <li><strong>蛋白质优先</strong> — 鸡胸/鱼/虾/牛肉/豆腐，每餐保证一拳大小蛋白质</li>
+      <li><strong>主食减半</strong> — 米饭/面条减半，或用杂粮/薯类替代</li>
+      <li><strong>蔬菜加倍</strong> — 额外加一份青菜/沙拉</li>
+      <li><strong>酱料分开</strong> — 要求酱料另放，蘸着吃比拌着吃热量低一半</li>
+      <li><strong>饮品选无糖</strong> — 无糖茶/黑咖啡/气泡水替代含糖饮料</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 5. 便利店生存 -->
+<div class="card">
+  <h2>便利店生存指南 · 7-11/全家/罗森</h2>
+  
+  <div class="pain-box">
+    <div class="pain-title">💢 职场人痛点</div>
+    <div class="pain-desc">加班到9点，饭堂关门了。便利店是唯一的救命稻草，但怎么买不胖？</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🏆</span>便利店减脂套餐</div>
+    <div class="entry-summary">总热量控制在400-500kcal以内</div>
+    <ul>
+      <li><strong>早餐</strong>：茶叶蛋2个 + 无糖豆浆 = ~280kcal</li>
+      <li><strong>午餐</strong>：鸡胸肉沙拉 + 杂粮饭团 = ~450kcal</li>
+      <li><strong>加餐</strong>：无糖酸奶 + 一小把坚果 = ~180kcal</li>
+      <li><strong>晚餐</strong>：关东煮（萝卜+魔芋+鸡蛋）= ~150kcal</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🏆</span>便利店增肌套餐</div>
+    <div class="entry-summary">总热量600-700kcal，蛋白质30g+</div>
+    <ul>
+      <li><strong>早餐</strong>：鸡蛋3个 + 全麦面包 + 牛奶 = ~500kcal</li>
+      <li><strong>午餐</strong>：鸡胸肉便当 + 饭团 + 蛋白质饮料 = ~700kcal</li>
+      <li><strong>加餐</strong>：蛋白棒 + 香蕉 = ~300kcal</li>
+      <li><strong>晚餐</strong>：鸡肉三明治 + 酸奶 + 坚果 = ~550kcal</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>⚠️</span>便利店陷阱</div>
+    <ul>
+      <li>三明治看着健康，酱料热量占一半</li>
+      <li>饭团选梅子/鲑鱼，避开蛋黄酱/炸物款</li>
+      <li>果汁≠水果，一杯果汁=3-4块方糖</li>
+      <li>「低脂」不等于「低卡」，看营养成分表</li>
+      <li>关东煮选清汤底，避开油炸/丸子类</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 6. 加班/应酬场景 -->
+<div class="card">
+  <h2>特殊场景怎么吃 · 加班/应酬/下午茶</h2>
+  
+  <div class="pain-box">
+    <div class="pain-title">💢 职场人痛点</div>
+    <div class="pain-desc">计划得好好的，一到加班/应酬/下午茶就破功。不是不想健康，是场景不允许。</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🌙</span>加班到很晚怎么吃</div>
+    <ul>
+      <li><strong>加班餐</strong>：公司盒饭选蒸菜/清淡线，米饭吃一半</li>
+      <li><strong>外卖</strong>：麻辣烫（蔬菜+豆腐+虾，清汤底）/ 日式定食</li>
+      <li><strong>便利店</strong>：关东煮（萝卜+魔芋+蛋）+ 酸奶</li>
+      <li><strong>别饿着睡</strong>：睡前2小时别大餐，但小加餐可以（酸奶/坚果/香蕉）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🍻</span>应酬/聚餐怎么吃</div>
+    <ul>
+      <li><strong>火锅</strong>：清汤/番茄锅底，选肉+蔬菜+豆腐，避开丸子和油炸</li>
+      <li><strong>烧烤</strong>：选烤蔬菜+瘦肉，避免烤肠/鸡翅（皮），不喝啤酒</li>
+      <li><strong>中餐</strong>：清蒸鱼/白切鸡/蒸蛋优先，红烧/干锅少碰</li>
+      <li><strong>喝酒</strong>：白酒>红酒>啤酒（热量从低到高），别混着喝</li>
+      <li><strong>补救</strong>：第二天轻断食一餐（早餐跳过，午餐减半），别第二天补偿性暴食</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>☕</span>下午茶/零食怎么吃</div>
+    <ul>
+      <li><strong>安全零食</strong>：无糖酸奶/坚果一小把/水果/黑巧克力（85%+）</li>
+      <li><strong>安全饮品</strong>：无糖茶/黑咖啡/气泡水/柠檬水</li>
+      <li><strong>危险零食</strong>：饼干/薯片/奶茶/蛋糕/糖果</li>
+      <li><strong>危险饮品</strong>：奶茶/果汁/可乐/含糖咖啡</li>
+      <li><strong>原则</strong>：饿了先喝水，真饿再吃。吃的时候别工作，专注吃更饱。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 7. 拍照打卡 -->
+<div class="card">
+  <h2>拍照打卡 · AI帮你算热量</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>📸</span>怎么拍最准？</div>
+    <ul>
+      <li>俯拍45°角，所有食物都入镜</li>
+      <li>拍清楚分量大小（和手/筷子对比）</li>
+      <li>饮料单独拍，AI识别更准</li>
+      <li>一天三餐都拍，晚餐最容易超标</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 打卡奖励</div>
+      <div class="a">连续打卡7天 → 积分奖励；21天 → 完赛奖牌；每餐打卡AI自动识别热量+营养素，营养教练每日点评。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. 常见误区 -->
+<div class="card">
+  <h2>饮食误区 · 你可能正在踩的坑</h2>
+  
+  <div class="pain-box">
+    <div class="pain-title">💢 职场人痛点</div>
+    <div class="pain-desc">网上信息太多，不知道听谁的。有些「常识」其实是错的，越努力越偏。</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>不吃主食能减肥？</div>
+    <div class="entry-summary">错。不吃主食→血糖低→暴食→反弹。</div>
+    <ul>
+      <li>正确做法：主食减半，或用杂粮/薯类替代</li>
+      <li>训练日正常吃碳水，休息日减半</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>水果可以随便吃？</div>
+    <div class="entry-summary">错。果糖也是糖，吃多了照样胖。</div>
+    <ul>
+      <li>低糖水果：草莓/蓝莓/猕猴桃/柚子</li>
+      <li>高糖水果：榴莲/荔枝/葡萄/芒果（控制量）</li>
+      <li>每天200-300g水果足够，约1-2个拳头</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>喝粥养生？</div>
+    <div class="entry-summary">白粥=糖水，升糖指数比米饭还高。</div>
+    <ul>
+      <li>想喝粥：选杂粮粥/燕麦粥，加蛋白质（蛋/肉）</li>
+      <li>白粥配咸菜=碳水+钠，最不健康的组合</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>晚上6点后不能吃东西？</div>
+    <div class="entry-summary">错。总热量才是关键，不是时间点。</div>
+    <ul>
+      <li>加班到很晚？正常吃晚餐，别饿着睡</li>
+      <li>睡前2小时避免大餐，小加餐可以</li>
+      <li>加餐选：酸奶/坚果/香蕉，别点外卖</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>吃素一定更健康？</div>
+    <div class="entry-summary">不一定。素食者容易缺蛋白质和B12。</div>
+    <ul>
+      <li>纯素食需要额外补充：豆制品/坚果/营养酵母/B12补剂</li>
+      <li>蛋奶素更可持续：鸡蛋+牛奶+鱼类提供完整蛋白</li>
+      <li>不是「素=健康」，素炸鸡/素奶茶照样高热量</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>代餐/减肥药靠谱？</div>
+    <div class="entry-summary">短期有效，长期反弹。还可能伤身体。</div>
+    <ul>
+      <li>代餐本质是节食，代谢下降→停药反弹</li>
+      <li>减肥药多数含泻药成分，减的是水不是脂肪</li>
+      <li>正确做法：调整饮食结构+适量运动，慢但稳</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 9. 面包摊指南 -->
+<div class="card">
+  <h2>晚饭/宵夜 · 饭堂面包摊怎么拿 <span class="badge gold">加班/晚归场景</span></h2>
+  
+  <div class="pain-box">
+    <div class="pain-title"> 职场人痛点</div>
+    <div class="pain-desc">加班到9点，饭堂只剩面包摊。拿错了热量爆炸，拿少了半夜饿醒。面包摊不是洪水猛兽，关键看怎么挑。</div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span></span>蛋白质类 — 先拿这个打底 <span class="badge green">必选</span></div>
+    <ul>
+      <li><strong>水煮蛋 × 2</strong> — 首选！约140kcal，蛋白质12g，饱腹感拉满 <span class="badge green">⭐ 最推荐</span></li>
+      <li><strong>鸡腿/鸭腿</strong> — 去皮吃，约150-180kcal，蛋白质20g+ <span class="badge gold">次选</span></li>
+      <li><strong>茶叶蛋 × 2</strong> — 约150kcal，比水煮蛋多钠，偶尔换口味 <span class="badge gold">次选</span></li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 蛋白质优先原则</div>
+      <div class="a">不管拿什么碳水，先拿蛋白质打底。蛋白质=饱腹感+肌肉修复，晚上吃不怕胖。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span></span>碳水类 — 选优质碳水 <span class="badge gold">选一个</span></div>
+    <ul>
+      <li><strong>蒸红薯</strong> — 约65kcal/100g，升糖慢，膳食纤维丰富 <span class="badge green">⭐ 最推荐</span></li>
+      <li><strong>煮玉米</strong> — 约67kcal/100g，天然甜味满足感强 <span class="badge green">推荐</span></li>
+      <li><strong>全麦面包</strong> — 约254kcal/100g，选1片即可，看配料表第一位是全麦粉 <span class="badge gold">可选</span></li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 碳水分量控制</div>
+      <div class="a">红薯/玉米拿拳头大小1个；全麦面包1片（约30-40g）。晚上碳水减半，但别不吃。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🚫</span>这些别碰 <span class="badge red">危险区</span></div>
+    <ul>
+      <li><strong>油炸类面包</strong> — 炸面包/油条/炸糕，热量直接翻倍 <span class="badge red">~400-600kcal</span></li>
+      <li><strong>芝士/奶油类</strong> — 芝士面包/奶油号角/丹麦酥，脂肪炸弹 <span class="badge red">~350-500kcal</span></li>
+      <li><strong>甜面包</strong> — 豆沙包/奶黄包/巧克力面包，糖+油双重打击 <span class="badge red">~300-450kcal</span></li>
+      <li><strong>起酥类</strong> — 牛角包/千层酥，一层黄油一层面 <span class="badge red">~400-550kcal</span></li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🌙</span>推荐搭配方案</div>
+    <div class="plan-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="plan-col">
+        <h4> 加班晚餐<br>~300-350kcal</h4>
+        <div class="meal">
+          <div class="meal-name">方案A（最优）</div>
+          <div class="meal-detail">水煮蛋2个 + 蒸红薯1个<br>蛋白质14g + 优质碳水</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案B</div>
+          <div class="meal-detail">鸡腿1个（去皮）+ 玉米1根<br>蛋白质20g + 膳食纤维</div>
+        </div>
+      </div>
+      <div class="plan-col">
+        <h4>🌙 深夜宵夜<br>~200-250kcal</h4>
+        <div class="meal">
+          <div class="meal-name">方案A（最轻）</div>
+          <div class="meal-detail">茶叶蛋2个 + 黄瓜1根<br>蛋白质12g + 几乎零热量</div>
+        </div>
+        <div class="meal">
+          <div class="meal-name">方案B</div>
+          <div class="meal-detail">全麦面包1片 + 水煮蛋1个<br>蛋白质8g + 少量碳水</div>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="q">💡 面包摊口诀</div>
+      <div class="a">「先拿蛋，再拿薯，油炸芝士全说不」</div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. 科学减脂三餐搭配公式 -->
+<div class="card" style="padding:20px 24px;">
+  <h2>科学减脂三餐搭配公式 · 照着拿不踩雷</h2>
+
+  <!-- 早餐 -->
+  <div class="entry" style="padding-bottom:16px;">
+    <div class="entry-title" style="font-size:15px;margin-bottom:2px;"><span>🌅</span>早餐 7:30-9:00</div>
+    <div class="entry-summary" style="margin-bottom:14px;">优质碳水 + 优质蛋白 + 膳食纤维</div>
+    
+    <div class="formula-grid">
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--danger);">优质碳水</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon"></span><span class="f-name">煮玉米</span><span class="f-cal">67kcal</span></div>
+          <div class="formula-item"><span class="f-icon"></span><span class="f-name">蒸红薯</span><span class="f-cal">65kcal</span></div>
+          <div class="formula-item"><span class="f-icon"></span><span class="f-name">杂粮粥</span><span class="f-cal">75kcal</span></div>
+          <div class="formula-item"><span class="f-icon"></span><span class="f-name">芋头</span><span class="f-cal">65kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍞</span><span class="f-name">全麦面包</span><span class="f-cal">254kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🟣</span><span class="f-name">紫薯</span><span class="f-cal">123kcal</span></div>
+        </div>
+      </div>
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--food);">优质蛋白</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🥚</span><span class="f-name">水煮蛋</span><span class="f-cal">143kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥛</span><span class="f-name">低脂牛奶</span><span class="f-cal">43kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🫘</span><span class="f-name">无糖豆浆</span><span class="f-cal">30kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🦐</span><span class="f-name">水煮虾</span><span class="f-cal">83kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥛</span><span class="f-name">无糖酸奶</span><span class="f-cal">55kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🧈</span><span class="f-name">豆腐</span><span class="f-cal">84kcal</span></div>
+        </div>
+      </div>
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--glow);color:#0a0a0f;">膳食纤维</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🍅</span><span class="f-name">西红柿</span><span class="f-cal">15kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥒</span><span class="f-name">黄瓜</span><span class="f-cal">16kcal</span></div>
+          <div class="formula-item"><span class="f-icon"></span><span class="f-name">生菜</span><span class="f-cal">12kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🫐</span><span class="f-name">蓝莓</span><span class="f-cal">57kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🐉</span><span class="f-name">火龙果</span><span class="f-cal">50kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍎</span><span class="f-name">苹果</span><span class="f-cal">53kcal</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="formula-note">每100g热量 · 早餐推荐：碳水1份 + 蛋白1份 + 纤维1份 ≈ 250-350kcal</div>
+  </div>
+
+  <!-- 午餐 -->
+  <div class="entry" style="padding-bottom:16px;">
+    <div class="entry-title" style="font-size:15px;margin-bottom:2px;"><span>☀️</span>午餐 11:30-13:00</div>
+    <div class="entry-summary" style="margin-bottom:14px;">优质碳水 + 优质蛋白 + 膳食纤维</div>
+    
+    <div class="formula-grid">
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--danger);">优质碳水</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🍚</span><span class="f-name">紫米饭</span><span class="f-cal">115kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍠</span><span class="f-name">蒸红薯</span><span class="f-cal">65kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍚</span><span class="f-name">杂粮饭</span><span class="f-cal">117kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍜</span><span class="f-name">荞麦面</span><span class="f-cal">115kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍞</span><span class="f-name">全麦面包</span><span class="f-cal">254kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍝</span><span class="f-name">意大利面</span><span class="f-cal">155kcal</span></div>
+        </div>
+      </div>
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--food);">优质蛋白</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🍜</span><span class="f-name">卤肉面</span><span class="f-cal">116kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍗</span><span class="f-name">煎鸡胸肉</span><span class="f-cal">128kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🐟</span><span class="f-name">清蒸鱼</span><span class="f-cal">101kcal</span></div>
+          <div class="formula-item"><span class="f-icon"></span><span class="f-name">水煮虾</span><span class="f-cal">83kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍗</span><span class="f-name">鸡腿肉</span><span class="f-cal">91kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥩</span><span class="f-name">里脊肉</span><span class="f-cal">107kcal</span></div>
+        </div>
+      </div>
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--glow);color:#0a0a0f;">膳食纤维</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🥬</span><span class="f-name">菠菜</span><span class="f-cal">28kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥕</span><span class="f-name">胡萝卜</span><span class="f-cal">32kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🌿</span><span class="f-name">秋葵</span><span class="f-cal">25kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🫑</span><span class="f-name">青椒</span><span class="f-cal">40kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍄</span><span class="f-name">香菇</span><span class="f-cal">25kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🌊</span><span class="f-name">海带</span><span class="f-cal">13kcal</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="formula-note">每100g热量 · 午餐推荐：碳水1.5份 + 蛋白1.5份 + 纤维2份 ≈ 400-500kcal</div>
+  </div>
+
+  <!-- 加餐 -->
+  <div class="entry" style="padding-bottom:0;">
+    <div class="entry-title" style="font-size:15px;margin-bottom:2px;"><span>🍵</span>加餐 15:30-16:00</div>
+    <div class="entry-summary" style="margin-bottom:14px;">低糖水果 + 原味坚果 + 其他类</div>
+    
+    <div class="formula-grid">
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--glow);color:#0a0a0f;">低糖水果</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🫐</span><span class="f-name">蓝莓</span><span class="f-cal">57kcal</span></div>
+          <div class="formula-item"><span class="f-icon"></span><span class="f-name">草莓</span><span class="f-cal">32kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍑</span><span class="f-name">西梅</span><span class="f-cal">42kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍎</span><span class="f-name">苹果</span><span class="f-cal">53kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍊</span><span class="f-name">橙子</span><span class="f-cal">47kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🍈</span><span class="f-name">柚子</span><span class="f-cal">42kcal</span></div>
+        </div>
+      </div>
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--food);">原味坚果</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🥜</span><span class="f-name">开心果</span><span class="f-cal">560kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥜</span><span class="f-name">腰果</span><span class="f-cal">560kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🌰</span><span class="f-name">核桃</span><span class="f-cal">616kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥜</span><span class="f-name">碧根果</span><span class="f-cal">681kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🎃</span><span class="f-name">南瓜籽</span><span class="f-cal">615kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🌰</span><span class="f-name">杏仁</span><span class="f-cal">594kcal</span></div>
+        </div>
+      </div>
+      <div class="formula-col">
+        <div class="formula-header" style="background:var(--sub);">其他类</div>
+        <div class="formula-items">
+          <div class="formula-item"><span class="f-icon">🍅</span><span class="f-name">圣女果</span><span class="f-cal">28kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥒</span><span class="f-name">黄瓜</span><span class="f-cal">32kcal</span></div>
+          <div class="formula-item"><span class="f-icon">🥬</span><span class="f-name">生菜</span><span class="f-cal">12kcal</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="formula-note">每100g热量 · 加餐推荐：水果1份 + 坚果10粒以内 ≈ 100-180kcal ⚠️ 坚果热量高，控制量！</div>
+  </div>
+</div>
+
+<div class="footer">
+  出汗社 · 吃什么不后悔 · 持续更新中<br>
+  💬 有饮食问题随时群里问，营养教练每天在线
+</div>
+
+</div>
+</body>
+</html>

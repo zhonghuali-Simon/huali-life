@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>练对不练废 — 出汗社·健身知识速查</title>
+<style>
+:root{--bg:#0a0a0f;--card:#0d1117;--glow:#00ff9f;--glow2:#00e5ff;--gold:#ffd740;--text:#e0ffe0;--sub:#5a8a6a;--danger:#ff2060;--fit:#ff9100;--fitRGB:255,145,0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'JetBrains Mono',monospace,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,159,.02) 3px,rgba(0,255,159,.02) 4px);pointer-events:none;z-index:9999}
+.container{max-width:800px;margin:0 auto;padding:2rem 1.5rem}
+.hero{text-align:center;padding:3rem 1rem 2rem;border-bottom:1px solid rgba(0,255,159,.1);margin-bottom:2rem}
+.hero h1{font-size:1.8rem;color:var(--glow);text-shadow:0 0 20px rgba(0,255,159,.4);letter-spacing:2px;margin-bottom:.5rem}
+.hero .sub{font-size:.85rem;color:var(--sub);letter-spacing:1px}
+.hero .tag{display:inline-block;margin-top:1rem;padding:4px 14px;border:1px solid var(--fit);color:var(--fit);font-size:11px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.card{background:rgba(13,17,23,.75);backdrop-filter:blur(6px);border:1px solid rgba(0,255,159,.12);padding:18px 20px;margin-bottom:1.5rem;position:relative;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--glow),var(--glow2),transparent)}
+.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glow2),var(--glow))}
+.card h2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--sub);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(0,255,159,.08)}
+.card h2::before{content:'◆ ';color:var(--fit)}
+.entry{padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)}
+.entry:last-child{border-bottom:none}
+.entry-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.entry-title span{color:var(--fit);margin-right:6px}
+.entry-summary{font-size:12px;color:var(--glow);font-style:italic;margin-bottom:8px}
+.entry ul{font-size:12px;line-height:2;padding-left:16px;color:var(--text)}
+.entry ul li::marker{color:var(--fit)}
+.tip-box{padding:8px 10px;background:rgba(var(--fitRGB),.05);border-left:2px solid var(--fit);margin-top:10px;font-size:11px}
+.tip-box .q{color:var(--fit);font-weight:600;margin-bottom:2px}
+.tip-box .a{color:var(--sub)}
+.badge{display:inline-block;padding:2px 8px;font-size:10px;border:1px solid;border-radius:2px;margin-left:6px;vertical-align:middle}
+.badge.red{border-color:var(--danger);color:var(--danger)}
+.badge.green{border-color:var(--glow);color:var(--glow)}
+.badge.gold{border-color:var(--gold);color:var(--gold)}
+.badge.cyan{border-color:var(--glow2);color:var(--glow2)}
+.badge.pink{border-color:#ff6090;color:#ff6090}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.mini-card{background:rgba(0,255,159,.03);border:1px solid rgba(0,255,159,.08);padding:12px;font-size:12px}
+.mini-card h4{color:var(--fit);font-size:12px;margin-bottom:6px}
+.gender-tag{display:inline-block;padding:1px 6px;font-size:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.gender-tag.m{background:rgba(0,229,255,.12);color:var(--glow2);border:1px solid rgba(0,229,255,.3)}
+.gender-tag.f{background:rgba(255,96,144,.12);color:#ff6090;border:1px solid rgba(255,96,144,.3)}
+.type-box{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.1);padding:14px;margin:10px 0;border-left:3px solid var(--glow2)}
+.type-box.pink-box{background:rgba(255,96,144,.03);border:1px solid rgba(255,96,144,.1);border-left:3px solid #ff6090}
+.type-box h4{font-size:12px;margin-bottom:8px}
+.type-box h4.m-title{color:var(--glow2)}
+.type-box h4.f-title{color:#ff6090}
+.formula-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+.formula-col{background:rgba(13,17,23,.6);border:1px solid rgba(255,145,0,.15);border-radius:8px;overflow:hidden}
+.formula-header{padding:8px 10px;font-size:12px;font-weight:700;text-align:center;color:#fff;letter-spacing:1px}
+.formula-header.fit-h{background:linear-gradient(135deg,var(--fit),#e07800)}
+.formula-header.warm-h{background:linear-gradient(135deg,#ff6090,#e04070)}
+.formula-header.cardio-h{background:linear-gradient(135deg,var(--glow2),#0090c0)}
+.formula-header.stretch-h{background:linear-gradient(135deg,var(--glow),#00c070)}
+.formula-items{padding:6px 8px}
+.formula-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px dashed rgba(255,145,0,.08);font-size:12px}
+.formula-item:last-child{border-bottom:none}
+.f-icon{font-size:16px;min-width:22px;text-align:center}
+.f-name{flex:1;color:var(--text)}
+.f-detail{color:var(--sub);font-size:10px;white-space:nowrap}
+.formula-note{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;padding:6px 10px;background:rgba(255,145,0,.04);border-radius:6px;border:1px solid rgba(255,145,0,.1)}
+.formula-vs{text-align:center;font-size:10px;color:var(--fit);letter-spacing:2px;margin:8px 0 4px;font-weight:700}
+@media(max-width:600px){.formula-grid{grid-template-columns:1fr}}
+.footer{text-align:center;padding:2rem 0;color:var(--sub);font-size:11px;border-top:1px solid rgba(0,255,159,.08);margin-top:2rem}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <h1>🏋️ 练对不练废</h1>
+  <div class="sub">出汗社 · 健身知识速查 · 上班族高效训练系列</div>
+  <div class="tag">💪 零基础也能看懂 · 男女分型指导</div>
+</div>
+
+<!-- 1. 新手入门 -->
+<div class="card">
+  <h2>新手入门 · 第一次进健身房不慌</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🎯</span>新手最容易犯的错误</div>
+    <ul>
+      <li><strong>上来就冲大重量</strong> — 受伤概率翻倍，第二周就不来了</li>
+      <li><strong>只做有氧不做力量</strong> — 肌肉流失，越跑越虚</li>
+      <li><strong>每天练同一部位</strong> — 肌肉需要48小时恢复，天天练=天天废</li>
+      <li><strong>忽略热身和拉伸</strong> — 热身5分钟=受伤概率降50%</li>
+      <li><strong>不记录训练</strong> — 不知道进步了多少，容易放弃</li>
+      <li><strong>模仿健美选手的训练</strong> — 他们的计划不适合新手，先打基础</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>📋</span>新手第一周计划（每周3次）</div>
+    <div class="entry-summary">全身训练，每次30-40分钟，不追求重量，先学动作</div>
+    <ul>
+      <li><strong>Day 1</strong>：深蹲（空杆）×15 + 俯卧撑（跪姿）×10 + 划船（轻重量）×12</li>
+      <li><strong>Day 2</strong>：休息或轻度有氧（快走/骑车30min）</li>
+      <li><strong>Day 3</strong>：硬拉（空杆）×12 + 哑铃推举×10 + 平板支撑×30秒</li>
+      <li><strong>Day 5</strong>：弓步蹲×12/侧 + 引体（辅助带）×8 + 卷腹×15</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 关键原则</div>
+      <div class="a">前4周目标：学会动作模式，不是追求重量。教练会纠正你的姿势，听他的。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 男女分型训练 -->
+<div class="card">
+  <h2>男女分型训练 · 不同体格不同练法</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>📊</span>先判断你的体格类型</div>
+    <div class="entry-summary">不同体格→不同训练策略，别盲目跟练</div>
+    
+    <div class="type-box">
+      <h4 class="m-title">🔵 男生常见体格</h4>
+      <ul style="font-size:12px;padding-left:16px;">
+        <li><strong>A型：偏瘦型</strong>（体重轻/骨架小/四肢细长）→ 目标：增肌增重</li>
+        <li><strong>B型：标准型</strong>（体重正常/有一定运动基础）→ 目标：增肌塑形</li>
+        <li><strong>C型：偏胖型</strong>（体重偏大/体脂高/有小肚腩）→ 目标：减脂+保留肌肉</li>
+      </ul>
+    </div>
+
+    <div class="type-box pink-box">
+      <h4 class="f-title">🔴 女生常见体格</h4>
+      <ul style="font-size:12px;padding-left:16px;">
+        <li><strong>A型：纤细型</strong>（体重轻/体脂低/线条不明显）→ 目标：塑形+练出线条</li>
+        <li><strong>B型：标准型</strong>（体重正常/体脂适中）→ 目标：塑形+提升体能</li>
+        <li><strong>C型：丰满型</strong>（体重偏大/体脂偏高）→ 目标：减脂+紧致线条</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔵</span><span class="gender-tag m">男生</span>A型·偏瘦增肌方案</div>
+    <div class="entry-summary">重点：多吃+大重量复合动作+少做有氧</div>
+    <ul>
+      <li><strong>训练</strong>：每周3-4次力量训练，以深蹲/硬拉/卧推/划船等复合动作为主</li>
+      <li><strong>次数</strong>：8-12次/组，3-4组，组间休息60-90秒</li>
+      <li><strong>有氧</strong>：每周不超过2次，每次20分钟以内（保护增肌热量）</li>
+      <li><strong>饮食</strong>：热量盈余300-500kcal/天；蛋白质1.6-2g/kg体重；碳水不能少</li>
+      <li><strong>关键</strong>：吃比练更重要，吃不够练再多也长不了</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔵</span><span class="gender-tag m">男生</span>B型·标准增肌塑形方案</div>
+    <div class="entry-summary">重点：力量为主+适度有氧+蛋白质充足</div>
+    <ul>
+      <li><strong>训练</strong>：每周4次，推拉腿分化（Push/Pull/Legs）或上下肢分化</li>
+      <li><strong>次数</strong>：8-12次/组（增肌区间），逐步加重（渐进超负荷）</li>
+      <li><strong>有氧</strong>：每周2-3次，每次30分钟（维持心肺+控制体脂）</li>
+      <li><strong>饮食</strong>：蛋白质1.5-2g/kg；碳水训练日多吃/休息日少吃</li>
+      <li><strong>关键</strong>：记录每次训练重量，确保渐进超负荷</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔵</span><span class="gender-tag m">男生</span>C型·偏胖减脂方案</div>
+    <div class="entry-summary">重点：热量缺口+力量保留肌肉+有氧燃脂</div>
+    <ul>
+      <li><strong>训练</strong>：每周3-4次力量（保留肌肉）+ 2-3次有氧（燃脂）</li>
+      <li><strong>力量</strong>：中等重量，8-12次/组，不要因为减脂就只做轻重量</li>
+      <li><strong>有氧</strong>：HIIT 20分钟 或 匀速有氧 40分钟（跑步/椭圆机/游泳）</li>
+      <li><strong>饮食</strong>：热量缺口300-500kcal/天；蛋白质2g/kg（减脂期更需要保护肌肉）</li>
+      <li><strong>关键</strong>：不要节食！节食→肌肉流失→基础代谢下降→反弹</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔴</span><span class="gender-tag f">女生</span>A型·纤细塑形方案</div>
+    <div class="entry-summary">重点：力量训练+吃够蛋白质+练出线条感</div>
+    <ul>
+      <li><strong>训练</strong>：每周3-4次力量训练，臀腿+上肢交替</li>
+      <li><strong>重点部位</strong>：臀（臀桥/臀推/保加利亚蹲）+ 背（划船/高位下拉）+ 核心</li>
+      <li><strong>次数</strong>：10-15次/组，3组，中等重量（能完成最后2个有点吃力）</li>
+      <li><strong>饮食</strong>：不要怕吃！蛋白质1.2-1.6g/kg；碳水训练前后吃</li>
+      <li><strong>关键</strong>：不用担心练壮，女性激素水平不够；吃够才能长出线条</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔴</span><span class="gender-tag f">女生</span>B型·标准塑形方案</div>
+    <div class="entry-summary">重点：臀腿优先+核心稳定+适度有氧</div>
+    <ul>
+      <li><strong>训练</strong>：每周3-4次，臀腿2次+上肢1次+全身1次</li>
+      <li><strong>臀腿日</strong>：深蹲/硬拉/臀推/弓步蹲/罗马尼亚硬拉（每个动作3-4组）</li>
+      <li><strong>上肢日</strong>：俯卧撑/划船/推举/侧平举（女生也要练上肢！改善体态）</li>
+      <li><strong>有氧</strong>：每周2次，每次30分钟（跑步/跳操/椭圆机）</li>
+      <li><strong>饮食</strong>：蛋白质1.2-1.5g/kg；碳水正常吃，不需要低碳</li>
+      <li><strong>关键</strong>：臀腿是女生塑形性价比最高的部位，练臀显腿长+显腰细</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔴</span><span class="gender-tag f">女生</span>C型·减脂紧致方案</div>
+    <div class="entry-summary">重点：热量缺口+力量+有氧+不要只做有氧</div>
+    <ul>
+      <li><strong>训练</strong>：每周3次力量（全身）+ 2-3次有氧</li>
+      <li><strong>力量</strong>：中等重量，12-15次/组，不要怕重量（不会练壮的）</li>
+      <li><strong>有氧</strong>：快走/慢跑/椭圆机/游泳，每次30-40分钟</li>
+      <li><strong>HIIT</strong>：体重较大时慎做HIIT（膝盖压力大），先匀速有氧</li>
+      <li><strong>饮食</strong>：热量缺口300kcal/天；蛋白质1.5g/kg；少油少糖</li>
+      <li><strong>关键</strong>：不要只跑步不做力量！纯有氧→肌肉流失→皮肤松弛→不好看</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 3. 办公室微训练 -->
+<div class="card">
+  <h2>办公室微训练 · 工位上就能做</h2>
+  
+  <div class="grid2">
+    <div class="mini-card">
+      <h4>🪑 久坐复活（5min）</h4>
+      <ul style="padding-left:12px;">
+        <li>颈部画圈 × 10/方向</li>
+        <li>肩部后旋 × 15</li>
+        <li>猫牛式 × 10</li>
+        <li>站立体前屈 × 10</li>
+        <li>手腕旋转 × 10/方向</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>🧍 站立办公（随时）</h4>
+      <ul style="padding-left:12px;">
+        <li>靠墙静蹲 × 30秒</li>
+        <li>提踵（踮脚）× 20</li>
+        <li>单腿站立 × 30秒/侧</li>
+        <li>臀桥（地上做）× 15</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>🚶 午休10分钟</h4>
+      <ul style="padding-left:12px;">
+        <li>快走5分钟（园区绕一圈）</li>
+        <li>楼梯上下3层 × 2组</li>
+        <li>拉伸5分钟（大腿/小腿/背）</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>📱 等电梯/排队</h4>
+      <ul style="padding-left:12px;">
+        <li>隐形深蹲（微蹲）× 30秒</li>
+        <li>收紧核心（腹式呼吸）</li>
+        <li>肩部后旋 × 10</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 4. 居家训练 -->
+<div class="card">
+  <h2>居家训练 · 不去健身房也能练</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🏠</span>零基础居家全身训练 <span class="badge green">无需器材</span></div>
+    <div class="entry-summary">每次20-30分钟，每周3次</div>
+    <ul>
+      <li><strong>深蹲</strong> × 15（3组）— 臀腿基础动作</li>
+      <li><strong>俯卧撑</strong> × 10（3组）— 做不了标准的就跪姿</li>
+      <li><strong>弓步蹲</strong> × 12/侧（3组）— 单腿力量+平衡</li>
+      <li><strong>平板支撑</strong> × 30秒（3组）— 核心稳定</li>
+      <li><strong>臀桥</strong> × 15（3组）— 激活臀部（久坐族必练）</li>
+      <li><strong>超人式</strong> × 12（3组）— 强化下背（预防腰痛）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🎽</span>进阶装备推荐</div>
+    <ul>
+      <li><strong>弹力带</strong>（20-50元）— 增加阻力，臀腿/上肢都能练</li>
+      <li><strong>瑜伽垫</strong>（50-100元）— 地面动作必备</li>
+      <li><strong>可调节哑铃</strong>（200-500元）— 家庭力量训练核心器材</li>
+      <li><strong>跳绳</strong>（20元）— 最高效的居家有氧</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 5. 团课选择 -->
+<div class="card">
+  <h2>团课怎么选 · 别选错浪费钱</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🔥</span>燃脂团课 <span class="badge green">适合减脂</span></div>
+    <div class="entry-summary">心率维持在最大心率60-80%，持续消耗热量</div>
+    <ul>
+      <li>适合人群：想减脂、心肺功能差、久坐族</li>
+      <li>频率：每周2-3次，间隔休息日</li>
+      <li>注意：膝盖不好避开跳跃动作，告诉教练</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💪</span>塑形团课 <span class="badge gold">适合增肌</span></div>
+    <div class="entry-summary">力量训练为主，塑造线条，提升基础代谢</div>
+    <ul>
+      <li>适合人群：想增肌/塑形、体重正常但体脂高</li>
+      <li>频率：每周2-3次，同一部位间隔48小时</li>
+      <li><span class="gender-tag f">女生</span>不用担心练成「金刚芭比」，激素水平不够</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🧘</span>拉伸/瑜伽课 <span class="badge green">适合恢复</span></div>
+    <div class="entry-summary">改善柔韧性，缓解久坐酸痛，预防受伤</div>
+    <ul>
+      <li>适合人群：所有人，特别是久坐办公族</li>
+      <li>频率：每周1-2次，或力量训练后加10分钟拉伸</li>
+      <li>注意：拉伸不是越痛越好，有轻微拉扯感即可</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🥊</span>搏击/拳击课 <span class="badge cyan">解压+燃脂</span></div>
+    <div class="entry-summary">高强度间歇+上肢爆发力，一小时消耗500-700kcal</div>
+    <ul>
+      <li>适合人群：压力大想发泄、想提升协调性、减脂平台期</li>
+      <li>频率：每周1-2次（强度大，不宜天天练）</li>
+      <li>注意：手腕/肩膀有伤慎选；跟教练学正确出拳姿势</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💃</span>舞蹈/尊巴课 <span class="badge pink">趣味有氧</span></div>
+    <div class="entry-summary">音乐+舞步+有氧，不知不觉燃脂400-600kcal</div>
+    <ul>
+      <li>适合人群：不喜欢枯燥有氧、想提升协调性、社交型选手</li>
+      <li>频率：每周1-2次</li>
+      <li>注意：不需要舞蹈基础，跟得上节奏就行；穿舒适运动鞋</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 6. 拉伸与恢复 -->
+<div class="card">
+  <h2>拉伸与恢复 · 不拉伸=白练</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🧘</span>训练后必做拉伸（10分钟）</div>
+    <ul>
+      <li><strong>大腿前侧</strong>：单腿站立，手拉脚背贴臀，30秒/侧</li>
+      <li><strong>大腿后侧</strong>：坐姿体前屈，手够脚尖，30秒</li>
+      <li><strong>臀部</strong>：仰卧翘二郎腿拉伸（鸽子式简化版），30秒/侧</li>
+      <li><strong>胸部</strong>：门框拉伸，手臂90°，身体前倾，30秒</li>
+      <li><strong>背部</strong>：猫牛式 × 10 + 婴儿式保持30秒</li>
+      <li><strong>髋屈肌</strong>：半跪姿弓步拉伸，30秒/侧（久坐族必做）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🧊</span>延迟性酸痛（DOMS）怎么处理？</div>
+    <ul>
+      <li>训练后12-48小时出现酸痛=正常（不是乳酸堆积）</li>
+      <li><strong>轻度酸痛</strong>：轻度活动（散步/游泳）比躺着恢复更快</li>
+      <li><strong>中度酸痛</strong>：泡沫轴滚压+热敷+轻度拉伸</li>
+      <li><strong>重度酸痛</strong>：休息，不要继续练同一部位</li>
+      <li><strong>避雷</strong>：不要痛着继续练（代偿→受伤）；不要冰敷（影响恢复）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>😴</span>恢复比训练更重要</div>
+    <ul>
+      <li>肌肉在休息时生长，不是在训练时</li>
+      <li>睡眠7-8小时（生长激素在深睡眠时分泌最多）</li>
+      <li>同一部位训练间隔48小时以上</li>
+      <li>连续训练不要超过5天（至少1天完全休息）</li>
+      <li>疲劳/生病时不要硬练（免疫力更低→更慢恢复）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 7. 常见误区 -->
+<div class="card">
+  <h2>健身误区 · 你可能信了假知识</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>「局部减脂」存在吗？</div>
+    <div class="entry-summary">不存在。仰卧起坐不能只减肚子。</div>
+    <ul>
+      <li>脂肪消耗是全身性的，基因决定先减哪里</li>
+      <li>想减肚子→全身减脂（有氧+饮食控制）+ 腹部力量训练</li>
+      <li>「瘦腿」「瘦手臂」产品=智商税</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>女生练力量会变「金刚芭比」？</div>
+    <div class="entry-summary">不会。女性睾酮水平只有男性的1/10，很难练出大块肌肉。</div>
+    <ul>
+      <li>女生练力量→线条更好看、基础代谢更高、不容易反弹</li>
+      <li>担心腿粗？那是肌肉充血暂时膨胀，2小时就恢复</li>
+      <li>真正想增肌的女生，需要非常刻苦的训练+精确饮食</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>出汗多=减脂多？</div>
+    <div class="entry-summary">错。出汗是散热机制，流失的是水不是脂肪。</div>
+    <ul>
+      <li>裹保鲜膜/穿暴汗服→脱水，不是减脂</li>
+      <li>运动后体重下降→水分流失，喝水就回来</li>
+      <li>真正看减脂效果→体脂率变化，不是体重秤数字</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>「不痛没效果」？</div>
+    <div class="entry-summary">错。延迟性酸痛（DOMS）≠训练效果。</div>
+    <ul>
+      <li>新手初期酸痛正常，但不应每次都痛到走不了路</li>
+      <li>训练效果看：力量增长、次数增加、心率恢复速度</li>
+      <li>痛到影响第二天工作/生活→强度过了，减量</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>空腹有氧更燃脂？</div>
+    <div class="entry-summary">争议中。总热量消耗差不多，但空腹可能掉肌肉。</div>
+    <ul>
+      <li>空腹运动→糖原不足→可能分解肌肉供能</li>
+      <li>低血糖→头晕/无力→训练质量下降</li>
+      <li>如果习惯空腹且状态好→可以；如果觉得晕→先吃点东西</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>❌</span>蛋白粉伤肾？</div>
+    <div class="entry-summary">不伤。健康人每天2g/kg体重内的蛋白质是安全的。</div>
+    <ul>
+      <li>蛋白粉=食物提取的蛋白质，不是药</li>
+      <li>肾功能正常的人→多余蛋白质通过尿液排出</li>
+      <li>已有肾病的人→需要限制蛋白质摄入，遵医嘱</li>
+      <li>日常饮食吃不够→用蛋白粉补；吃够了→不需要额外喝</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 8. 夜跑指南 -->
+<div class="card">
+  <h2>夜跑指南 · 出汗社免费活动</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🏃</span>配速分组</div>
+    <ul>
+      <li><strong>A组（5'30"-6'00"）</strong> — 有跑步基础，追求速度</li>
+      <li><strong>B组（6'30"-7'00"）</strong> — 能跑完3km，想提升</li>
+      <li><strong>C组（7'30"+/走跑结合）</strong> — 零基础友好，走路也欢迎</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🎒</span>夜跑装备</div>
+    <ul>
+      <li>跑鞋：缓震系（不要平底鞋/板鞋）</li>
+      <li>衣服：速干面料（不要纯棉，湿了冷）</li>
+      <li><span class="gender-tag f">女生</span>运动内衣（必须！跑步不穿→胸部悬韧带损伤→不可逆下垂）</li>
+      <li>荧光手环/反光条（夜间安全）</li>
+      <li>手机臂包（可选）</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💧 免费补给</div>
+      <div class="a">每次夜跑提供矿泉水，跑完合影+领水。运动饮料作为打卡积分奖励发放。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>⚠️</span>夜跑注意</div>
+    <ul>
+      <li>跑前2小时别吃大餐（会岔气）</li>
+      <li>跑后拉伸10分钟（教练带做）</li>
+      <li>下雨取消，群内提前通知</li>
+      <li>身体不适别硬撑，走路也可以</li>
+      <li>体重较大（BMI>28）→先快走+慢跑交替，保护膝盖</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 9. 训练前后吃什么 -->
+<div class="card">
+  <h2>训练前后吃什么 · 练了不吃=白练</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🍌</span>训练前（30-60分钟）</div>
+    <div class="entry-summary">补充碳水，提供能量</div>
+    <ul>
+      <li>香蕉1根 + 黑咖啡（提神+促燃脂）</li>
+      <li>或：全麦面包1片 + 蜂蜜</li>
+      <li>避免：高脂肪食物（消化慢，运动时胃不舒服）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🥛</span>训练后（30分钟内）</div>
+    <div class="entry-summary">蛋白质+碳水，修复肌肉+补充糖原</div>
+    <ul>
+      <li>蛋白粉1勺 + 香蕉（最方便）</li>
+      <li>或：酸奶200ml + 坚果一小把</li>
+      <li>或：鸡胸肉/鸡蛋 + 米饭（正餐）</li>
+      <li><span class="gender-tag m">男生</span>增肌期：蛋白质20-30g + 碳水30-50g</li>
+      <li><span class="gender-tag f">女生</span>减脂期：蛋白质15-20g + 碳水15-25g</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💊</span>补剂指南 <span class="badge gold">可选</span></div>
+    <div class="entry-summary">补剂是锦上添花，不是雪中送炭</div>
+    <ul>
+      <li><strong>蛋白粉</strong>：饮食蛋白质不够时补充，乳清蛋白最通用</li>
+      <li><strong>肌酸</strong>：每天3-5g，提升力量和爆发力，研究最充分的补剂</li>
+      <li><strong>咖啡因</strong>：训练前30分钟，3-6mg/kg体重，提升表现</li>
+      <li><strong>BCAA</strong>：智商税概率大，正常饮食+蛋白粉就够了</li>
+      <li><strong>维生素D</strong>：不见太阳的上班族建议补，每天1000-2000IU</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 训练公式 -->
+<div class="card">
+  <h2>训练公式 · 一次训练的标准结构</h2>
+
+  <div class="entry">
+    <div class="entry-title"><span>📐</span>黄金50分钟公式 <span class="badge green">通用</span></div>
+    <div class="entry-summary">不管增肌减脂，每次训练都按这个顺序来</div>
+  </div>
+
+  <div class="formula-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+    <div class="formula-col">
+      <div class="formula-header warm-h">🔥 热身 · 5min</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🚶</span><span class="f-name">快走/慢跑</span><span class="f-detail">3min</span></div>
+        <div class="formula-item"><span class="f-icon">🔄</span><span class="f-name">关节绕环</span><span class="f-detail">肩/髋/膝/踝</span></div>
+        <div class="formula-item"><span class="f-icon">🤸</span><span class="f-name">动态拉伸</span><span class="f-detail">弓步+转体</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header fit-h">💪 力量 · 20min</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🏋️</span><span class="f-name">复合动作为主</span><span class="f-detail">深蹲/硬拉/推</span></div>
+        <div class="formula-item"><span class="f-icon">📊</span><span class="f-name">3-4组×8-12次</span><span class="f-detail">组间休60-90s</span></div>
+        <div class="formula-item"><span class="f-icon">⬆️</span><span class="f-name">渐进超负荷</span><span class="f-detail">每周+2.5%</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header cardio-h">🏃 有氧 · 15min</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🚴</span><span class="f-name">单车/椭圆机</span><span class="f-detail">心率130-150</span></div>
+        <div class="formula-item"><span class="f-icon">🏃</span><span class="f-name">跑步/跳绳</span><span class="f-detail">中等配速</span></div>
+        <div class="formula-item"><span class="f-icon">⏱️</span><span class="f-name">HIIT（进阶）</span><span class="f-detail">30s冲+30s休</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header stretch-h">🧘 拉伸 · 10min</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🦵</span><span class="f-name">大腿前后侧</span><span class="f-detail">各30s×2</span></div>
+        <div class="formula-item"><span class="f-icon">🙆</span><span class="f-name">胸部+肩部</span><span class="f-detail">门框拉伸</span></div>
+        <div class="formula-item"><span class="f-icon">🧎</span><span class="f-name">髋屈肌+臀部</span><span class="f-detail">鸽子式</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-note">⚡ 顺序不能乱：热身→力量→有氧→拉伸。先力量后有氧，燃脂效率最高。</div>
+
+  <div class="entry" style="margin-top:1.2rem;">
+    <div class="entry-title"><span>⚖️</span>增肌 vs 减脂 公式对比</div>
+    <div class="entry-summary">同样的动作，参数不同，效果完全不同</div>
+  </div>
+
+  <div class="formula-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="formula-col">
+      <div class="formula-header fit-h">🏋️ 增肌公式</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🔢</span><span class="f-name">重量</span><span class="f-detail">70-85% 1RM</span></div>
+        <div class="formula-item"><span class="f-icon">📊</span><span class="f-name">次数</span><span class="f-detail">8-12次/组</span></div>
+        <div class="formula-item"><span class="f-icon">⏸️</span><span class="f-name">组间休息</span><span class="f-detail">60-90秒</span></div>
+        <div class="formula-item"><span class="f-icon">🍗</span><span class="f-name">饮食</span><span class="f-detail">热量盈余300kcal</span></div>
+        <div class="formula-item"><span class="f-icon">😴</span><span class="f-name">睡眠</span><span class="f-detail">7-8h（肌肉在睡觉时长）</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header cardio-h">🔥 减脂公式</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🔢</span><span class="f-name">重量</span><span class="f-detail">50-70% 1RM</span></div>
+        <div class="formula-item"><span class="f-icon">📊</span><span class="f-name">次数</span><span class="f-detail">12-20次/组</span></div>
+        <div class="formula-item"><span class="f-icon">⏸️</span><span class="f-name">组间休息</span><span class="f-detail">30-45秒</span></div>
+        <div class="formula-item"><span class="f-icon">🥗</span><span class="f-name">饮食</span><span class="f-detail">热量缺口300-500kcal</span></div>
+        <div class="formula-item"><span class="f-icon">🏃</span><span class="f-name">有氧</span><span class="f-detail">力量后+15-20min</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-note">💡 记住：增肌靠「重量×次数×吃够」，减脂靠「热量缺口×保持肌肉」。别搞反了。</div>
+</div>
+
+<div class="footer">
+  出汗社 · 练对不练废 · 持续更新中<br>
+  💬 有健身问题随时群里问，教练每天在线答疑
+</div>
+
+</div>
+</body>
+</html>

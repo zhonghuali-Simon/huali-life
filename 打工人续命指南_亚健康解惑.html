@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>打工人续命指南 — 出汗社·上班族亚健康解惑</title>
+<style>
+:root{--bg:#0a0a0f;--card:#0d1117;--glow:#00ff9f;--glow2:#00e5ff;--gold:#ffd740;--text:#e0ffe0;--sub:#5a8a6a;--danger:#ff2060;--cyan:#00e5ff;--cyanRGB:0,229,255}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'JetBrains Mono',monospace,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,159,.02) 3px,rgba(0,255,159,.02) 4px);pointer-events:none;z-index:9999}
+.container{max-width:800px;margin:0 auto;padding:2rem 1.5rem}
+.hero{text-align:center;padding:3rem 1rem 2rem;border-bottom:1px solid rgba(0,255,159,.1);margin-bottom:2rem}
+.hero h1{font-size:1.8rem;color:var(--glow);text-shadow:0 0 20px rgba(0,255,159,.4);letter-spacing:2px;margin-bottom:.5rem}
+.hero .sub{font-size:.85rem;color:var(--sub);letter-spacing:1px}
+.hero .tag{display:inline-block;margin-top:1rem;padding:4px 14px;border:1px solid var(--cyan);color:var(--cyan);font-size:11px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.card{background:rgba(13,17,23,.75);backdrop-filter:blur(6px);border:1px solid rgba(0,255,159,.12);padding:18px 20px;margin-bottom:1.5rem;position:relative;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--glow),var(--glow2),transparent)}
+.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glow2),var(--glow))}
+.card h2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--sub);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(0,255,159,.08)}
+.card h2::before{content:'◆ ';color:var(--cyan)}
+.entry{padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)}
+.entry:last-child{border-bottom:none}
+.entry-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.entry-title span{color:var(--cyan);margin-right:6px}
+.entry-summary{font-size:12px;color:var(--glow);font-style:italic;margin-bottom:8px}
+.entry ul{font-size:12px;line-height:2;padding-left:16px;color:var(--text)}
+.entry ul li::marker{color:var(--cyan)}
+.tip-box{padding:8px 10px;background:rgba(var(--cyanRGB),.05);border-left:2px solid var(--cyan);margin-top:10px;font-size:11px}
+.tip-box .q{color:var(--cyan);font-weight:600;margin-bottom:2px}
+.tip-box .a{color:var(--sub)}
+.badge{display:inline-block;padding:2px 8px;font-size:10px;border:1px solid;border-radius:2px;margin-left:6px;vertical-align:middle}
+.badge.red{border-color:var(--danger);color:var(--danger)}
+.badge.green{border-color:var(--glow);color:var(--glow)}
+.badge.gold{border-color:var(--gold);color:var(--gold)}
+.qa{margin:1rem 0;padding:12px;background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.1);border-left:3px solid var(--cyan)}
+.qa .q{color:var(--cyan);font-weight:600;font-size:12px;margin-bottom:6px}
+.qa .a{color:var(--text);font-size:12px;line-height:1.8}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.mini-card{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.08);padding:12px;font-size:12px}
+.mini-card h4{color:var(--cyan);font-size:12px;margin-bottom:6px}
+.formula-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+.formula-col{background:rgba(13,17,23,.6);border:1px solid rgba(0,229,255,.15);border-radius:8px;overflow:hidden}
+.formula-header{padding:8px 10px;font-size:12px;font-weight:700;text-align:center;color:#fff;letter-spacing:1px}
+.formula-header.cyan-h{background:linear-gradient(135deg,var(--cyan),#0090c0)}
+.formula-header.green-h{background:linear-gradient(135deg,var(--glow),#00c070)}
+.formula-header.gold-h{background:linear-gradient(135deg,var(--gold),#e0a000)}
+.formula-header.pink-h{background:linear-gradient(135deg,#ff6090,#e04070)}
+.formula-items{padding:6px 8px}
+.formula-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px dashed rgba(0,229,255,.08);font-size:12px}
+.formula-item:last-child{border-bottom:none}
+.f-icon{font-size:16px;min-width:22px;text-align:center}
+.f-name{flex:1;color:var(--text)}
+.f-detail{color:var(--sub);font-size:10px;white-space:nowrap}
+.formula-note{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;padding:6px 10px;background:rgba(0,229,255,.04);border-radius:6px;border:1px solid rgba(0,229,255,.1)}
+@media(max-width:600px){.formula-grid{grid-template-columns:1fr}}
+.footer{text-align:center;padding:2rem 0;color:var(--sub);font-size:11px;border-top:1px solid rgba(0,255,159,.08);margin-top:2rem}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <h1>🏥 打工人续命指南</h1>
+  <div class="sub">出汗社 · 上班族亚健康解惑 · 久坐族自救手册</div>
+  <div class="tag">⚡ 你的身体在求救 · 别等出问题才看</div>
+</div>
+
+<!-- 1. 颈椎 -->
+<div class="card">
+  <h2>颈椎问题 · 低头族自救</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🔍</span>你的颈椎还好吗？</div>
+    <div class="entry-summary">自测：低头看手机时，颈椎承受的压力=头顶放了一个25kg的小孩</div>
+    <ul>
+      <li><strong>脖子僵硬</strong>：转头有「咔咔」声，活动受限</li>
+      <li><strong>肩颈酸痛</strong>：下午开始酸痛，晚上更严重</li>
+      <li><strong>手指发麻</strong>：神经受压的信号，别忽视</li>
+      <li><strong>头晕头痛</strong>：颈椎问题导致的「颈源性头痛」</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔧</span>每天3分钟自救</div>
+    <ul>
+      <li><strong>颈部拉伸</strong>：头向左右侧倾，保持15秒×3组（不要画圈）</li>
+      <li><strong>收下巴</strong>：双下巴动作，保持5秒×10次（强化深层颈屈肌）</li>
+      <li><strong>肩部后旋</strong>：双肩向后画圈，15次（打开胸腔）</li>
+      <li><strong>毛巾对抗</strong>：毛巾放后脑勺，头向后用力，手向前拉，对抗10秒×5次</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 习惯调整</div>
+      <div class="a">手机举高到视线水平；显示器上沿与眼睛平齐；每45分钟起来活动1分钟。</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：颈椎操有用吗？</div>
+    <div class="a">有用，但要坚持。每天3分钟，2周见效。如果已经有手麻/头晕症状，先去医院拍片，别自己瞎练。</div>
+  </div>
+</div>
+
+<!-- 2. 腰椎 -->
+<div class="card">
+  <h2>腰椎问题 · 久坐族的痛</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🔍</span>为什么坐久了腰会痛？</div>
+    <ul>
+      <li>坐姿时腰椎压力比站立时大40%</li>
+      <li>弯腰驼背坐→腰椎间盘后侧受压→突出风险增加</li>
+      <li>久坐→髂腰肌缩短→骨盆前倾→腰部代偿→酸痛</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔧</span>腰痛自救方案</div>
+    <ul>
+      <li><strong>麦肯基伸展</strong>：俯卧，双手撑起上半身，骨盆贴地，保持5秒×10次（缓解椎间盘压力）</li>
+      <li><strong>猫牛式</strong>：四点跪撑，交替弓背和塌腰，10次（活动腰椎）</li>
+      <li><strong>臀桥</strong>：仰卧屈膝，抬臀，保持5秒×15次（激活臀部，减轻腰部负担）</li>
+      <li><strong>死虫式</strong>：仰卧，对侧手脚交替伸展，10次/侧（核心稳定）</li>
+    </ul>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：久坐怎么坐才不伤腰？</div>
+    <div class="a">臀部坐满椅子；腰后垫靠垫维持生理曲度；双脚平放地面；膝盖略低于髋部。最好每45分钟站起来活动。</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：腰痛要不要去健身房练硬拉？</div>
+    <div class="a">急性期别练。缓解后可以从轻重量学动作，硬拉能强化后链预防腰痛，但动作错了会加重。建议先跟教练学3-5次。</div>
+  </div>
+</div>
+
+<!-- 3. 眼睛 -->
+<div class="card">
+  <h2>眼睛疲劳 · 盯屏幕一天怎么办</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🔍</span>干眼症自测</div>
+    <ul>
+      <li>眼睛干涩、异物感、烧灼感</li>
+      <li>看东西模糊，眨眼后清楚</li>
+      <li>怕光、容易流泪（反射性流泪）</li>
+      <li>下午/晚上比早上严重</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔧</span>护眼方案</div>
+    <ul>
+      <li><strong>20-20-20法则</strong>：每20分钟看20英尺（6米）外20秒</li>
+      <li><strong>主动眨眼</strong>：盯屏幕时眨眼频率降低60%，有意识多眨</li>
+      <li><strong>人工泪液</strong>：玻璃酸钠滴眼液（不含防腐剂），干涩时滴</li>
+      <li><strong>热敷</strong>：40°C热毛巾敷眼5分钟（疏通睑板腺）</li>
+      <li><strong>屏幕设置</strong>：亮度=环境亮度；色温偏暖；距离50-70cm</li>
+    </ul>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：防蓝光眼镜有用吗？</div>
+    <div class="a">证据不足。蓝光不是导致眼疲劳的主因，长时间盯屏幕+不眨眼才是。但戴了也没坏处，如果心理安慰有效就戴。</div>
+  </div>
+</div>
+
+<!-- 4. 睡眠 -->
+<div class="card">
+  <h2>睡眠问题 · 睡不着/睡不好/睡不醒</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🔍</span>你的睡眠及格吗？</div>
+    <ul>
+      <li>入睡时间 > 30分钟 → 入睡困难</li>
+      <li>夜间醒来 > 2次 → 睡眠维持困难</li>
+      <li>早醒后无法再入睡 → 早醒</li>
+      <li>睡了7-8小时仍困 → 睡眠质量差</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔧</span>睡眠改善方案</div>
+    <ul>
+      <li><strong>固定作息</strong>：每天同一时间睡/起（包括周末），误差<30分钟</li>
+      <li><strong>睡前仪式</strong>：睡前1小时→调暗灯光→不看手机→看书/冥想/拉伸</li>
+      <li><strong>环境优化</strong>：温度18-22°C；全黑（遮光窗帘）；安静（耳塞）</li>
+      <li><strong>饮食注意</strong>：下午2点后不喝咖啡；睡前3小时不饮酒/大餐</li>
+      <li><strong>运动帮助</strong>：白天运动→晚上睡得更深，但睡前2小时不剧烈运动</li>
+    </ul>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：褪黑素能吃吗？</div>
+    <div class="a">短期倒时差/调作息可以用（0.5-3mg，睡前1小时），但不建议长期依赖。长期解决靠行为调整。</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：午睡多久合适？</div>
+    <div class="a">10-20分钟（power nap）。超过30分钟进入深睡眠，醒来更困。下午2点前午睡，不影响晚上入睡。</div>
+  </div>
+</div>
+
+<!-- 5. 肠胃 -->
+<div class="card">
+  <h2>肠胃问题 · 吃饭不规律代价大</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🔍</span>常见症状</div>
+    <ul>
+      <li><strong>胃胀/反酸</strong>：吃饭太快/不规律/咖啡过多</li>
+      <li><strong>便秘</strong>：纤维不够/水不够/久坐不动</li>
+      <li><strong>腹泻</strong>：压力大/乳糖不耐/外卖太油</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔧</span>肠胃自救</div>
+    <ul>
+      <li><strong>规律吃饭</strong>：三餐定时，间隔4-5小时，不要饿一顿饱一顿</li>
+      <li><strong>细嚼慢咽</strong>：每口嚼20次，一顿饭至少15分钟</li>
+      <li><strong>纤维够量</strong>：每天25-30g（蔬菜500g+水果200g+杂粮）</li>
+      <li><strong>喝水</strong>：1.5-2L/天，便秘时早起一杯温水</li>
+      <li><strong>运动</strong>：饭后散步10分钟，促进肠胃蠕动</li>
+    </ul>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：咖啡伤胃吗？</div>
+    <div class="a">空腹喝可能刺激胃酸，有胃病史的人注意。健康人每天1-2杯（<400mg咖啡因）没问题，不要下午/晚上喝。</div>
+  </div>
+</div>
+
+<!-- 6. 压力 -->
+<div class="card">
+  <h2>压力管理 · 精神内耗比加班更累</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🔍</span>压力大的身体信号</div>
+    <ul>
+      <li>持续疲劳，睡多久都累</li>
+      <li>食欲变化（暴食或没胃口）</li>
+      <li>注意力下降，记忆力变差</li>
+      <li>容易生病（免疫力下降）</li>
+      <li>情绪波动大，易怒或低落</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔧</span>压力管理方案</div>
+    <ul>
+      <li><strong>运动</strong>：最有效的减压方式之一，30分钟中等强度→皮质醇下降</li>
+      <li><strong>呼吸练习</strong>：4-7-8呼吸法（吸4秒→屏7秒→呼8秒）→快速平静</li>
+      <li><strong>正念冥想</strong>：每天10分钟，关注呼吸，走神了拉回来（App辅助：小睡眠/潮汐）</li>
+      <li><strong>社交</strong>：和朋友聊天/运动/吃饭，不要一个人扛</li>
+      <li><strong>界限</strong>：下班后不查工作消息（除非真的紧急）</li>
+    </ul>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q：压力大想吃东西怎么办？</div>
+    <div class="a">压力→皮质醇升高→渴望高糖高脂。别硬忍，准备健康零食（坚果/酸奶/水果），允许自己吃，但换个选项。</div>
+  </div>
+</div>
+
+<!-- 7. 体检 -->
+<div class="card">
+  <h2>体检指标 · 这些异常别忽视</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>📊</span>上班族常见异常</div>
+    <ul>
+      <li><strong>血脂偏高</strong>：久坐+饮食不规律→甘油三酯/LDL升高→心血管风险</li>
+      <li><strong>尿酸偏高</strong>：啤酒+海鲜+内脏+果糖→痛风风险</li>
+      <li><strong>脂肪肝</strong>：不是胖人才有，瘦人喝酒/吃糖多也会</li>
+      <li><strong>维生素D缺乏</strong>：不见太阳→骨质疏松风险→补充VD+晒太阳</li>
+      <li><strong>甲状腺功能异常</strong>：压力大/作息乱→疲劳/体重变化→查TSH</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💡</span>改善建议</div>
+    <ul>
+      <li>每年体检一次，不要拿到报告就扔</li>
+      <li>异常指标→3个月后复查→持续异常→看医生</li>
+      <li>生活方式干预3-6个月再复查，很多人不用吃药就能改善</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 8. 日常习惯 -->
+<div class="card">
+  <h2>日常好习惯 · 小改变大健康</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>💧</span>喝水习惯</div>
+    <div class="entry-summary">不是「多喝水」三个字就能解决的</div>
+    <ul>
+      <li>早上起床第一杯温水（200-300ml，唤醒肠胃）</li>
+      <li>工位放一个大水杯（500ml以上），看到就喝</li>
+      <li>设每小时提醒喝水（或每次开会前喝一杯）</li>
+      <li>不要等渴了再喝（渴=已经脱水1-2%）</li>
+      <li>咖啡/茶不算在饮水量内（利尿，越喝越脱水）</li>
+      <li>尿液颜色浅黄=水分够；深黄=该喝水了</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🧍</span>久坐对抗</div>
+    <div class="entry-summary">久坐=新型吸烟，每坐1小时=少活22分钟（夸张但警醒）</div>
+    <ul>
+      <li>每45-60分钟站起来活动1-2分钟（设闹钟！）</li>
+      <li>能站不坐：站着开会/站着打电话/站着吃零食</li>
+      <li>走楼梯代替电梯（3层以内不坐电梯）</li>
+      <li>接水/上厕所走远一点（多走几步=多动一点）</li>
+      <li>午休后散步10分钟（园区走一圈，不刷手机）</li>
+      <li>坐姿：臀部坐满/腰靠椅背/屏幕平视/双脚平放</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🌅</span>晨间习惯</div>
+    <div class="entry-summary">早上30分钟决定一天状态</div>
+    <ul>
+      <li>醒来后先晒太阳5-10分钟（调节生物钟，比咖啡管用）</li>
+      <li>不要醒来就刷手机（给大脑10分钟清醒时间）</li>
+      <li>早餐吃蛋白质（鸡蛋/酸奶/豆浆），不要只吃碳水（包子/面包→血糖过山车）</li>
+      <li>出门前做2分钟拉伸（猫牛式+体前屈，唤醒身体）</li>
+      <li>通勤路上：能走就走/能站就站/能爬楼就爬楼</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🌙</span>晚间习惯</div>
+    <div class="entry-summary">晚上的习惯决定明天状态</div>
+    <ul>
+      <li>晚餐不要太晚（睡前3小时吃完）</li>
+      <li>饭后不要立刻躺下（散步10-15分钟）</li>
+      <li>睡前1小时调暗灯光+放下手机（蓝光抑制褪黑素）</li>
+      <li>睡前可以做5分钟拉伸/冥想（放松身体+平静大脑）</li>
+      <li>手机不要放床头（辐射+忍不住刷+影响睡眠深度）</li>
+      <li>固定时间睡觉（包括周末），误差不要超过30分钟</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🍽️</span>饮食习惯</div>
+    <div class="entry-summary">不是让你节食，是让你吃得聪明</div>
+    <ul>
+      <li>三餐规律，不要跳过早餐（代谢下降+午餐暴食）</li>
+      <li>每餐先吃菜和肉，最后吃主食（血糖更稳，下午不困）</li>
+      <li>吃饭速度放慢（每口嚼20次，一餐至少15分钟）</li>
+      <li>八分饱就停（胃不胀=刚好）</li>
+      <li>下午3-4点加餐（坚果/酸奶/水果），防止晚餐暴食</li>
+      <li>外卖选清淡的（轻食/日料/蒸菜），少点麻辣香锅/炒饭</li>
+      <li>含糖饮料换成无糖茶/黑咖啡/气泡水</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🚶</span>运动习惯</div>
+    <div class="entry-summary">不需要每天泡健身房，碎片化运动也有效</div>
+    <ul>
+      <li>每周至少150分钟中等强度运动（快走/骑车/游泳）</li>
+      <li>每天步数目标6000-8000步（不需要1万步）</li>
+      <li>能走路就不坐车，能爬楼就不坐电梯</li>
+      <li>工作间隙做办公室微训练（颈部画圈/肩部后旋/提踵）</li>
+      <li>周末至少1次户外活动（徒步/骑行/跑步/飞盘）</li>
+      <li>运动不需要整块时间：早起15分钟+午休10分钟+晚上15分钟=40分钟</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🧠</span>心理健康习惯</div>
+    <div class="entry-summary">身体重要，心理同样重要</div>
+    <ul>
+      <li>每天留10分钟给自己（不看手机/不想工作/发呆也行）</li>
+      <li>学会说「不」（不是所有饭局/聚会都必须参加）</li>
+      <li>记录3件感恩的事（睡前写，训练大脑关注正面）</li>
+      <li>定期和朋友见面/聊天（社交是抗压缓冲器）</li>
+      <li>允许自己「不够好」（完美主义=慢性压力源）</li>
+      <li>情绪持续低落>2周→考虑找心理咨询师聊聊（不丢人）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>📱</span>屏幕/数字健康</div>
+    <div class="entry-summary">你的眼睛和大脑都需要休息</div>
+    <ul>
+      <li>每20分钟看远处20秒（20-20-20法则，护眼）</li>
+      <li>手机使用时间设上限（屏幕时间App可以看每天用了多久）</li>
+      <li>睡前1小时不看手机（用纸质书/Kindle替代）</li>
+      <li>关闭非必要的通知推送（减少注意力碎片化）</li>
+      <li>周末给自己半天「数字断联」（不看不回工作消息）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🌬️</span>呼吸与放松</div>
+    <div class="entry-summary">大多数人不会呼吸（真的）</div>
+    <ul>
+      <li>腹式呼吸：吸气时肚子鼓起，呼气时肚子收缩（不是胸腔起伏）</li>
+      <li>焦虑时做4-7-8呼吸：吸4秒→屏7秒→呼8秒（快速平静）</li>
+      <li>工作间隙做3次深呼吸（缓解紧张+增加氧气供应）</li>
+      <li>不要憋气工作（很多人专注时不自觉憋气→缺氧→疲劳）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 9. 办公室急救包 -->
+<div class="card">
+  <h2>办公室急救包 · 工位常备</h2>
+  
+  <div class="grid2">
+    <div class="mini-card">
+      <h4>💊 身体急救</h4>
+      <ul style="padding-left:12px;">
+        <li>人工泪液（眼干）</li>
+        <li>布洛芬（头痛/痛经）</li>
+        <li>胃药（铝碳酸镁/反酸时用）</li>
+        <li>创可贴/碘伏棉签</li>
+        <li>薄荷膏（太阳穴涂→提神）</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>🧘 工位神器</h4>
+      <ul style="padding-left:12px;">
+        <li>腰靠/坐垫（护腰）</li>
+        <li>显示器支架（抬高屏幕）</li>
+        <li>站立办公垫（交替坐站）</li>
+        <li>筋膜球/网球（踩着滚→放松足底）</li>
+        <li>弹力带（工位拉伸用）</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>🍎 健康零食</h4>
+      <ul style="padding-left:12px;">
+        <li>坚果（每日一小把，约15g）</li>
+        <li>无糖酸奶</li>
+        <li>水果（苹果/香蕉/小番茄）</li>
+        <li>黑巧克力（70%以上，解压）</li>
+        <li>蛋白棒（应急加餐）</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>☕ 饮品替代</h4>
+      <ul style="padding-left:12px;">
+        <li>黑咖啡（上午提神，下午别喝）</li>
+        <li>绿茶/乌龙茶（抗氧化+提神）</li>
+        <li>气泡水（替代含糖饮料）</li>
+        <li>菊花枸杞茶（护眼）</li>
+        <li>温水（万能解药）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 久坐自救公式 -->
+<div class="card">
+  <h2>久坐自救公式 · 每天5分钟对抗久坐</h2>
+
+  <div class="entry">
+    <div class="entry-title"><span>📐</span>打工人续命三板斧</div>
+    <div class="entry-summary">不需要去健身房，工位上就能做</div>
+  </div>
+
+  <div class="formula-grid">
+    <div class="formula-col">
+      <div class="formula-header cyan-h">🪑 坐姿调整</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">📐</span><span class="f-name">屏幕距离</span><span class="f-detail">一臂远</span></div>
+        <div class="formula-item"><span class="f-icon">👀</span><span class="f-name">屏幕上沿</span><span class="f-detail">与眼睛平齐</span></div>
+        <div class="formula-item"><span class="f-icon">🦶</span><span class="f-name">双脚</span><span class="f-detail">平放地面</span></div>
+        <div class="formula-item"><span class="f-icon">🦵</span><span class="f-name">膝盖</span><span class="f-detail">90° 略高于髋</span></div>
+        <div class="formula-item"><span class="f-icon">🔙</span><span class="f-name">腰背</span><span class="f-detail">贴紧椅背</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header green-h">⏰ 定时活动</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🔔</span><span class="f-name">每45min</span><span class="f-detail">起来1分钟</span></div>
+        <div class="formula-item"><span class="f-icon">🚶</span><span class="f-name">接水/上厕所</span><span class="f-detail">走一圈</span></div>
+        <div class="formula-item"><span class="f-icon">🧍</span><span class="f-name">站立办公</span><span class="f-detail">午饭后15min</span></div>
+        <div class="formula-item"><span class="f-icon">🪜</span><span class="f-name">楼梯替代</span><span class="f-detail">3层以内不坐电梯</span></div>
+        <div class="formula-item"><span class="f-icon">📱</span><span class="f-name">设个闹钟</span><span class="f-detail">手机定时提醒</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header gold-h">🧘 工位拉伸+护眼</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🙆</span><span class="f-name">肩部后旋</span><span class="f-detail">15次</span></div>
+        <div class="formula-item"><span class="f-icon">😤</span><span class="f-name">收下巴</span><span class="f-detail">5秒×10次</span></div>
+        <div class="formula-item"><span class="f-icon">👐</span><span class="f-name">手腕拉伸</span><span class="f-detail">上下各15秒</span></div>
+        <div class="formula-item"><span class="f-icon">👁️</span><span class="f-name">20-20-20护眼</span><span class="f-detail">每20min看20ft外</span></div>
+        <div class="formula-item"><span class="f-icon">🌅</span><span class="f-name">远眺窗外</span><span class="f-detail">20秒放松睫状肌</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-note">⚡ 久坐最大的敌人不是「坐」，而是「不动」。每45分钟站起来，就是最好的自救。</div>
+
+  <div class="entry" style="margin-top:1.2rem;">
+    <div class="entry-title"><span>🆘</span>5分钟工位急救操</div>
+    <div class="entry-summary">下午3-4点最累的时候，跟着做一遍</div>
+  </div>
+
+  <div class="formula-grid" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+    <div class="formula-col">
+      <div class="formula-header pink-h">1️⃣ 颈部</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">↔️</span><span class="f-name">左右侧倾</span><span class="f-detail">15s×2</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header cyan-h">2️⃣ 肩部</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🔄</span><span class="f-name">向后画圈</span><span class="f-detail">15次</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header green-h">3️⃣ 胸背</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🤗</span><span class="f-name">扩胸+猫式</span><span class="f-detail">各5次</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header gold-h">4️⃣ 腰臀</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🧎</span><span class="f-name">站立体前屈</span><span class="f-detail">15s×2</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header pink-h">5️⃣ 腿脚</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🦵</span><span class="f-name">踮脚+勾脚</span><span class="f-detail">各15次</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-note">🔁 每天做2-3遍，颈椎腰椎问题减少80%。坚持一周你就能感受到区别。</div>
+</div>
+
+<div class="footer">
+  出汗社 · 打工人续命指南 · 持续更新中<br>
+  ⚠️ 本文档为健康科普，不替代医疗诊断。症状持续请就医。<br>
+  💬 有健康问题随时群里问，大家一起保重
+</div>
+
+</div>
+</body>
+</html>

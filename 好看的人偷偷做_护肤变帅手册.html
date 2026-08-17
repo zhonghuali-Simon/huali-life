@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>好看的人偷偷做 — 出汗社·变美变帅手册</title>
+<style>
+:root{--bg:#0a0a0f;--card:#0d1117;--glow:#00ff9f;--glow2:#00e5ff;--gold:#ffd740;--text:#e0ffe0;--sub:#5a8a6a;--danger:#ff2060;--pink:#ff6090;--pinkRGB:255,96,144}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'JetBrains Mono',monospace,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,159,.02) 3px,rgba(0,255,159,.02) 4px);pointer-events:none;z-index:9999}
+.container{max-width:800px;margin:0 auto;padding:2rem 1.5rem}
+.hero{text-align:center;padding:3rem 1rem 2rem;border-bottom:1px solid rgba(0,255,159,.1);margin-bottom:2rem}
+.hero h1{font-size:1.8rem;color:var(--glow);text-shadow:0 0 20px rgba(0,255,159,.4);letter-spacing:2px;margin-bottom:.5rem}
+.hero .sub{font-size:.85rem;color:var(--sub);letter-spacing:1px}
+.hero .tag{display:inline-block;margin-top:1rem;padding:4px 14px;border:1px solid var(--pink);color:var(--pink);font-size:11px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.card{background:rgba(13,17,23,.75);backdrop-filter:blur(6px);border:1px solid rgba(0,255,159,.12);padding:18px 20px;margin-bottom:1.5rem;position:relative;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--glow),var(--glow2),transparent)}
+.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glow2),var(--glow))}
+.card h2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--sub);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(0,255,159,.08)}
+.card h2::before{content:'◆ ';color:var(--pink)}
+.entry{padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)}
+.entry:last-child{border-bottom:none}
+.entry-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.entry-title span{color:var(--pink);margin-right:6px}
+.entry-summary{font-size:12px;color:var(--glow);font-style:italic;margin-bottom:8px}
+.entry ul{font-size:12px;line-height:2;padding-left:16px;color:var(--text)}
+.entry ul li::marker{color:var(--pink)}
+.tip-box{padding:8px 10px;background:rgba(var(--pinkRGB),.05);border-left:2px solid var(--pink);margin-top:10px;font-size:11px}
+.tip-box .q{color:var(--pink);font-weight:600;margin-bottom:2px}
+.tip-box .a{color:var(--sub)}
+.badge{display:inline-block;padding:2px 8px;font-size:10px;border:1px solid;border-radius:2px;margin-left:6px;vertical-align:middle}
+.badge.red{border-color:var(--danger);color:var(--danger)}
+.badge.green{border-color:var(--glow);color:var(--glow)}
+.badge.gold{border-color:var(--gold);color:var(--gold)}
+.badge.pink{border-color:var(--pink);color:var(--pink)}
+.badge.cyan{border-color:var(--glow2);color:var(--glow2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.mini-card{background:rgba(0,255,159,.03);border:1px solid rgba(0,255,159,.08);padding:12px;font-size:12px}
+.mini-card h4{color:var(--pink);font-size:12px;margin-bottom:6px}
+.gender-tag{display:inline-block;padding:1px 6px;font-size:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.gender-tag.m{background:rgba(0,229,255,.12);color:var(--glow2);border:1px solid rgba(0,229,255,.3)}
+.gender-tag.f{background:rgba(255,96,144,.12);color:var(--pink);border:1px solid rgba(255,96,144,.3)}
+.gender-tag.all{background:rgba(0,255,159,.12);color:var(--glow);border:1px solid rgba(0,255,159,.3)}
+.formula-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+.formula-col{background:rgba(13,17,23,.6);border:1px solid rgba(255,96,144,.15);border-radius:8px;overflow:hidden}
+.formula-header{padding:8px 10px;font-size:12px;font-weight:700;text-align:center;color:#fff;letter-spacing:1px}
+.formula-header.pink-h{background:linear-gradient(135deg,var(--pink),#e04070)}
+.formula-header.cyan-h{background:linear-gradient(135deg,var(--glow2),#0090c0)}
+.formula-header.green-h{background:linear-gradient(135deg,var(--glow),#00c070)}
+.formula-header.gold-h{background:linear-gradient(135deg,var(--gold),#e0a000)}
+.formula-items{padding:6px 8px}
+.formula-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px dashed rgba(255,96,144,.08);font-size:12px}
+.formula-item:last-child{border-bottom:none}
+.f-icon{font-size:16px;min-width:22px;text-align:center}
+.f-name{flex:1;color:var(--text)}
+.f-detail{color:var(--sub);font-size:10px;white-space:nowrap}
+.formula-note{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;padding:6px 10px;background:rgba(255,96,144,.04);border-radius:6px;border:1px solid rgba(255,96,144,.1)}
+.formula-vs{text-align:center;font-size:10px;color:var(--pink);letter-spacing:2px;margin:8px 0 4px;font-weight:700}
+@media(max-width:600px){.formula-grid{grid-template-columns:1fr}}
+.footer{text-align:center;padding:2rem 0;color:var(--sub);font-size:11px;border-top:1px solid rgba(0,255,159,.08);margin-top:2rem}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <h1>✨ 好看的人偷偷做</h1>
+  <div class="sub">出汗社 · 变美变帅手册 · 男女通用的形象提升指南</div>
+  <div class="tag">💇 不靠天赋靠习惯 · 30天看得见变化</div>
+</div>
+
+<!-- 1. 护肤基础 -->
+<div class="card">
+  <h2>护肤基础 · 男女都只需要3步</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🧴</span>Step 1：清洁 <span class="badge green">最重要</span></div>
+    <div class="entry-summary">脸洗干净，问题少一半</div>
+    <ul>
+      <li>早晚各一次，用氨基酸洁面（不要皂基，太干）</li>
+      <li>温水洗脸，不要太热（破坏皮脂膜）</li>
+      <li>洗脸时间30-60秒，不要搓太久</li>
+      <li><span class="gender-tag m">男生</span>推荐：芙丽芳丝/珂润/旁氏米粹（平价好用）</li>
+      <li><span class="gender-tag f">女生</span>推荐：芙丽芳丝/珂润/elta md（温和不紧绷）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💧</span>Step 2：保湿</div>
+    <div class="entry-summary">油皮也要保湿，不然越油越干</div>
+    <ul>
+      <li><span class="gender-tag m">男生</span>油皮多：选清爽型乳液/凝露（不要面霜）</li>
+      <li><span class="gender-tag f">女生</span>根据肤质：油皮凝露/干皮面霜/混合皮分区护理</li>
+      <li>洗完脸3分钟内涂，锁水效果最好</li>
+      <li><span class="gender-tag all">通用</span>推荐：无印良品敏感肌乳液/科颜氏高保湿（分季节）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>☀️</span>Step 3：防晒 <span class="badge gold">抗老关键</span></div>
+    <div class="entry-summary">80%的皮肤老化来自紫外线，不是年龄</div>
+    <ul>
+      <li>每天涂，阴天/冬天也要（UVA穿透云层）</li>
+      <li>用量：一元硬币大小，少了等于没涂</li>
+      <li>SPF30日常通勤，SPF50户外运动</li>
+      <li><span class="gender-tag m">男生</span>推荐：碧柔水感/怡思丁（不搓泥不泛白）</li>
+      <li><span class="gender-tag f">女生</span>推荐：安耐晒小金瓶/苏菲娜（可当妆前打底）</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 常见误区</div>
+      <div class="a">「我皮肤好不用护肤」→ 不防晒=30岁长斑+皱纹；「洗脸用香皂」→ 碱性太强越洗越油；「涂防晒会闷痘」→ 选对适合自己的产品就不会。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💄</span>女生额外步骤 <span class="badge pink">精简即可</span></div>
+    <div class="entry-summary">护肤在防晒之后加1-2步就够</div>
+    <ul>
+      <li><strong>精华</strong>：维C精华（抗氧化+提亮）早上用，烟酰胺精华（控油缩毛孔）晚上用</li>
+      <li><strong>眼霜</strong>：25岁后可以加，轻薄眼霜即可，不需要贵价</li>
+      <li><strong>面膜</strong>：一周1-2次补水面膜足够，不要天天敷（过度水合伤屏障）</li>
+      <li><strong>卸妆</strong>：涂了防晒/化妆→晚上必须卸妆（卸妆油/卸妆水均可）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 2. 常见问题 -->
+<div class="card">
+  <h2>皮肤问题急救 · 痘/油/黑头/毛孔/敏感</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>😤</span>长痘怎么办？</div>
+    <ul>
+      <li><strong>红肿痘</strong>：涂过氧化苯甲酰（班赛）/水杨酸，别挤</li>
+      <li><strong>闭口/粉刺</strong>：含水杨酸/果酸产品，疏通毛孔</li>
+      <li><strong>痘印</strong>：维生素C精华+防晒，3-6个月淡化</li>
+      <li><strong>反复长痘</strong>：看皮肤科医生，不要自己折腾</li>
+      <li><span class="gender-tag f">女生</span>经前下巴长痘→激素波动正常，严重时查激素六项</li>
+      <li><span class="gender-tag m">男生</span>剃须后长痘→换干净刀片+须后水消炎</li>
+      <li><strong>避雷</strong>：不要用手挤、不要用牙膏敷、不要用撕拉面膜</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🛢️</span>脸太油怎么办？</div>
+    <ul>
+      <li>一天洗脸不超过2次（过度清洁→反弹出油）</li>
+      <li>用控油型洁面+清爽保湿+吸油纸（中午应急）</li>
+      <li>饮食少油少糖（高GI食物→刺激皮脂分泌）</li>
+      <li>睡眠充足（熬夜→雄激素升高→出油加倍）</li>
+      <li><span class="gender-tag f">女生</span>定妆散粉/吸油纸随身带，补妆前先吸油再补</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔴</span>黑头/毛孔粗大？</div>
+    <ul>
+      <li>黑头：水杨酸棉片敷鼻翼5分钟/周2次，溶解油脂</li>
+      <li>毛孔：不可逆，但防晒+维A醇能让它看起来小一点</li>
+      <li>避雷：不要用撕拉鼻贴（越撕越大）、不要用盐搓</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🌸</span>皮肤敏感/泛红？ <span class="badge pink">女生多见</span></div>
+    <div class="entry-summary">屏障受损→什么都刺痛</div>
+    <ul>
+      <li>停用所有功效型产品（酸/A醇/VC），只留洁面+保湿+防晒</li>
+      <li>选含神经酰胺/角鲨烷的修复类产品</li>
+      <li>不要频繁更换护肤品，给皮肤2-4周适应期</li>
+      <li>反复过敏→查过敏原，不要自己当医生</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 3. 发型 -->
+<div class="card">
+  <h2>发型管理 · 换个发型=换张脸</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>💇</span><span class="gender-tag m">男生</span>发型选择</div>
+    <ul>
+      <li><strong>圆脸</strong>：两侧推短，顶部留长（拉长脸型）</li>
+      <li><strong>方脸</strong>：侧分/背头，柔化棱角</li>
+      <li><strong>长脸</strong>：刘海+两侧留厚（缩短视觉长度）</li>
+      <li><strong>发量少</strong>：短寸/毛寸，显得蓬松</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💇‍♀️</span><span class="gender-tag f">女生</span>发型选择</div>
+    <ul>
+      <li><strong>圆脸</strong>：侧分长发/锁骨发（拉长脸型），避免齐刘海</li>
+      <li><strong>方脸</strong>：大波浪/八字刘海（柔化线条），避免齐耳短发</li>
+      <li><strong>长脸</strong>：空气刘海+中长发（缩短比例），避免中分直发</li>
+      <li><strong>发量少/细软</strong>：层次剪+蓬松烫，视觉增量</li>
+      <li><strong>发际线高</strong>：龙须刘海/碎发修饰，不要扎太紧</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 理发店沟通技巧（通用）</div>
+      <div class="a">带3-5张参考图（正面+侧面），告诉理发师你的脸型和发质。别只说「剪短一点」，每个人理解不同。</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🧴</span>头发护理</div>
+    <ul>
+      <li><span class="gender-tag m">男生</span>洗头频率：油皮每天，干皮隔天；洗发水选无硅油（油皮）或含硅油（干皮）</li>
+      <li><span class="gender-tag f">女生</span>洗头频率：2-3天一次；护发素只涂发尾不涂头皮；每周1次发膜</li>
+      <li><span class="gender-tag all">通用</span>吹风机温度不要太高，距离15cm；染烫间隔至少3个月</li>
+      <li><span class="gender-tag f">女生</span>直发夹/卷发棒用前涂隔热精油，减少热损伤</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 4. 穿搭基础 -->
+<div class="card">
+  <h2>穿搭基础 · 不用潮只要干净</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>👕</span><span class="gender-tag m">男生</span>穿搭3原则</div>
+    <div class="entry-summary">干净 > 合身 > 款式 > 品牌</div>
+    <ul>
+      <li><strong>干净</strong>：衣服无褶皱/无污渍/无起球，鞋子干净</li>
+      <li><strong>合身</strong>：肩线对齐/袖长到手腕/衣长不超过臀部一半</li>
+      <li><strong>简约</strong>：纯色为主（黑白灰蓝卡其），全身不超过3色</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>👗</span><span class="gender-tag f">女生</span>穿搭3原则</div>
+    <div class="entry-summary">合身 > 质感 > 搭配 > 品牌</div>
+    <ul>
+      <li><strong>合身</strong>：不追求oversize也不追求紧身，找到适合自己身型的版型</li>
+      <li><strong>质感</strong>：面料比款式重要，纯棉/真丝/羊毛 > 化纤（看着就不一样）</li>
+      <li><strong>搭配</strong>：基础款+一个亮点（丝巾/耳饰/腰带），不需要全身名牌</li>
+      <li><strong>职场</strong>：衬衫+直筒裤/半裙+乐福鞋，简约高级感</li>
+      <li><strong>日常</strong>：T恤+牛仔裤+小白鞋/帆布鞋，干净就赢了</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>👖</span><span class="gender-tag m">男生</span>基础款清单</div>
+    <ul>
+      <li>白T恤 × 3（优衣库/无印良品，纯棉200g以上）</li>
+      <li>黑色直筒裤 × 2（不紧身不宽松，九分或全长）</li>
+      <li>卡其色休闲裤 × 1</li>
+      <li>牛仔外套/黑色卫衣 × 1（过渡季节）</li>
+      <li>小白鞋 × 1（皮质好打理，不要帆布）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>👜</span><span class="gender-tag f">女生</span>基础款清单</div>
+    <ul>
+      <li>白T/条纹衫 × 3（纯棉/棉混，质感好的基础款）</li>
+      <li>黑色直筒裤/烟管裤 × 2（通勤日常都能穿）</li>
+      <li>衬衫 × 2（白色+浅蓝，职场百搭）</li>
+      <li>小黑裙 × 1（简约款，聚会/正式场合）</li>
+      <li>小白鞋+乐福鞋 × 各1（覆盖休闲+通勤）</li>
+      <li>质感托特包 × 1（能装电脑，通勤必备）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>⚠️</span>穿搭避雷 <span class="badge red">通用</span></div>
+    <ul>
+      <li>大logo/大印花 → 土味来源</li>
+      <li>衣服有味道/领口变形 → 直接扔，别穿了</li>
+      <li><span class="gender-tag m">男生</span>紧身裤+豆豆鞋 → 精神小伙既视感；袜子配凉鞋 → 除非你是时尚博主</li>
+      <li><span class="gender-tag f">女生</span>全身紧身暴露曲线 → 不如适当宽松有高级感；配饰太多太闪 → 精简更耐看</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 5. 体态 -->
+<div class="card">
+  <h2>体态管理 · 站直了好看10%</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🧍</span>常见体态问题</div>
+    <ul>
+      <li><strong>圆肩驼背</strong>：久坐看屏幕→胸肌紧背肌弱→肩膀前扣</li>
+      <li><strong>头前伸</strong>：看手机低头→颈椎前倾→侧面像乌龟</li>
+      <li><strong>骨盆前倾</strong>：久坐→髂腰肌紧→小腹突出（不是胖）</li>
+      <li><span class="gender-tag f">女生</span><strong>假胯宽</strong>：久坐+跷二郎腿→股骨大转子突出→显腿短</li>
+      <li><span class="gender-tag f">女生</span><strong>斜方肌肥大</strong>：长期耸肩/背包方式不对→显脖子短</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>🔧</span>每天5分钟矫正</div>
+    <ul>
+      <li><strong>靠墙站立</strong>：后脑勺/肩胛骨/臀部/脚跟贴墙，保持5分钟</li>
+      <li><strong>胸肌拉伸</strong>：门框处手臂90°，身体前倾，30秒×3组</li>
+      <li><strong>背部激活</strong>：俯卧Y字抬起，15次×3组</li>
+      <li><strong>下巴回收</strong>：双下巴动作，保持5秒×10次</li>
+      <li><span class="gender-tag f">女生</span><strong>开肩</strong>：弹力带肩外旋×15次/改善圆肩+斜方肌</li>
+      <li><span class="gender-tag f">女生</span><strong>纠正假胯</strong>：侧卧抬腿×15次/侧+泡沫轴滚大腿外侧</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 习惯养成</div>
+      <div class="a">设每小时闹钟，站起来靠墙站1分钟。坚持2周，体态明显改善。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. 细节管理 -->
+<div class="card">
+  <h2>细节管理 · 好看的人赢在细节</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>🦷</span>口腔护理 <span class="badge green">通用</span></div>
+    <ul>
+      <li>每天刷牙2次+牙线（牙缝臭=牙线用少了）</li>
+      <li>半年洗牙1次（预防牙结石+口臭）</li>
+      <li><span class="gender-tag m">男生</span>戒烟/少喝咖啡→牙齿发黄</li>
+      <li><span class="gender-tag f">女生</span>口红选对色号比选对品牌重要（黄皮→偏橘/偏红；白皮→随意）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>👃</span>气味管理 <span class="badge green">通用</span></div>
+    <ul>
+      <li>止汗露/体香剂（夏天必备，不是只有女生才用）</li>
+      <li>衣服不要阴干（霉味→重新洗+太阳晒）</li>
+      <li><span class="gender-tag m">男生</span>淡香水推荐：大卫杜夫冷水/宝格丽大吉链（喷手腕+衣领，1-2喷足够）</li>
+      <li><span class="gender-tag f">女生</span>淡香水推荐：祖玛珑蓝风铃/迪奥花漾甜心（耳后+手腕，少量多次）</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>💅</span>手部/指甲 <span class="badge green">通用</span></div>
+    <ul>
+      <li>指甲定期修剪，边缘磨平（不要咬指甲）</li>
+      <li>手部干燥→护手霜随身带（洗完手就涂）</li>
+      <li><span class="gender-tag f">女生</span>裸色/豆沙色甲油比大红更安全日常；不美甲也要涂护甲油</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>👀</span>眉毛/面部毛发</div>
+    <ul>
+      <li><span class="gender-tag m">男生</span>修眉=整容级变化。找Tony老师修一次，之后自己维护（杂毛刮掉）</li>
+      <li><span class="gender-tag m">男生</span>鼻毛每周检查（外露=社死）</li>
+      <li><span class="gender-tag f">女生</span>眉毛决定气质，眉形跟脸型走（平眉/挑眉/弯眉）</li>
+      <li><span class="gender-tag f">女生</span>唇毛/鬓角碎发→定期处理，影响精致度</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 7. 生活习惯 -->
+<div class="card">
+  <h2>变好看的习惯 · 不花钱但效果大</h2>
+  
+  <div class="grid2">
+    <div class="mini-card">
+      <h4>😴 睡眠</h4>
+      <ul style="padding-left:12px;">
+        <li>11点前睡（生长激素分泌高峰）</li>
+        <li>7-8小时（少于6小时→皮肤差+胖）</li>
+        <li>睡前1小时不看手机（蓝光影响入睡）</li>
+        <li><span class="gender-tag f">女生</span>睡前涂唇膜/厚涂面霜（早起状态好）</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>💧 喝水</h4>
+      <ul style="padding-left:12px;">
+        <li>每天1.5-2L（约8杯）</li>
+        <li>起床一杯温水（唤醒肠胃）</li>
+        <li>不要等渴了再喝（已经脱水了）</li>
+        <li><span class="gender-tag f">女生</span>温水>冰水（中医角度暖宫）</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>🚭 戒烟限酒</h4>
+      <ul style="padding-left:12px;">
+        <li>吸烟→皮肤暗沉+皱纹+脱发</li>
+        <li>酒精→脱水+浮肿+热量高</li>
+        <li>应酬 unavoidable → 啤酒改红酒，限量</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>📱 屏幕时间</h4>
+      <ul style="padding-left:12px;">
+        <li>每20分钟看20英尺外20秒（护眼）</li>
+        <li>屏幕亮度=环境亮度（不刺眼）</li>
+        <li>晚上开夜间模式（减少蓝光）</li>
+        <li>不要躺着刷手机（颈椎+眼压）</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>🧘 表情管理</h4>
+      <ul style="padding-left:12px;">
+        <li>不要习惯性皱眉（抬头纹/川字纹）</li>
+        <li>不要单侧咀嚼（大小脸）</li>
+        <li>微笑时嘴角上扬+眼睛微眯（真诚感）</li>
+        <li>拍照前练习自己好看的角度</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>🧢 配饰加分</h4>
+      <ul style="padding-left:12px;">
+        <li><span class="gender-tag m">男生</span>手表>手链（质感+实用）</li>
+        <li><span class="gender-tag m">男生</span>帽子（棒球帽/渔夫帽）遮没洗头</li>
+        <li><span class="gender-tag f">女生</span>耳饰/项链/丝巾→基础款变精致</li>
+        <li><span class="gender-tag f">女生</span>配饰不超过3件，多了显累赘</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 8. 30天挑战 -->
+<div class="card">
+  <h2>30天变好看挑战 · 跟着做就行</h2>
+  
+  <div class="entry">
+    <div class="entry-title"><span>📅</span>每日清单</div>
+    <div class="entry-summary">每天5件事，不需要额外时间</div>
+    <ul>
+      <li>☐ 早晚认真洗脸+涂防晒/保湿</li>
+      <li>☐ 喝水1.5L以上</li>
+      <li>☐ 11点前睡觉</li>
+      <li>☐ 靠墙站1分钟（体态矫正）</li>
+      <li>☐ 拍一张今日饮食/穿搭打卡</li>
+    </ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-title"><span>📅</span>每周清单</div>
+    <ul>
+      <li>☐ 运动2-3次（团课/夜跑/自己练）</li>
+      <li>☐ 敷1次面膜/做1次发膜（女生）</li>
+      <li>☐ 整理衣柜/检查衣服状态</li>
+      <li>☐ 修眉/修指甲</li>
+    </ul>
+    <div class="tip-box">
+      <div class="q">💡 打卡奖励</div>
+      <div class="a">连续打卡7天→上榜赢周边；21天→完赛奖牌；群内分享变化对比照，互相监督一起变好看。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 变帅公式 -->
+<div class="card">
+  <h2>变帅公式 · 30天形象提升公式</h2>
+
+  <div class="entry">
+    <div class="entry-title"><span>📐</span>好看的人每天在做的事</div>
+    <div class="entry-summary">不需要天赋，只需要公式+坚持</div>
+  </div>
+
+  <div class="formula-grid">
+    <div class="formula-col">
+      <div class="formula-header pink-h">🧴 护肤基础3步</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🫧</span><span class="f-name">清洁</span><span class="f-detail">氨基酸洁面·早晚</span></div>
+        <div class="formula-item"><span class="f-icon">💧</span><span class="f-name">保湿</span><span class="f-detail">3分钟内涂乳液</span></div>
+        <div class="formula-item"><span class="f-icon">☀️</span><span class="f-name">防晒</span><span class="f-detail">SPF30+ 出门前涂</span></div>
+        <div class="formula-item"><span class="f-icon">🔄</span><span class="f-name">周期</span><span class="f-detail">7天见光泽</span></div>
+        <div class="formula-item"><span class="f-icon">✨</span><span class="f-name">效果</span><span class="f-detail">30天肤质稳定</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header cyan-h">👦 男生加分项</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">✂️</span><span class="f-name">修眉</span><span class="f-detail">2周一次·去杂毛</span></div>
+        <div class="formula-item"><span class="f-icon">💇</span><span class="f-name">发型</span><span class="f-detail">3-4周修剪</span></div>
+        <div class="formula-item"><span class="f-icon">👔</span><span class="f-name">穿搭</span><span class="f-detail">基础款+合身</span></div>
+        <div class="formula-item"><span class="f-icon">🦷</span><span class="f-name">口腔</span><span class="f-detail">牙线+漱口水</span></div>
+        <div class="formula-item"><span class="f-icon">💪</span><span class="f-name">体态</span><span class="f-detail">靠墙站1min/天</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header green-h">👧 女生加分项</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">💄</span><span class="f-name">淡妆</span><span class="f-detail">防晒+眉笔+口红</span></div>
+        <div class="formula-item"><span class="f-icon">💅</span><span class="f-name">指甲</span><span class="f-detail">2周修一次</span></div>
+        <div class="formula-item"><span class="f-icon">🧴</span><span class="f-name">身体乳</span><span class="f-detail">洗完澡3min内涂</span></div>
+        <div class="formula-item"><span class="f-icon">💇</span><span class="f-name">发质</span><span class="f-detail">发膜1次/周</span></div>
+        <div class="formula-item"><span class="f-icon">👗</span><span class="f-name">配色</span><span class="f-detail">全身不超过3色</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-note">💡 变帅不是一夜之间的事，而是每天5分钟×30天的复利。先做到，再做好。</div>
+
+  <div class="entry" style="margin-top:1.2rem;">
+    <div class="entry-title"><span>🌅</span>早晚护肤公式</div>
+    <div class="entry-summary">早上防护，晚上修复，两步搞定</div>
+  </div>
+
+  <div class="formula-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="formula-col">
+      <div class="formula-header gold-h">🌅 早间公式 · 3分钟</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🫧</span><span class="f-name">清水/洁面</span><span class="f-detail">30秒</span></div>
+        <div class="formula-item"><span class="f-icon">💧</span><span class="f-name">保湿水/乳</span><span class="f-detail">1分钟</span></div>
+        <div class="formula-item"><span class="f-icon">☀️</span><span class="f-name">防晒霜</span><span class="f-detail">1分钟·一元硬币量</span></div>
+        <div class="formula-item"><span class="f-icon">👄</span><span class="f-name">润唇膏</span><span class="f-detail">出门前涂</span></div>
+      </div>
+    </div>
+    <div class="formula-col">
+      <div class="formula-header pink-h">🌙 晚间公式 · 5分钟</div>
+      <div class="formula-items">
+        <div class="formula-item"><span class="f-icon">🫧</span><span class="f-name">氨基酸洁面</span><span class="f-detail">60秒·温水</span></div>
+        <div class="formula-item"><span class="f-icon">💧</span><span class="f-name">精华（可选）</span><span class="f-detail">烟酰胺/VC衍生物</span></div>
+        <div class="formula-item"><span class="f-icon">🧴</span><span class="f-name">面霜/乳液</span><span class="f-detail">锁住水分</span></div>
+        <div class="formula-item"><span class="f-icon">👄</span><span class="f-name">润唇膏</span><span class="f-detail">睡前厚涂</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-note">🔑 核心原则：早上「清洁+保湿+防晒」出门，晚上「清洁+修复」睡觉。坚持30天，皮肤状态肉眼可见变好。</div>
+</div>
+
+<div class="footer">
+  出汗社 · 好看的人偷偷做 · 男女通用版 · 持续更新中<br>
+  💬 有护肤/穿搭问题随时群里问，大家一起变好看
+</div>
+
+</div>
+</body>
+</html>
