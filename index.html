@@ -3833,6 +3833,15 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   function bsNormalize(m){
     if (!m || typeof m !== 'object') return m;
     const o = Object.assign({}, m);
+    // roles: 兼容仅有 name 字段(旧cron写入)：若无 role 但有 name，把 name 复用为 role
+    if (Array.isArray(o.roles)){
+      o.roles = o.roles.map(r => {
+        if (!r || typeof r !== 'object') return r;
+        if (r.role) return r;
+        if (r.name) return Object.assign({}, r, {role: r.name, name: ''});
+        return r;
+      });
+    }
     // keyPoints: ['文本'] -> [{point,why}]
     if (Array.isArray(o.keyPoints)){
       o.keyPoints = o.keyPoints.map(kp => (typeof kp === 'string') ? {point: kp, why: ''} : kp);
