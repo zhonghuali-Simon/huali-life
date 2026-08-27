@@ -2750,6 +2750,10 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     }
     items.forEach(f=>{
       const itemType = f.type || ({crossover:'💡 思路',fitness:'🏋️ 副业'}[_tbCat] || '📰 新闻');
+      // 兼容旧结构(只有 action)与任何字段缺失：绝不能因为一条数据没有 points 就让整页空白
+      const pts = Array.isArray(f.points) ? f.points
+                : (f.points ? [f.points]
+                : (f.action ? [f.action] : (f.detail ? [f.detail] : [])));
       html += `<div style="padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
           <span style="font-size:10px;padding:2px 8px;background:rgba(${catInfo.bg},.12);color:${catInfo.color};border:1px solid rgba(${catInfo.bg},.25)">${itemType}</span>
@@ -2757,7 +2761,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         </div>
         <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${f.summary}</div>
         <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:2">
-          ${f.points.map(p=>`<li>${p}</li>`).join('')}
+          ${pts.map(p=>`<li>${p}</li>`).join('')}
         </ul>
       </div>`;
     });
