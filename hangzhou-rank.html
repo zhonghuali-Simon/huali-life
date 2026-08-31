@@ -51,10 +51,12 @@ input.q:focus{border-color:var(--g);box-shadow:0 0 14px rgba(57,255,20,.22)}
 .nm{font-size:15px;color:#eafff0;font-weight:700;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .dot{width:8px;height:8px;border-radius:50%;flex:none;box-shadow:0 0 9px currentColor}
 .tg{font-size:10.5px;color:#8fbfa4;border:1px solid rgba(57,255,20,.2);border-radius:5px;padding:1px 6px;font-weight:400}
-.track{height:9px;border-radius:6px;background:rgba(255,255,255,.06);margin:8px 0 6px;overflow:hidden;position:relative}
-.fill{height:100%;border-radius:6px;background:linear-gradient(90deg,rgba(57,255,20,.55),#39ff14 70%,#aaffc0);
+.scline{display:flex;justify-content:space-between;align-items:baseline;margin-top:9px;font-size:11.5px}
+.scline .lb{color:#5f8272}
+.scline .sc{color:#aaffc0;font-weight:800;text-shadow:0 0 10px rgba(57,255,20,.5)}
+.track{height:9px;border-radius:6px;background:rgba(255,255,255,.06);margin:4px 0 7px;overflow:hidden;position:relative}
+.fill{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,rgba(57,255,20,.5),#39ff14 72%,#c8ffd6);
  box-shadow:0 0 12px rgba(57,255,20,.55);width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
-.sc{position:absolute;right:0;top:-19px;font-size:11.5px;color:#aaffc0;font-weight:700}
 .meta{font-size:11.5px;color:#7fa691;display:flex;flex-wrap:wrap;gap:5px 12px}
 .rv{font-size:12px;color:#9fc9b1;margin-top:6px;line-height:1.6;border-left:2px solid rgba(57,255,20,.35);padding-left:8px}
 .mini{margin:8px 0 18px;border:1px solid rgba(0,229,255,.16);background:rgba(6,16,20,.6);border-radius:12px;padding:14px}
@@ -157,7 +159,8 @@ function row(x, i, mx){
     <div>
       <div class="nm"><span class="dot" style="color:${x.c};background:${x.c}"></span>${esc(x.n)}
         <span class="tg">${esc(x.t)}</span><span class="tg">${esc(x.a)}</span><span class="tg">${esc(x.h)}</span></div>
-      <div class="track"><span class="sc">口碑 ${x.s}</span><i class="fill" data-w="${w}%"></i></div>
+      <div class="scline"><span class="lb">口碑分</span><span class="sc">${x.s}</span></div>
+      <div class="track"><i class="fill" data-w="${w}%"></i></div>
       <div class="meta"><span>${money(x.p)}</span><span>车程 ${x.d||'—'} 分钟</span>
         <span>推荐 ${stars(x.r)}</span><span>网感 ${x.w}</span><span>出片 ${x.ph}/5</span></div>
       ${x.v?`<div class="rv">${esc(x.v)}</div>`:''}
