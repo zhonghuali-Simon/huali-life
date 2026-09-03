@@ -31667,79 +31667,54 @@
           "_date": "2026-09-03"
         },
         {
-          "title": "Fitness English: Explaining Progressive Overload",
+          "title": "Product English: Setting Experiment Guardrails 设定实验护栏",
           "one": {
-            "en": "Progressive overload means making your muscles work a little harder over time, not lifting heavy every day.",
-            "zh": "渐进超负荷是逐渐让肌肉多受一点刺激，而不是每天冲大重量。",
+            "en": "Guardrails define what must not get worse while an experiment pursues its primary goal.",
+            "zh": "实验护栏用于明确：追求主目标时，哪些指标绝不能恶化。",
             "words": [
               {
-                "w": "progressive",
-                "ipa": "/prəˈɡresɪv/",
-                "def": "渐进的；逐步的"
+                "w": "guardrail",
+                "ipa": "/ˈɡɑːrdreɪl/",
+                "def": "护栏指标；安全边界"
               },
               {
-                "w": "overload",
-                "ipa": "/ˌoʊvərˈloʊd/",
-                "def": "超负荷"
-              },
-              {
-                "w": "stimulus",
-                "ipa": "/ˈstɪmjələs/",
-                "def": "刺激"
+                "w": "trade-off",
+                "ipa": "/ˈtreɪd ɔːf/",
+                "def": "权衡；取舍"
               }
             ]
           },
           "points": [
             {
-              "en": "You can add weight, add reps, add sets, or shorten rest periods.",
-              "zh": "可以通过加重量、加次数、加组数或缩短组间休息来实现。",
+              "en": "Choose one primary metric and no more than three guardrail metrics.",
+              "zh": "选择一个主指标，护栏指标不超过三个。",
               "words": [
                 {
-                  "w": "reps",
-                  "ipa": "/reps/",
-                  "def": "次数（repetitions 的缩写）"
-                },
-                {
-                  "w": "sets",
-                  "ipa": "/sets/",
-                  "def": "组数"
-                },
-                {
-                  "w": "rest periods",
-                  "ipa": "/rest ˈpɪriədz/",
-                  "def": "休息间隔"
+                  "w": "primary metric",
+                  "ipa": "/ˈpraɪmeri ˈmetrɪk/",
+                  "def": "主指标"
                 }
               ]
             },
             {
-              "en": "Increase only one variable at a time to keep the movement safe.",
-              "zh": "每次只增加一个变量，保持动作安全。",
+              "en": "Set the stop threshold before launch, not after the data looks uncomfortable.",
+              "zh": "上线前设定停止阈值，不要等数据难看后再临时解释。",
               "words": [
                 {
-                  "w": "variable",
-                  "ipa": "/ˈveriəbl/",
-                  "def": "变量"
-                },
-                {
-                  "w": "movement",
-                  "ipa": "/ˈmuːvmənt/",
-                  "def": "动作；动作模式"
+                  "w": "threshold",
+                  "ipa": "/ˈθreʃhoʊld/",
+                  "def": "阈值"
                 }
               ]
             },
             {
-              "en": "Track your numbers; progress is measured in weeks and months, not single sessions.",
-              "zh": "记录数据；进步以周和月衡量，不是单次训练。",
+              "en": "If a guardrail is breached, pause the test and diagnose the affected segment.",
+              "zh": "若护栏被击穿，暂停实验并定位受影响人群。",
               "words": [
                 {
-                  "w": "track",
-                  "ipa": "/træk/",
-                  "def": "记录；追踪"
-                },
-                {
-                  "w": "sessions",
-                  "ipa": "/ˈseʃnz/",
-                  "def": "训练课；场次"
+                  "w": "breach",
+                  "ipa": "/briːtʃ/",
+                  "def": "突破；违反"
                 }
               ]
             }
@@ -31981,15 +31956,15 @@
       ],
       "fitness": [
         {
-          "type": "insight",
-          "title": "🏋️ 出个汗Sughan的「秋季体态评估周」：用免费评估导入周期私教",
-          "one": "9月开学季是用户建立训练习惯的黄金窗口——用一周免费的体态评估活动吸引潜在会员，再用评估报告自然导入周期私教。",
-          "summary": "开学季推体态评估周，以低门槛评估导入周期私教。",
+          "type": "副业运营",
+          "title": "🏋️ 出个汗Sughan「25分钟下班恢复舱」：用短服务承接晚高峰碎片需求",
+          "one": "面向久坐上班族，把呼吸、活动度与低强度力量组合成25分钟标准服务，解决“没时间练一小时”的阻力。",
+          "summary": "用25分钟标准化恢复服务切入晚高峰碎片需求。",
           "points": [
-            "活动设计：预约即送15分钟体态评估+3分钟改善方案，突出专业性和低压力",
-            "评估维度：圆肩驼背、骨盆前倾、核心稳定性、踝背屈活动度，覆盖80%常见体态问题",
-            "转化路径：评估后给出「4周改善计划」入口，首单体验课与评估结果强绑定",
-            "数据目标：评估到店率≥60%，体验课转化率≥35%，周期私教签约率≥20%"
+            "入口只承诺缓解当日僵硬感，不夸大治疗效果",
+            "流程固定为状态询问、呼吸重置、两项活动度、两项低强度力量和离店建议",
+            "按18:00—21:00连续排班，记录每时段到店率与复购间隔",
+            "两周后依据单小时贡献和次日反馈决定是否扩容"
           ]
         },
         {
@@ -32005,15 +31980,15 @@
           ]
         },
         {
-          "type": "insight",
-          "title": "📱 教练个人IP的「口播脚本模板」：30秒讲清一个动作误区",
-          "one": "短视频口播不需要复杂剪辑，30秒讲清一个常见动作误区，就能建立专业信任并吸引同城用户。",
-          "summary": "用30秒口播脚本讲清一个动作误区，建立教练专业信任。",
+          "type": "内容运营",
+          "title": "📱 教练「一周动作迭代日志」：用连续纠错过程建立专业可信度",
+          "one": "不再只拍一次性的技巧口播，而是连续七天记录同一动作从评估、练习到复测的变化，让用户看见方法如何起效。",
+          "summary": "用七天连续纠错日志展示方法、过程与边界。",
           "points": [
-            "脚本结构：痛点提问（3秒）+错误示范（10秒）+正确做法（12秒）+行动号召（5秒）",
-            "选题来源：学员上课中最常犯的5个错误、网上最容易误导新手的动作",
-            "拍摄要点：固定机位、自然光、纯色背景，教练着装与品牌色一致",
-            "发布节奏：每周3条口播+1条幕后+1条学员故事，稳定建立专业人设"
+            "第1天展示基线与限制条件，第2—6天每天只改一个变量，第7天复测",
+            "每条内容同时说明适用对象与不适用情况，避免制造万能动作",
+            "画面固定机位与测试标准，保证前后对比可解释",
+            "以完播率、收藏率和有效咨询率判断内容价值，不追逐单条播放峰值"
           ]
         }
       ]
