@@ -41071,7 +41071,10 @@
         }
       ]
     },
-    "done": [],
+    "done": [
+      "T-101",
+      "T-502"
+    ],
     "bonus": [],
     "blockedTitles": [],
     "manualTasks": [],
