@@ -1417,14 +1417,35 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   }
   async function fetchSync(){
     SYNC_STATE.tried = [];
+    let best = null, bestName = '', bestScore = -1;
+    const d = today();
+    function freshnessScore(data){
+      const row = data && data[d];
+      if (!row || typeof row !== 'object') return 0;
+      let score = 0;
+      if ((row.tpl||'').trim()) score++;
+      if (row.kbAppend && typeof row.kbAppend === 'object') score++;
+      if (row.stockToday && row.stockToday.date === d) score++;
+      if (row.tbToday && (!row.tbToday.date || row.tbToday.date === d)) score++;
+      if (row.bsToday) score++;
+      return score;
+    }
     for (const [name, mk] of SYNC_SOURCES){
       const data = await fetchOnce(mk(), 8000);
       if (data && typeof data === 'object'){
-        SYNC_STATE.ok = true; SYNC_STATE.source = name; SYNC_STATE.at = Date.now();
-        renderSyncBadge();
-        return data;
+        const score = freshnessScore(data);
+        if (score > bestScore){ best = data; bestName = name; bestScore = score; }
+        // 当日五个数据域齐全才停止；旧缓存即使可访问，也继续尝试后续源。
+        if (score >= 5) break;
+        SYNC_STATE.tried.push(name+'(旧缓存)');
+        continue;
       }
       SYNC_STATE.tried.push(name);
+    }
+    if (best){
+      SYNC_STATE.ok = true; SYNC_STATE.source = bestName; SYNC_STATE.at = Date.now();
+      renderSyncBadge();
+      return best;
     }
     SYNC_STATE.ok = false; SYNC_STATE.source = ''; SYNC_STATE.at = Date.now();
     renderSyncBadge();
