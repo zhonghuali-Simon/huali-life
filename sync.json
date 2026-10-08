@@ -47569,6 +47569,11 @@
         }
       ]
     },
-    "manualTasks": []
+    "manualTasks": [],
+    "done": [
+      "T-101",
+      "T-606"
+    ],
+    "bonus": []
   }
 }
