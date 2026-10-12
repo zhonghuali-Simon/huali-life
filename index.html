@@ -320,6 +320,7 @@
   <div class="tab" data-page="history" onclick="switchPage('history')">📅 历史</div>
   <div style="align-self:center;color:var(--sub);opacity:.3;padding:0 4px">|</div>
   <div class="tab" data-page="settings" onclick="switchPage('settings')">⚙️ 设置</div>
+  <div class="tab" data-page="tips" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('tips');}" onclick="switchPage('tips')">每日 Tips</div>
 </div>
 
 <div class="wrap">
@@ -822,6 +823,39 @@
       </div>
     </div>
   </div>
+
+<style>
+#page-tips [hidden]{display:none!important}
+#page-tips .tips-grid{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:24px;align-items:start}#page-tips .tips-form,#page-tips .tips-view{min-width:0}#page-tips label{display:block;font-size:12px;color:var(--text);margin:14px 0 6px}#page-tips input,#page-tips textarea,#page-tips select{display:block;width:100%;min-width:0;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:10px;font:13px/1.6 -apple-system,"PingFang SC",sans-serif}#page-tips input:focus-visible,#page-tips textarea:focus-visible,#page-tips select:focus-visible,#page-tips button:focus-visible{outline:2px solid #2ec167;outline-offset:3px}#page-tips textarea{resize:vertical;min-height:58px}#page-tips .tips-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}#page-tips .tips-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}#page-tips .tips-muted{font-size:12px;line-height:1.8;color:var(--sub);overflow-wrap:anywhere}#page-tips .tips-origin{padding:10px 12px;border-left:2px solid #2ec167;background:#2ec1670c;margin:14px 0;color:var(--text);font-size:12px;line-height:1.8}#page-tips .tips-view{position:sticky;top:140px}#tipsCanvas{display:block;width:100%;max-width:600px;height:auto;background:#141916;box-shadow:0 16px 48px #0005}#tipsStatus{margin-top:12px;font-size:12px;line-height:1.8;color:var(--text);overflow-wrap:anywhere}#page-tips .tips-review{display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.8}#page-tips .tips-review input{width:16px;height:16px;flex:none;margin-top:3px;accent-color:#2ec167}#page-tips details{margin:14px 0;line-height:1.8;font-size:12px}#tipsRaw{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--sub)}#page-tips .tips-tabs{display:flex;gap:8px;margin-bottom:16px}#page-tips .tips-tabs button{flex:1;min-height:40px}#page-tips .tips-tabs button[aria-pressed=true]{border-color:#2ec167;color:#2ec167;background:#2ec16712}#page-tips .tips-empty{padding:12px;border:1px dashed var(--line);font-size:12px;line-height:1.8}@media(max-width:850px){#page-tips .tips-grid{grid-template-columns:1fr;gap:20px}#page-tips .tips-view{position:static}#page-tips .card{padding:16px}#page-tips .tips-tabs{flex-wrap:wrap}}
+</style>
+<div class="page" id="page-tips">
+  <div class="card">
+    <h2>出个汗 · 每日 Tips <span class="right">文字编辑台</span></h2>
+    <div class="tips-muted">一张卡，只说一件事。沿用知识库的「标题＋一句话结论＋3条要点」，无实物图。</div>
+    <div class="tips-grid">
+      <div class="tips-form">
+        <div class="tips-tabs"><button id="tipsFitTab" type="button" aria-pressed="true" onclick="tipsSwitch('fit')">健身知识</button><button id="tipsLookTab" type="button" aria-pressed="false" onclick="tipsSwitch('look')">护肤知识</button></div>
+        <div class="tips-row"><div><label for="tipsSourceDate">知识日期</label><select id="tipsSourceDate" onchange="tipsChangeDate()"></select></div><div><label for="tipsDate">卡片日期</label><input id="tipsDate" type="date"></div></div>
+        <label for="tipsEntry">选择知识库条目</label><select id="tipsEntry" onchange="tipsChangeEntry()"></select>
+        <div class="tips-origin" id="tipsOrigin"></div>
+        <div class="tips-empty" id="tipsEmpty" hidden></div>
+        <label for="tipsTitle">标题 · 建议24字内</label><textarea id="tipsTitle" rows="2" maxlength="60"></textarea>
+        <label for="tipsOne">一句话结论 · 建议45字内</label><textarea id="tipsOne" rows="2" maxlength="150"></textarea>
+        <label for="tipsPoint0">要点 1 · 建议38字内</label><textarea id="tipsPoint0" rows="2" maxlength="150"></textarea>
+        <label for="tipsPoint1">要点 2</label><textarea id="tipsPoint1" rows="2" maxlength="150"></textarea>
+        <label for="tipsPoint2">要点 3</label><textarea id="tipsPoint2" rows="2" maxlength="150"></textarea>
+        <label for="tipsCaution">注意事项 · 可留空</label><textarea id="tipsCaution" rows="2" maxlength="150"></textarea>
+        <label class="tips-review"><input id="tipsReviewed" type="checkbox">已核对建议与适用范围，确认这份文案可以分享。</label>
+        <div class="tips-actions"><button type="button" class="primary" id="tipsExport" onclick="tipsExportPng()">导出 PNG</button><button type="button" onclick="tipsCopy()">复制文字</button><button type="button" onclick="tipsSaveDrafts()">保存文案</button><button type="button" onclick="document.getElementById('tipsImport').click()">导入文案</button><button type="button" onclick="tipsReset()">恢复这条知识</button></div>
+        <input type="file" id="tipsImport" accept=".json,application/json" hidden onchange="tipsImportDrafts(this)">
+        <div class="tips-muted" style="margin-top:12px">切换分类保留编辑。刷新或关闭前请「保存文案」；文件可再次导入，不改知识库原文、任务或积分。</div>
+        <details><summary>查看知识库原文</summary><div id="tipsRaw"></div></details>
+      </div>
+      <div class="tips-view"><div class="tips-muted" style="margin-bottom:12px">1080 × 1080 · 纯文字知识卡</div><canvas id="tipsCanvas" width="1080" height="1080" aria-label="纯文字每日Tips预览"></canvas><div id="tipsStatus" role="status" aria-live="polite"></div></div>
+    </div>
+  </div>
+</div>
+
 
 </div>
 
@@ -1732,6 +1766,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       renderAntiBadges:renderAntiBadges,renderRadarChart:renderRadarChart,renderTrend30:renderTrend30,
       renderGroupPie:renderGroupPie,renderChallenges:renderChallenges,renderPK:renderPK,renderRun:renderRun};
     for (const k in R) _safeRender(k, R[k]);
+    if (document.getElementById('page-tips').classList.contains('active')) _safeRender('renderTips',renderTips);
     _safeRender('header', function(){
       const a = document.getElementById('tabTodayCnt');
       if (a) a.textContent = S.tasks.filter(t=>!t.done).length;
@@ -2595,6 +2630,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     if (name==='run') renderRun();
     if (name==='skills') renderSkills();
     if (name==='settings') renderSettings();
+    if (name==='tips') renderTips();
   }
 
   function toggleTheme(){
@@ -3162,6 +3198,130 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       if (b.textContent.includes('中文翻译')) b.textContent = show ? '隐藏中文翻译' : '显示中文翻译';
     });
   }
+
+  // 每日Tips只读取知识库，编辑内容留在独立内存草稿中，不写入成长状态。
+  const TIPS_PRESETS = {
+    '握距选择以手腕中立为边界：不存在人人通用的固定厘米数': {title:'握距随动作调整，\n避免手腕明显后折',one:'没有人人通用的握距；以无痛、稳定和动作可控为调整依据。',points:['先减轻重量，再小幅调整握距，不照搬他人。','留意手腕与前臂的受力关系，避免明显后折。','用正面、侧面录像检查腕肘与器械路径。'],caution:'疼痛或麻木时停下；持续不适或既往损伤需专业评估。'},
+    '久坐时踝泵只能做短时补位，不能替代定时起身和步行': {title:'久坐做踝泵，\n也要起身走动',one:'踝泵只是短时活动补位，不能替代起身步行，也不能抵消整天久坐。',points:['坐稳后缓慢勾脚、绷脚，以舒适范围为准。','配合起身和短走，不把抖脚当作活动替代。','保持自然呼吸，确保起身路径安全。'],caution:'单侧肿胀、发热或疼痛及时就医；呼吸不适立即就医。'},
+    '皮肤防晒ABC:Avoid-Block-Cream分级策略': {title:'防晒三步：\n避晒、遮挡、涂防晒',one:'防晒不只靠防晒霜，减少暴晒、适当遮挡与涂抹防晒应配合使用。',points:['尽量避开强烈日晒，户外活动安排遮阴休息。','配合帽子、防晒衣或伞，别只依赖防晒霜。','选广谱SPF30+、耐水防晒，按说明涂足并补涂。'],caution:'户外约每两小时补涂；出汗、游泳或擦拭后及时补涂。'}
+  };
+  const TIPS_FIELDS = ['Date','Title','One','Point0','Point1','Point2','Caution'];
+  const TIPS_STATE = {cat:'fit',date:{},selected:{},drafts:{},ready:false,errors:[]};
+  const tipsEl = id=>document.getElementById('tips'+id);
+  function tipsText(v){ if(typeof v==='string')return v; if(v && typeof v==='object')return v.zh||v.text||v.en||''; return ''; }
+  function tipsCatalog(cat){
+    const kb=kbSource(); const rows=((kb[cat]||{}).entries||[]).filter(e=>e&&typeof e.title==='string');
+    const seen=new Set();
+    return rows.filter(e=>{
+      if(cat==='look' && (!/护肤|洁面|皮肤|防晒|保湿|屏障|洗脸|维A|维C|视黄醇|祛痘|粉刺/.test(e.title) || /穿搭|造型|服装|气场|肤色与气色/.test(e.title)))return false;
+      const key=(e._date||'base')+'::'+e.title; if(seen.has(key))return false; seen.add(key); return true;
+    }).sort((a,b)=>(b._date||'').localeCompare(a._date||''));
+  }
+  function tipsKey(cat,date,title){return JSON.stringify([cat,date,title]);}
+  function tipsEntries(){
+    const cat=TIPS_STATE.cat,date=TIPS_STATE.date[cat],rows=tipsCatalog(cat).filter(e=>(e._date||'base')===date);
+    const seen=new Set(rows.map(e=>tipsKey(cat,date,e.title)));
+    Object.values(TIPS_STATE.drafts).filter(d=>d.cat===cat && d.sourceDate===date && (d.title||d.one||d.points.some(p=>p.trim()))).forEach(d=>{
+      if(!seen.has(tipsKey(cat,date,d.sourceTitle)))rows.push({title:d.sourceTitle,_date:date,_tipsDraft:true,_draftLabel:d.title||'手动草稿'});
+    });
+    return rows;
+  }
+  function tipsCurrent(){return TIPS_STATE.drafts[TIPS_STATE.selected[TIPS_STATE.cat]];}
+  function tipsBuildDraft(entry,cat){
+    const preset=TIPS_PRESETS[entry.title];
+    const text=preset||{title:entry.title,one:tipsText(entry.one),points:(entry.points||[]).slice(0,3).map(tipsText),caution:''};
+    return {cat,date:today(),sourceDate:entry._date||'base',sourceTitle:entry.title,title:text.title,one:text.one,points:[0,1,2].map(i=>(text.points||[])[i]||''),caution:text.caution||'',reviewed:false,curated:!!preset};
+  }
+  function tipsCollect(){
+    if(!TIPS_STATE.ready)return; const d=tipsCurrent(); if(!d)return;
+    d.date=tipsEl('Date').value; d.title=tipsEl('Title').value; d.one=tipsEl('One').value;
+    d.points=[0,1,2].map(i=>tipsEl('Point'+i).value);d.caution=tipsEl('Caution').value;d.reviewed=tipsEl('Reviewed').checked;
+  }
+  function tipsFill(){
+    const d=tipsCurrent(); if(!d)return;
+    tipsEl('Date').value=d.date;tipsEl('Title').value=d.title;tipsEl('One').value=d.one;
+    [0,1,2].forEach(i=>tipsEl('Point'+i).value=d.points[i]||'');tipsEl('Caution').value=d.caution||'';tipsEl('Reviewed').checked=!!d.reviewed;
+  }
+  function renderTips(){
+    if(!tipsEl('Canvas') || !S)return;
+    if(!TIPS_STATE.ready){
+      TIPS_FIELDS.forEach(f=>tipsEl(f).addEventListener('input',()=>{tipsEl('Reviewed').checked=false;tipsCollect();renderTipsCard();}));
+      tipsEl('Reviewed').addEventListener('change',()=>{tipsCollect();renderTipsCard();});TIPS_STATE.ready=true;
+    }
+    const cat=TIPS_STATE.cat, rows=tipsCatalog(cat), ds=tipsEl('SourceDate');
+    const preferred=rows.find(e=>e._date===today()) || (cat==='look'?rows.find(e=>TIPS_PRESETS[e.title]):null);
+    if(!TIPS_STATE.date[cat])TIPS_STATE.date[cat]=(preferred||rows[0]||{})._date||'base';
+    const dates=[...new Set([today(),...rows.map(e=>e._date||'base'),...Object.values(TIPS_STATE.drafts).filter(d=>d.cat===cat).map(d=>d.sourceDate)])].sort().reverse();
+    ds.replaceChildren();dates.forEach(d=>{const op=document.createElement('option');op.value=d;op.textContent=d==='base'?'基础知识':d+(d===today()?' · 今日':'');ds.append(op);});ds.value=TIPS_STATE.date[cat];
+    const entries=tipsEntries(), sel=tipsEl('Entry');sel.replaceChildren();
+    entries.forEach(e=>{const op=document.createElement('option');op.value=tipsKey(cat,e._date||'base',e.title);op.textContent=e._tipsDraft?'文案草稿 · '+e._draftLabel:e.title;sel.append(op);});
+    let key=TIPS_STATE.selected[cat];
+    if(!entries.some(e=>tipsKey(cat,e._date||'base',e.title)===key)){
+      const e=entries.find(e=>TIPS_PRESETS[e.title])||entries[0];key=e?tipsKey(cat,e._date||'base',e.title):tipsKey(cat,TIPS_STATE.date[cat],'');TIPS_STATE.selected[cat]=key;
+    }
+    if(!TIPS_STATE.drafts[key]){
+      const entry=entries.find(e=>tipsKey(cat,e._date||'base',e.title)===key);
+      TIPS_STATE.drafts[key]=entry?tipsBuildDraft(entry,cat):{cat,date:today(),sourceDate:TIPS_STATE.date[cat],sourceTitle:'',title:'',one:'',points:['','',''],caution:'',reviewed:false};
+    }
+    sel.value=key;sel.disabled=!entries.length;
+    tipsEl('Empty').hidden=entries.some(e=>!e._tipsDraft);tipsEl('Empty').textContent='这一天没有'+(cat==='fit'?'健身':'护肤')+'知识库条目。可切换历史日期、编辑已保存草稿或手动填写；不会把穿搭或旧内容标为今日。';
+    const d=tipsCurrent(); const hist=d.sourceDate!==today();
+    tipsEl('Origin').textContent=(d.sourceTitle?'来源：'+(d.sourceDate==='base'?'基础知识':d.sourceDate)+' · '+d.sourceTitle:'手动文案 · 无知识库来源')+(d.curated?'｜已精简为日常科普，仍需确认适用范围。':'｜保留原文结构，请精简并核对后分享。')+(hist && d.sourceTitle?'（历史内容，不是今日上新）':'');
+    const entry=entries.find(e=>tipsKey(cat,e._date||'base',e.title)===key);
+    tipsEl('Raw').textContent=entry&&!entry._tipsDraft?[entry.title,tipsText(entry.one),...(entry.points||[]).map(tipsText)].join('\n\n'):'这是已保存文案；当前知识库无对应原文。';
+    tipsEl('FitTab').setAttribute('aria-pressed',String(cat==='fit'));tipsEl('LookTab').setAttribute('aria-pressed',String(cat==='look'));
+    tipsFill();renderTipsCard();
+  }
+  function tipsSwitch(cat){if(!['fit','look'].includes(cat))return;tipsCollect();TIPS_STATE.cat=cat;renderTips();}
+  function tipsChangeDate(){tipsCollect();TIPS_STATE.date[TIPS_STATE.cat]=tipsEl('SourceDate').value;renderTips();}
+  function tipsChangeEntry(){tipsCollect();TIPS_STATE.selected[TIPS_STATE.cat]=tipsEl('Entry').value;renderTips();}
+  function renderTipsCard(){
+    const d=tipsCurrent();if(!d)return;const c=tipsEl('Canvas'),ctx=c.getContext('2d');const errors=[];
+    function text(t,x,y,w,size,weight,lineHeight,max,label,color){
+      ctx.font=weight+' '+size+'px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillStyle=color;let ls=[];
+      for(const p of String(t||'').split('\n')){let s='';for(const ch of p){if(s&&ctx.measureText(s+ch).width>w){ls.push(s);s=ch;}else s+=ch;}ls.push(s);}
+      if(ls.length>max){errors.push(label+'过长，请精简');ls=ls.slice(0,max);let end=ls.length-1;while(ctx.measureText(ls[end]+'…').width>w)ls[end]=ls[end].slice(0,-1);ls[end]+='…';}
+      ls.forEach((s,i)=>ctx.fillText(s,x,y+i*lineHeight));
+    }
+    function rule(y){ctx.strokeStyle='#314238';ctx.beginPath();ctx.moveTo(72,y);ctx.lineTo(1008,y);ctx.stroke();}
+    ctx.fillStyle='#141916';ctx.fillRect(0,0,1080,1080);ctx.textBaseline='alphabetic';ctx.textAlign='left';
+    text('出个汗',72,100,300,40,800,50,1,'品牌','#f0f4e9');text('每日 TIPS  /  '+(d.cat==='fit'?'健身知识':'护肤知识'),72,144,600,19,500,26,1,'栏目','#2ec167');
+    ctx.textAlign='right';ctx.font='18px "PingFang SC",sans-serif';ctx.fillStyle='#9eb7a5';ctx.fillText((d.date||today()).replace(/-/g,'.'),1008,100);ctx.textAlign='left';rule(178);
+    text(d.title||'写下今天的小提醒',68,251,940,59,700,76,2,'标题','#eff4e8');
+    text(d.one||'一句话，说清核心结论。',72,385,936,30,500,43,2,'一句话结论','#a9c4b1');rule(463);
+    let n=0;d.points.forEach((p,i)=>{if(!p.trim())return;const y=531+n*119;text('0'+(n+1),72,y,60,23,600,30,1,'序号','#2ec167');text(p,152,y,856,31,500,43,2,'要点'+(i+1),'#d9e5d6');n++;});
+    if(d.caution.trim()){text('温馨提醒',72,917,936,19,600,28,1,'提醒标签','#2ec167');text(d.caution,72,957,936,23,400,31,2,'注意事项','#9fb6a5');}
+    rule(1019);text('知识库 · '+(d.sourceTitle?(d.sourceDate==='base'?'基础知识':d.sourceDate):'手动编辑'),72,1057,690,17,400,22,1,'来源','#728e7b');
+    ctx.textAlign='right';ctx.font='500 17px "PingFang SC",sans-serif';ctx.fillStyle='#9fb6a5';ctx.fillText('每天一点，慢慢变好。',1008,1057);ctx.textAlign='left';
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(d.date))errors.push('请填写有效卡片日期');
+    if(!d.title.trim()||!d.one.trim()||!n)errors.push('请填写标题、结论和至少1条要点');
+    TIPS_STATE.errors=errors;tipsEl('Export').disabled=!!errors.length||!d.reviewed;
+    tipsEl('Status').textContent=errors.length?errors.join('；'):d.reviewed?'预览就绪 · 可导出PNG或保存文案':'预览就绪 · 请核对适用范围并勾选确认后导出。';
+  }
+  function tipsDownload(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+  function tipsExportPng(){tipsCollect();renderTipsCard();const d=tipsCurrent();if(TIPS_STATE.errors.length||!d.reviewed)return;tipsEl('Canvas').toBlob(blob=>{if(blob)tipsDownload(blob,'出个汗_'+(d.cat==='fit'?'健身':'护肤')+'_文字Tips_'+d.date+'.png');else tipsEl('Status').textContent='导出失败，请重试';},'image/png');}
+  function tipsCopy(){
+    tipsCollect();const d=tipsCurrent();const value=['出个汗 · '+(d.cat==='fit'?'健身':'护肤')+'每日Tips',d.date,d.title,d.one,...d.points.filter(p=>p.trim()),d.caution,d.sourceTitle?'知识库原文：'+d.sourceDate+' · '+d.sourceTitle:'手动文案'].filter(Boolean).join('\n\n');
+    if(!d.reviewed){tipsEl('Status').textContent='未核对文案请先核对适用范围。';return;}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(value).then(()=>tipsEl('Status').textContent='已复制文字').catch(()=>prompt('复制下方文字',value));else prompt('复制下方文字',value);
+  }
+  function tipsSaveDrafts(){tipsCollect();const drafts=Object.values(TIPS_STATE.drafts);if(drafts.some(d=>!/^\d{4}-\d{2}-\d{2}$/.test(d.date))){tipsEl('Status').textContent='保存失败：存在空日期草稿，请补齐卡片日期后再保存。';return;}tipsDownload(new Blob([JSON.stringify({version:1,type:'lijing-tips',drafts},null,2)],{type:'application/json'}),'出个汗_Tips文案_'+today()+'.json');tipsEl('Status').textContent='已导出文案文件；刷新后可导入恢复，不包含系统进度或私密设置。';}
+  async function tipsImportDrafts(input){
+    try{
+      const f=input.files[0];if(!f)return;if(f.size>1000000)throw new Error('文案文件过大');const value=JSON.parse(await f.text());
+      if(value.type!=='lijing-tips'||value.version!==1||!Array.isArray(value.drafts)||value.drafts.length>500)throw new Error('不是有效的Tips文案文件');
+      const drafts=value.drafts.map(d=>{
+        if(!d||!['fit','look'].includes(d.cat)||!Array.isArray(d.points)||d.points.length!==3||![d.date,d.title,d.one,d.caution,d.sourceDate,d.sourceTitle,...d.points].every(s=>typeof s==='string'&&s.length<=1000)||!/^\d{4}-\d{2}-\d{2}$/.test(d.date)||!(d.sourceDate==='base'||/^\d{4}-\d{2}-\d{2}$/.test(d.sourceDate)))throw new Error('文案字段不完整或过长');
+        return {cat:d.cat,date:d.date,title:d.title,one:d.one,points:d.points.slice(),caution:d.caution,sourceDate:d.sourceDate,sourceTitle:d.sourceTitle,reviewed:false,curated:false};
+      });
+      if(!confirm('导入后会覆盖同一条知识的当前草稿；未导出的修改请先保存。继续？'))return;
+      drafts.forEach(d=>{TIPS_STATE.drafts[tipsKey(d.cat,d.sourceDate,d.sourceTitle)]=d;});
+      const active=drafts.find(d=>tipsKey(d.cat,d.sourceDate,d.sourceTitle)===TIPS_STATE.selected[TIPS_STATE.cat])||drafts[0];
+      if(active){TIPS_STATE.cat=active.cat;TIPS_STATE.date[active.cat]=active.sourceDate;TIPS_STATE.selected[active.cat]=tipsKey(active.cat,active.sourceDate,active.sourceTitle);}
+      tipsFill();renderTips();tipsEl('Status').textContent='已导入 '+drafts.length+' 份文案；请重新核对后导出。';
+    }catch(e){tipsEl('Status').textContent='导入失败：'+e.message;}finally{input.value='';}
+  }
+  function tipsReset(){if(!confirm('恢复当前知识的文案？其它草稿不受影响。'))return;const key=TIPS_STATE.selected[TIPS_STATE.cat],entry=tipsEntries().find(e=>tipsKey(TIPS_STATE.cat,e._date||'base',e.title)===key);if(entry&&!entry._tipsDraft){TIPS_STATE.drafts[key]=tipsBuildDraft(entry,TIPS_STATE.cat);tipsFill();renderTipsCard();}else tipsEl('Status').textContent='这份文案没有可恢复的知识库原文，已保留当前草稿。';}
 
   // ═══════ 知识库阅读计时：仅"活跃阅读"才计时，每满5分钟+10积分 ═══════
   let _kbReadTimer = null, _lastActivity = Date.now();
