@@ -311,8 +311,15 @@ def source_rows(sync, target):
                     continue
                 if source_day > target:
                     continue
-                yield {"sourceDate": actual_date, "cat": cat, "title": title,
-                       "one": one, "points": list(points)}
+                source = {"sourceDate": actual_date, "cat": cat, "title": title,
+                          "one": one, "points": list(points)}
+                if "caution" in item:
+                    try:
+                        source["caution"] = safe_text(
+                            item["caution"], "source caution", 72, required=False)
+                    except TipsError:
+                        continue
+                yield source
 
 
 def load_sync(repo):

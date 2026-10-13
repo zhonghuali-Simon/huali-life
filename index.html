@@ -274,15 +274,17 @@
   const UNLOCK_KEY = 'lijing-lock-ok';
   const DEFAULT_PIN = '0107';
   const hash = s => {let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return h.toString(36);};
-  // 初始化：若从未设置密码，存入默认密码hash
-  if (!localStorage.getItem(LOCK_KEY)) localStorage.setItem(LOCK_KEY, hash(DEFAULT_PIN));
-  const pinHash = localStorage.getItem(LOCK_KEY);
+  const lsGet = key=>{ try{return localStorage.getItem(key);}catch(e){return null;} };
+  const lsSet = (key,value)=>{ try{localStorage.setItem(key,value);return true;}catch(e){return false;} };
+  // 初始化：若从未设置密码，存入默认密码hash；存储受限时仍可用默认密码解锁本次访问
+  if (!lsGet(LOCK_KEY)) lsSet(LOCK_KEY, hash(DEFAULT_PIN));
+  const pinHash = lsGet(LOCK_KEY) || hash(DEFAULT_PIN);
   // 如果本设备已解锁过（且密码未变），直接通过
-  if (localStorage.getItem(UNLOCK_KEY) === pinHash){ document.getElementById('lockScreen').style.display='none'; }
+  if (lsGet(UNLOCK_KEY) === pinHash){ document.getElementById('lockScreen').style.display='none'; }
   window.checkPin = function(){
     const val = document.getElementById('pinInput').value;
-    if (hash(val) === localStorage.getItem(LOCK_KEY)){
-      localStorage.setItem(UNLOCK_KEY, localStorage.getItem(LOCK_KEY));
+    if (hash(val) === pinHash){
+      lsSet(UNLOCK_KEY, pinHash);
       document.getElementById('lockScreen').style.display='none';
     } else {
       document.getElementById('pinError').style.display='block';
@@ -827,6 +829,7 @@
 <style>
 #page-tips{--tips-green:#2ec167;--tips-ink:#0d2719;--tips-surface:#13221a;--tips-border:#315540;--tips-muted:#a8beb0}#page-tips [hidden]{display:none!important}#page-tips .card{border:1px solid var(--tips-border);background:rgba(10,19,14,.96);padding:24px;border-radius:16px;clip-path:none}#page-tips .tips-banner{display:flex;justify-content:space-between;align-items:center;gap:20px;background:var(--tips-green);color:var(--tips-ink);padding:24px;border-radius:12px;margin-bottom:24px}#page-tips .tips-kicker{font:600 11px/1.6 -apple-system,"PingFang SC",sans-serif;letter-spacing:2px}#page-tips .tips-banner h2{font-size:25px;font-weight:750;letter-spacing:0;margin:4px 0;color:var(--tips-ink);text-shadow:none;text-align:left;border:0;padding:0;background:none}#page-tips .tips-banner h2:before{display:none}#page-tips .tips-banner p{margin:8px 0 0;font-size:12px;line-height:1.8}#page-tips .tips-clock{flex:none;text-align:right}#page-tips .tips-clock strong{display:block;font:750 36px/1.15 -apple-system,sans-serif;letter-spacing:-1px}#page-tips .tips-clock span{font-size:11px}#page-tips .tips-daily-grid{display:grid;grid-template-columns:minmax(230px,1fr) minmax(300px,460px);gap:32px;align-items:center;margin-bottom:24px}#page-tips .tips-section-label{font-size:11px;letter-spacing:2px;color:var(--tips-green);margin-bottom:12px}#page-tips .tips-daily-title{font-size:24px;font-weight:700;line-height:1.5;color:#edf4ec;margin:16px 0 12px;white-space:pre-line}#page-tips .tips-daily-meta{font-size:12px;line-height:1.8;color:var(--tips-muted);overflow-wrap:anywhere}#page-tips .tips-pill{display:inline-block;border:1px solid #2ec16766;background:#2ec16718;color:#86e8ad;font-size:11px;line-height:1.6;border-radius:20px;padding:4px 12px}#page-tips .tips-grid{display:grid;grid-template-columns:minmax(290px,1fr) minmax(300px,460px);gap:24px;align-items:start}#page-tips .tips-form,#page-tips .tips-view{min-width:0}#page-tips .tips-view{position:sticky;top:140px}#page-tips .tips-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}#page-tips .tips-block{padding:16px;background:var(--tips-surface);border:1px solid #31554088;border-radius:10px;margin-top:12px}#page-tips .tips-block-title{font-size:12px;color:#a9ebc2;font-weight:650;margin-bottom:4px}#page-tips label{display:block;font-size:12px;color:#d9eadf;margin:12px 0 6px}#page-tips input,#page-tips textarea,#page-tips select{display:block;width:100%;box-sizing:border-box;min-width:0;background:#0d1812;color:#edf4ec;border:1px solid #365441;border-radius:8px;padding:9px 10px;font:13px/1.6 -apple-system,"PingFang SC",sans-serif}#page-tips input:focus-visible,#page-tips textarea:focus-visible,#page-tips select:focus-visible,#page-tips button:focus-visible,#page-tips summary:focus-visible{outline:2px solid var(--tips-green);outline-offset:3px}#page-tips textarea{resize:vertical;min-height:54px}#page-tips button{background:#193223;border:1px solid #42634e;color:#d7ebdf;border-radius:8px;padding:10px 14px;clip-path:none;cursor:pointer;font-size:12px;min-height:40px}#page-tips button:hover{background:#254833}#page-tips button.primary{background:var(--tips-green);border-color:var(--tips-green);color:var(--tips-ink);font-weight:700}#page-tips button:disabled{opacity:.4;cursor:not-allowed}#page-tips .tips-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}#page-tips .tips-muted{font-size:12px;line-height:1.8;color:var(--tips-muted);overflow-wrap:anywhere}#page-tips .tips-origin{padding:10px 12px;border-left:3px solid var(--tips-green);background:#2ec16712;margin:12px 0;color:#b8d7c3;font-size:11px;line-height:1.8;border-radius:0 8px 8px 0}#page-tips canvas{display:block;width:100%;height:auto;background:#141916;border-radius:10px;box-shadow:0 12px 32px #0005}#tipsStatus{margin-top:12px;font-size:12px;line-height:1.8;color:#b9d9c6;overflow-wrap:anywhere}#page-tips .tips-review{display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.8}#page-tips .tips-review input{width:16px;height:16px;flex:none;margin-top:3px;accent-color:var(--tips-green)}#page-tips details{margin:14px 0;line-height:1.8;font-size:12px}#page-tips summary{cursor:pointer}#page-tips .tips-editor-head{border-top:1px solid #315540;padding-top:24px;margin:8px 0 20px;display:flex;justify-content:space-between;align-items:center;gap:16px}#page-tips .tips-editor-head h3{font-size:17px;margin:0;color:#e0efe4}#tipsRaw{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--tips-muted)}#page-tips .tips-tabs{display:flex;gap:8px;margin-bottom:12px}#page-tips .tips-tabs button{flex:1}#page-tips .tips-tabs button[aria-pressed=true]{border-color:var(--tips-green);color:var(--tips-ink);background:var(--tips-green);font-weight:700}#page-tips .tips-empty{padding:12px;border:1px dashed var(--tips-border);font-size:12px;line-height:1.8;color:var(--tips-muted);border-radius:8px}@media(max-width:850px){#page-tips .tips-grid,#page-tips .tips-daily-grid{grid-template-columns:1fr;gap:20px}#page-tips .tips-daily-grid{align-items:start}#page-tips .tips-view{position:static}#page-tips .card{padding:16px}#page-tips .tips-banner{padding:20px;gap:12px}#page-tips .tips-banner h2{font-size:21px}#page-tips .tips-clock strong{font-size:27px}#page-tips .tips-tabs{flex-wrap:wrap}}@media(max-width:420px){#page-tips .tips-editor-head{align-items:start;flex-direction:column}#page-tips .tips-banner{padding:16px}#page-tips .tips-banner p{max-width:190px}#page-tips .tips-daily-title{font-size:21px}}
 @media(max-width:600px){#page-tips .tips-banner{flex-wrap:wrap}#page-tips .tips-banner>div:first-child{min-width:0;flex:1 1 150px}#page-tips .tips-clock{flex:1 1 110px;text-align:left}#page-tips .tips-clock span{white-space:normal}#page-tips .tips-row{grid-template-columns:1fr}#page-tips .tips-grid,#page-tips .tips-daily-grid{grid-template-columns:minmax(0,1fr)}#page-tips .tips-tabs button{min-width:0;overflow-wrap:anywhere}#page-tips .tips-block{padding:12px}#page-tips input[type=date]{max-width:100%}}
+#page-tips .tips-banner h2,#page-tips .tips-daily-title,#page-tips .tips-editor-head h3{font-weight:900}#page-tips .tips-banner{border-radius:0}#page-tips #tipsCanvas{border-radius:0}
 </style>
 <div class="page" id="page-tips">
   <div class="card">
@@ -1226,18 +1229,40 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   }
 
   let S = null;
+  const BOOT_STATE = {recovered:false, storageError:''};
+  const isRecord = v=>!!v && typeof v==='object' && !Array.isArray(v);
   function load(){
-    try { S = JSON.parse(localStorage.getItem(KEY)) || defaultState(); }
-    catch(e){ S = defaultState(); }
     const d = defaultState();
-    for (const k of Object.keys(d)) if (S[k]===undefined) S[k]=d[k];
-    if (!S.pomo) S.pomo = d.pomo;
-    if (!S.skills || !S.skills.length) S.skills = DEFAULT_SKILLS.slice(); // 首次升级回填技能
-    if (!S.customRewards) S.customRewards = [];
-    if (!S.playlists) S.playlists = [];
+    let stored = null, raw = null;
+    try{ raw=localStorage.getItem(KEY); }
+    catch(e){ BOOT_STATE.recovered=true; BOOT_STATE.storageError='读取失败'; }
+    if (raw){
+      try{ stored=JSON.parse(raw); }
+      catch(e){ BOOT_STATE.recovered=true; }
+    }
+    if (!isRecord(stored)){
+      if (stored!==null) BOOT_STATE.recovered=true;
+      S = d;
+    } else {
+      S = stored;
+    }
+    for (const k of Object.keys(d)){
+      const fallback=d[k], current=S[k];
+      let invalid=current===undefined;
+      if (Array.isArray(fallback)) invalid=!Array.isArray(current);
+      else if (isRecord(fallback)) invalid=!isRecord(current);
+      else if (fallback!==null) invalid=typeof current!==typeof fallback;
+      if (invalid){ S[k]=fallback; BOOT_STATE.recovered=true; }
+    }
+    S.pomo = Object.assign({}, d.pomo, S.pomo);
+    if (!Array.isArray(S.pomo.log)) S.pomo.log=[];
+    S.cfg = Object.assign({}, d.cfg, S.cfg);
+    S.cumu = Object.assign({}, d.cumu, S.cumu);
+    S.tasks = S.tasks.filter(isRecord).map(t=>Object.assign({},t,{dims:isRecord(t.dims)?t.dims:{}}));
+    if (!S.skills.length) S.skills = DEFAULT_SKILLS.slice(); // 首次升级回填技能
     if (S.pomo.todayDate !== today()){ S.pomo.todayCnt=0; S.pomo.todayDate=today(); }
     if (S.date !== today()){
-      settleDay(S.date);
+      try{ settleDay(S.date); }catch(e){ BOOT_STATE.recovered=true; }
       S.date = today();
       S.tasks = parseTpl(S.tpl || DEFAULT_TPL);
       S.todayBadges = {};
@@ -1248,7 +1273,11 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     }
     save();
   }
-  function save(){ localStorage.setItem(KEY, JSON.stringify(S)); scheduleCloudPush(); }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(S)); }
+    catch(e){ BOOT_STATE.storageError='写入失败'; }
+    try{ scheduleCloudPush(); }catch(e){}
+  }
 
   // ═══════ 真·双向云同步 (jsonbin.io, LWW最后写入优先) ═══════
   const CLOUD_CFG_KEY = 'huali-cloud-cfg';   // 凭证单独存本地，不进入同步内容
@@ -1772,7 +1801,8 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     });
   }
   function renderMeta(){
-    document.getElementById('meta').textContent = `${todayCn()} · 签到 ${S.streak} 天 · 健身连击 ${S.bodyStreak} 天 · 💰 ${S.coin}`;
+    const suffix=BOOT_STATE.storageError?' · ⚠️ 本地存储不可用':(BOOT_STATE.recovered?' · 已恢复异常状态':'');
+    document.getElementById('meta').textContent = `${todayCn()} · 签到 ${S.streak} 天 · 健身连击 ${S.bodyStreak} 天 · 💰 ${S.coin}${suffix}`;
     document.getElementById('dailyNote').value = S.note||'';
   }
   function renderTasks(){
@@ -3167,6 +3197,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:2">
           ${(e.points||[]).map(p=>renderSentence(p,'point')).join('')}
         </ul>
+        ${typeof e.caution==='string' && e.caution.trim()?`<div class="kb-caution" style="margin-top:8px;font-size:11px;line-height:1.8;color:var(--sub)">温馨提醒：${e.caution.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}</div>`:''}
         <div style="margin-top:10px;padding:8px 10px;background:rgba(${p.bg},.05);border-left:2px solid ${p.color}">
           <div style="font-size:11px;color:${p.color};margin-bottom:4px;font-weight:600">${p.icon} ${p.q1}</div>
           <div style="font-size:11px;color:var(--sub);margin-bottom:6px">↳ ${p.q2}</div>
@@ -3225,7 +3256,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   function tipsCurrent(){return TIPS_STATE.drafts[TIPS_STATE.selected[TIPS_STATE.cat]];}
   function tipsBuildDraft(entry,cat){
     const preset=TIPS_PRESETS[entry.title];
-    const text=preset||{title:entry.title,one:tipsText(entry.one),points:(entry.points||[]).slice(0,3).map(tipsText),caution:''};
+    const text=preset||{title:entry.title,one:tipsText(entry.one),points:(entry.points||[]).slice(0,3).map(tipsText),caution:tipsText(entry.caution)};
     return {cat,date:today(),sourceDate:entry._date||'base',sourceTitle:entry.title,title:text.title,one:text.one,points:[0,1,2].map(i=>(text.points||[])[i]||''),caution:text.caution||'',reviewed:false,curated:!!preset};
   }
   function tipsCollect(){
@@ -3275,25 +3306,34 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   // TIPS_DRAW_BEGIN
   function tipsDrawCard(d,c){
     const ctx=c.getContext('2d'),errors=[];c.width=1080;c.height=1080;
+    const green='#2ec167',ink='#092619',paper='#e6f7e6',pink='#f2689a';
     function block(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h);}
-    function text(t,x,y,w,size,weight,lineHeight,max,label,color){
-      ctx.font=weight+' '+size+'px "PingFang SC", "Microsoft YaHei", sans-serif';ctx.fillStyle=color;let ls=[];
-      for(const p of String(t||'').split('\n')){let s='';for(const ch of p){if(s&&ctx.measureText(s+ch).width>w){ls.push(s);s=ch;}else s+=ch;}ls.push(s);}
-      if(ls.length>max){errors.push(label+'过长，请精简');ls=ls.slice(0,max);let end=ls.length-1;while(ctx.measureText(ls[end]+'…').width>w)ls[end]=ls[end].slice(0,-1);ls[end]+='…';}
-      ls.forEach((s,i)=>ctx.fillText(s,x,y+i*lineHeight));
+    function font(size,weight,italic){ctx.font=(italic?'italic ':'')+weight+' '+size+'px "PingFang SC", "Microsoft YaHei", sans-serif';}
+    function lines(t,w){
+      const ls=[];for(const p of String(t||'').split('\n')){let s='';for(const ch of p){if(s&&ctx.measureText(s+ch).width>w){ls.push(s);s=ch;}else s+=ch;}ls.push(s);}return ls;
     }
-    const green='#2ec167',ink='#0d2719';block(0,0,1080,1080,'#141916');ctx.textBaseline='alphabetic';ctx.textAlign='left';
-    block(64,62,7,66,green);text('出个汗',91,104,400,40,800,48,1,'品牌','#eff4e8');
-    text('SUGHAN  /  每日 TIPS',91,145,600,17,500,24,1,'栏目','#8faa99');
-    block(824,64,192,46,green);text(d.cat==='fit'?'健身知识':'变美知识',846,95,150,22,650,28,1,'分类',ink);
-    text(String(d.date||'待填写').replace(/-/g,'.'),846,145,170,18,500,24,1,'日期','#9eb7a5');
-    text(d.title||'写下今天的小提醒',64,238,952,58,750,71,2,'标题','#eff4e8');
-    block(64,342,952,143,green);text('一句话重点',88,378,900,17,650,24,1,'结论标签',ink);
-    text(d.one||'一句话，说清核心结论。',88,421,904,29,600,41,2,'一句话结论',ink);
-    let n=0;d.points.forEach((p,i)=>{if(!p.trim())return;const y=514+n*114;block(64,y,952,100,'#1c3023');block(64,y,5,100,green);text('0'+(n+1),86,y+40,60,22,700,28,1,'序号',green);text(p,152,y+40,840,30,500,40,2,'要点'+(i+1),'#dcebdd');n++;});
-    if(d.caution.trim()){text('温馨提醒',64,905,952,18,650,25,1,'提醒标签',green);text(d.caution,64,944,952,22,400,30,2,'注意事项','#a8bcae');}
-    block(64,1003,952,1,'#38503e');text('知识库 · '+(d.sourceTitle?(d.sourceDate==='base'?'基础知识':d.sourceDate):'手动编辑'),64,1046,630,17,400,22,1,'来源','#809e89');
-    ctx.textAlign='right';ctx.font='500 17px "PingFang SC",sans-serif';ctx.fillStyle='#a8bcae';ctx.fillText('每天一点，慢慢变好。',1016,1046);ctx.textAlign='left';
+    function text(t,x,y,w,size,weight,lineHeight,max,label,color,italic){
+      font(size,weight,italic);ctx.fillStyle=color;let ls=lines(t,w);
+      if(ls.length>max){errors.push(label+'过长，请精简');ls=ls.slice(0,max);let end=ls.length-1;while(ctx.measureText(ls[end]+'…').width>w)ls[end]=ls[end].slice(0,-1);ls[end]+='…';}
+      ls.forEach((s,i)=>ctx.fillText(s,x,y+i*lineHeight));return ls.length;
+    }
+    const bg=ctx.createLinearGradient(0,220,1080,1080);bg.addColorStop(0,'#10151d');bg.addColorStop(1,'#11171b');block(0,0,1080,1080,bg);
+    const head=ctx.createLinearGradient(0,0,1080,240);head.addColorStop(0,'#39ce78');head.addColorStop(1,green);block(0,0,1080,232,head);
+    ctx.textBaseline='alphabetic';ctx.textAlign='left';
+    font(24,700);ctx.fillStyle=ink;let x=44;for(const ch of 'SUGHAN / DAILY NOTE'){ctx.fillText(ch,x,74);x+=ctx.measureText(ch).width+4;}
+    text('出个汗 · 每日 TIPS',44,176,992,72,900,84,1,'栏目',ink);
+    text(d.cat==='fit'?'健身知识':'变美知识',46,214,250,19,700,24,1,'分类',ink);
+    ctx.textAlign='right';font(19,600);ctx.fillStyle=ink;ctx.fillText(String(d.date||'待填写').replace(/-/g,'.'),1034,214);ctx.textAlign='left';
+    let titleSize=46;while(titleSize>38){font(titleSize,900);if(lines(d.title||'写下今天的小提醒',992).length<=2)break;titleSize-=2;}
+    let y=294;const titleLines=text(d.title||'写下今天的小提醒',44,y,992,titleSize,900,58,2,'标题',paper);y+=titleLines*58+12;
+    const oneLines=text(d.one||'一句话，说清核心结论。',44,y,972,31,650,42,2,'一句话结论','#43e98f',true);y+=oneLines*42+22;
+    let n=0;d.points.forEach((p,i)=>{if(!p.trim())return;ctx.beginPath();ctx.arc(51,y-11,5,0,Math.PI*2);ctx.fillStyle=paper;ctx.fill();const count=text(p,78,y,946,31,500,42,2,'要点'+(i+1),paper);y+=count*42+16;n++;});
+    if(y-16>823)errors.push('正文过长，请精简标题、结论或要点');
+    const caution=String(d.caution||'').trim(),boxY=842;block(32,boxY,1016,174,'#211c28');block(32,boxY,5,174,pink);
+    text(caution?'温馨提醒':'留给今天的小行动',60,boxY+43,960,25,800,32,1,'提醒标签',pink);
+    text(caution||'从上面挑一件适合自己的小事，今天先试试。',60,boxY+84,956,25,500,37,2,'注意事项','#b9d4bc');
+    text('知识来源 · '+(d.sourceTitle?(d.sourceDate==='base'?'基础知识':d.sourceDate):'手动编辑'),44,1053,660,17,400,22,1,'来源','#8ca998');
+    ctx.textAlign='right';font(17,500);ctx.fillStyle='#a7c4ad';ctx.fillText('每天一点，慢慢变好。',1036,1053);ctx.textAlign='left';
     if(!/^\d{4}-\d{2}-\d{2}$/.test(d.date))errors.push('请填写有效卡片日期');
     if(!d.title.trim()||!d.one.trim()||!n)errors.push('请填写标题、结论和至少1条要点');
     return errors;
@@ -3353,9 +3393,19 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   function tipsRenderDaily(){
     const dayNow=tipsBeijingToday(),dates=Object.keys(TIPS_DAILY.entries).sort().reverse(),sel=tipsEl('Archive');sel.replaceChildren();
     dates.forEach(day=>{const op=document.createElement('option');op.value=day;op.textContent=day+' · '+(TIPS_DAILY.entries[day].cat==='fit'?'健身':'变美')+(day===dayNow?' · 今日':'');sel.append(op);});sel.value=TIPS_DAILY.selected;sel.disabled=!dates.length;
-    const d=TIPS_DAILY.entries[TIPS_DAILY.selected],canvas=tipsEl('DailyCanvas');let errors=[];
-    if(d)errors=tipsDrawCard(d,canvas);canvas.hidden=!d||!!errors.length;tipsEl('DailyEmpty').hidden=!!d&&!errors.length;
-    tipsEl('DailyDownload').disabled=!d||!!errors.length;tipsEl('DailyEdit').disabled=!d||!!errors.length;
+    const d=TIPS_DAILY.entries[TIPS_DAILY.selected],canvas=tipsEl('DailyCanvas');const errors=[];
+    canvas.hidden=true;tipsEl('DailyEmpty').hidden=false;tipsEl('DailyDownload').disabled=!d;tipsEl('DailyEdit').disabled=!d;
+    const imageToken={};TIPS_DAILY.imageToken=imageToken;
+    if(d){
+      const image=new Image();
+      image.onload=()=>{
+        if(TIPS_DAILY.imageToken!==imageToken)return;
+        if(image.naturalWidth!==1080||image.naturalHeight!==1080){tipsEl('DailyEmpty').textContent='存档图片尺寸异常，请稍后重试。';tipsEl('DailyDownload').disabled=true;return;}
+        canvas.width=1080;canvas.height=1080;canvas.getContext('2d').drawImage(image,0,0);canvas.hidden=false;tipsEl('DailyEmpty').hidden=true;
+      };
+      image.onerror=()=>{if(TIPS_DAILY.imageToken===imageToken){tipsEl('DailyEmpty').textContent='存档图片读取失败，请刷新成品重试。';tipsEl('DailyDownload').disabled=true;}};
+      image.src=d.png+'?v='+encodeURIComponent(d.generatedAt||d.date);
+    }
     tipsEl('DailyDownload').textContent=d&&d.date!==dayNow?'保存这张图片':'保存今日图片';
     tipsEl('DailyBadge').textContent=d?(d.date===dayNow?'今日已生成':'历史成品')+' · '+(d.cat==='fit'?'健身':'变美'):'等待生成 · '+(tipsPlannedCategory(dayNow)==='fit'?'健身':'变美');
     tipsEl('DailyTitle').textContent=d?d.title:'每天一点，慢慢变好。';
@@ -4408,7 +4458,12 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     document.getElementById('runCreed').innerHTML = LR_CREED.map(c=>`<div style="padding:8px 0;border-bottom:1px solid rgba(0,255,159,.06)"><div style="font-size:12px;font-weight:700;color:var(--glow)">${c[0]}</div><div style="font-size:11px;color:var(--sub);margin-top:2px">${c[1]}</div></div>`).join('');
   }
 
-  load();
+  try{ load(); }
+  catch(e){
+    S=defaultState();
+    BOOT_STATE.recovered=true;
+    BOOT_STATE.storageError=BOOT_STATE.storageError||'状态恢复失败';
+  }
   document.body.classList.toggle('light', !!S.cfg.light);
 
   // ⚠️ 顺序很重要：同步链路必须先注册。
