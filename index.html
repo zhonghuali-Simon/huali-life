@@ -293,6 +293,23 @@
     }
   };
   document.getElementById('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkPin();});
+  // 慢网下导航可能先于主脚本显示，保留最后一次切页意图。
+  let pendingPage = null;
+  const queuePage = event => {
+    const tab = event.target.closest && event.target.closest('.tab[data-page]');
+    if (!tab || typeof window.switchPage === 'function') return;
+    if (event.type === 'keydown' && event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    pendingPage = tab.dataset.page;
+  };
+  document.addEventListener('click',queuePage,true);
+  document.addEventListener('keydown',queuePage,true);
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.removeEventListener('click',queuePage,true);
+    document.removeEventListener('keydown',queuePage,true);
+    if (pendingPage && typeof window.switchPage === 'function') window.switchPage(pendingPage);
+  },{once:true});
 })();
 </script>
 <header>
