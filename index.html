@@ -2824,8 +2824,8 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     let html = '';
     // 类别顶部说明标签
     const catInfo = {
-      taobao:{color:'#00ff9f',bg:'0,255,159',label:'新闻·真实动态',icon:'📰',desc:'淘宝运营/用户增长的实际动作与数据：拉新召回、唤端、渠道投放、私域、活动机制'},
-      internet:{color:'#00e5ff',bg:'0,229,255',label:'新闻·行业动态',icon:'🌐',desc:'互联网行业公开的真实新闻和业务动向'},
+      taobao:{color:'#00ff9f',bg:'0,255,159',label:'资讯·运营建议',icon:'📰',desc:'包含已核验资讯与运营试验建议，以每条内容类型为准；建议不代表平台已发布政策或实际执行结果'},
+      internet:{color:'#00e5ff',bg:'0,229,255',label:'公开资料·行业动态',icon:'🌐',desc:'区分新闻、官方资料复读和常青文档；历史资料不代表今日新发布，日期与来源以条目标注为准'},
       crossover:{color:'#ffd740',bg:'255,215,64',label:'思路·可能性',icon:'💡',desc:'淘宝×我手上的用增场景能怎么打，非实际发生的新闻，供参考'},
       fitness:{color:'#ff6ec7',bg:'255,110,199',label:'副业·个人事业',icon:'🏋️',desc:'出个汗健身副业、户外生活、自媒体账号的思考，与本职淘宝工作分开看'}
     }[_tbCat];
@@ -3065,7 +3065,9 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       if (typeof s !== 'object') return '';
       // 结构化英语句子
       const id = sid();
-      const wordHtml = (s.words||[]).map(w=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:2px 8px;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.15);border-radius:0;clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px);font-size:11px"><b style="color:var(--glow2)">${w.w}</b> <span style="color:var(--sub);font-family:monospace">${w.ipa||''}</span> <span style="color:var(--text)">· ${w.def}</span></span>`).join('');
+      const wordEscape = v=>String(v||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const words = (Array.isArray(s.words)?s.words:[]).map(w=>typeof w==='string'?{w:w}:w).filter(w=>w&&typeof w==='object'&&typeof w.w==='string');
+      const wordHtml = words.map(w=>`<span style="display:inline-block;margin:2px 6px 2px 0;padding:2px 8px;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.15);border-radius:0;clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px);font-size:11px"><b style="color:var(--glow2)">${wordEscape(w.w)}</b> <span style="color:var(--sub);font-family:monospace">${wordEscape(w.ipa)}</span>${w.def?` <span style="color:var(--text)">· ${wordEscape(w.def)}</span>`:''}</span>`).join('');
       const enStyle = kind==='one'
         ? 'font-size:13px;color:var(--glow);font-style:italic;margin-bottom:6px'
         : 'font-size:12px;color:var(--text);margin-bottom:4px';
