@@ -1212,7 +1212,11 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     {id:'bucket-list',ico:'📋',name:'完成人生清单一项',cost:100,cond:s=>s.streak>=7,desc:'连击≥7天 → 划掉一项很爽',cat:'仪式感'},
   ];
 
-  const today = () => new Date().toISOString().slice(0,10);
+  const today = () => {
+    // 北京时间 = UTC+8：避免 UTC 日期在每日切换时段(00:00-07:59 CST)与本地日不一致
+    const d = new Date(Date.now() + 8*3600*1000);
+    return d.toISOString().slice(0,10);
+  };
   function todayCn(){ return new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'}); }
 
   function defaultState(){
@@ -1596,7 +1600,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         if (!hist || !hist.kbAppend) return;
         if (!S.kbArchive) S.kbArchive = {};
         ensureKBArchive();
-        const arc = S.kbArchive[STOCK_DATA.date || today()];
+        const arc = S.kbArchive[today()];
         const histKa = normKbAppend(hist.kbAppend);
         if (arc && arc.kb && histKa){
           Object.entries(histKa).forEach(([cat, entries])=>{
@@ -1683,7 +1687,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     if (todayData.kbAppend){
       if (!S.kbArchive) S.kbArchive = {};
       ensureKBArchive();
-      const arc = S.kbArchive[STOCK_DATA.date||d];
+      const arc = S.kbArchive[d];
       const kaObj = normKbAppend(todayData.kbAppend);
       if (arc && arc.kb && kaObj){
         Object.entries(kaObj).forEach(([cat, entries])=>{
@@ -1700,7 +1704,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       const rs = todayData.kbReseed;
       if (S._kbReseedVer !== rs.version){
         const map = rs.map || {};
-        const arc = S.kbArchive[STOCK_DATA.date||d];
+        const arc = S.kbArchive[d];
         if (arc && arc.kb){
           Object.values(arc.kb).forEach(cat=>{
             (cat.entries||[]).forEach(e=>{ if (map[e.title]){ e._date = map[e.title]; changed++; } });
@@ -3120,7 +3124,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   // 把 STOCK_DATA + KB_DATA 存档到 S.kbArchive（非破坏性：只补缺，绝不删已累积内容）
   function ensureKBArchive(){
     if (!S.kbArchive) S.kbArchive = {};
-    const d = STOCK_DATA.date || today();
+    const d = today();
     let arc = S.kbArchive[d];
     if (!arc || !arc.kb){
       // 首次：从基础内容建档
@@ -3147,7 +3151,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   // 知识库内容源（所有内容都存在这一份快照里，用条目 _date 区分日期）
   function kbSource(){
     ensureKBArchive();
-    const arc = (S.kbArchive||{})[STOCK_DATA.date || today()];
+    const arc = (S.kbArchive||{})[today()];
     return (arc && arc.kb) ? arc.kb : KB_DATA;
   }
   // 收集所有条目里出现过的真实日期（去重，倒序），并保证今日在列
