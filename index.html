@@ -1380,12 +1380,16 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         };
         S = remote;
         const dd = defaultState(); for (const k of Object.keys(dd)) if (S[k]===undefined) S[k]=dd[k];
-        // 恢复归档（仅当远端没有或更旧时）
+        // 恢复归档：按日期合并，本地有而远端没有的日期保留（防止远端旧快照覆盖今天新同步的数据）
         ['tbArchive','bsArchive','kbArchive'].forEach(k=>{
-          if (_savedArchives[k] && (!S[k] || Object.keys(S[k]).length <= Object.keys(_savedArchives[k]).length)){
-            S[k] = _savedArchives[k];
+          if (_savedArchives[k]){
+            if (!S[k]) S[k] = {};
+            for (const [date, data] of Object.entries(_savedArchives[k])){
+              if (!S[k][date]) S[k][date] = data;
+            }
           }
         });
+        // 日期变量：仅当本地比远端更新时恢复（防止 cloudPull 把视图日期回退）
         if (_savedArchives._tbDate) _tbDate = _savedArchives._tbDate;
         if (_savedArchives._bsDate) _bsDate = _savedArchives._bsDate;
         if (_savedArchives._kbViewDate) _kbViewDate = _savedArchives._kbViewDate;
