@@ -1480,13 +1480,15 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
 
   // ═══════ 服务端同步：统一从线上拉取，不管在哪个域名运行 ═══════
   const SYNC_URL = 'https://raw.githubusercontent.com/zhonghuali-Simon/huali-life/main/sync.json';
-  // 多源兜底：同源相对路径(在Pages上最快) → GitHub Pages 绝对地址(本地file://打开时靠它) →
-  // jsDelivr CDN(内网常能通) → raw.githubusercontent(部分内网被墙)。任一成功即返回。
+  // 多源兜底：raw.githubusercontent(最新，CDN不缓存) → 同源相对路径(Pages上快) →
+  // GitHub Pages 绝对地址(本地file://打开时靠它) → jsDelivr CDN(内网常能通)。
+  // raw 排第一是因为 GitHub Pages CDN 对 sync.json 有强缓存，?t= 参数无法穿透，
+  // 导致浏览器拿到旧版数据、todayData=undefined、mergeDailyContent 从不执行。
   const SYNC_SOURCES = [
+    ['raw',    ()=>SYNC_URL+'?t='+Date.now()],
     ['同源',   ()=>'./sync.json?t='+Date.now()],
     ['Pages',  ()=>'https://zhonghuali-simon.github.io/huali-life/sync.json?t='+Date.now()],
-    ['jsDelivr', ()=>'https://cdn.jsdelivr.net/gh/zhonghuali-Simon/huali-life@main/sync.json?t='+Date.now()],
-    ['raw',    ()=>SYNC_URL+'?t='+Date.now()]
+    ['jsDelivr', ()=>'https://cdn.jsdelivr.net/gh/zhonghuali-Simon/huali-life@main/sync.json?t='+Date.now()]
   ];
   // 同步状态：给界面显示"到底同步上了没有"，避免静默失败让人以为内容没更新
   const SYNC_STATE = {ok:false, source:'', at:0, tried:[]};
@@ -1698,6 +1700,8 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
           (entries||[]).forEach(e=>{ if (!exist.has(kbGuideTitle(e))){ arc.kb[cat].entries.push({...e, _date: e._date||d}); exist.add(kbGuideTitle(e)); changed++; } });
         });
       }
+      // 知识库日期选择器始终指向今天（与 tb/bs 同理，避免 fallback 到 KB_DATA 硬编码旧数据）
+      if (_kbViewDate !== d){ _kbViewDate = d; changed++; }
     }
     // 一次性"重新归期"：把已有知识条目按 map 分配到不同日期，形成多日时间轴
     if (todayData.kbReseed && typeof todayData.kbReseed==='object'){
