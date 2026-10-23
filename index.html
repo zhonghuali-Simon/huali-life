@@ -1667,7 +1667,8 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       _tbSplitDay(incoming);
       const prev = JSON.stringify(S.tbArchive[d]||{});
       const next = JSON.stringify(incoming);
-      if (prev !== next){ S.tbArchive[d] = JSON.parse(next); changed++; _tbDate = d; }
+      if (prev !== next){ S.tbArchive[d] = JSON.parse(next); changed++; }
+      if (_tbDate !== d){ _tbDate = d; changed++; } // 始终切到今天，并触发 renderAll
     }
     // 股市资讯：当天行情(覆盖)
     if (todayData.stockToday && typeof todayData.stockToday==='object'){
@@ -1681,7 +1682,8 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       if (!S.bsArchive) S.bsArchive = {};
       const prev = JSON.stringify(S.bsArchive[d]||{});
       const next = JSON.stringify(todayData.bsToday);
-      if (prev !== next){ S.bsArchive[d] = JSON.parse(next); changed++; _bsDate = d; }
+      if (prev !== next){ S.bsArchive[d] = JSON.parse(next); changed++; }
+      if (_bsDate !== d){ _bsDate = d; changed++; } // 始终切到今天，并触发 renderAll
     }
     // 知识库：按分类追加新条目(用title去重)，并给每条打上当日日期标记
     if (todayData.kbAppend){
