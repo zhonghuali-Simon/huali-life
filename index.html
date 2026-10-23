@@ -1372,8 +1372,23 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       const remote = j.record;
       if (remote && (remote._syncTime||0) > (S._syncTime||0)){
         // 远端更新→覆盖本地(凭证在独立key，不受影响)
+        // 保护归档：cloudPull 会用远端快照整体替换 S，但远端可能是旧设备写入，
+        // 不含今天已同步的 tbArchive/bsArchive/kbArchive。先保存再恢复，避免 wipe。
+        const _savedArchives = {
+          tbArchive: S.tbArchive, bsArchive: S.bsArchive, kbArchive: S.kbArchive,
+          _tbDate, _bsDate, _kbViewDate
+        };
         S = remote;
         const dd = defaultState(); for (const k of Object.keys(dd)) if (S[k]===undefined) S[k]=dd[k];
+        // 恢复归档（仅当远端没有或更旧时）
+        ['tbArchive','bsArchive','kbArchive'].forEach(k=>{
+          if (_savedArchives[k] && (!S[k] || Object.keys(S[k]).length <= Object.keys(_savedArchives[k]).length)){
+            S[k] = _savedArchives[k];
+          }
+        });
+        if (_savedArchives._tbDate) _tbDate = _savedArchives._tbDate;
+        if (_savedArchives._bsDate) _bsDate = _savedArchives._bsDate;
+        if (_savedArchives._kbViewDate) _kbViewDate = _savedArchives._kbViewDate;
         localStorage.setItem(KEY, JSON.stringify(S));
         renderAll();
         // 云端快照可能是旧设备的,不含今天新下发的脑洞/知识库/淘宝创新;覆盖后必须立刻回源重并一次
@@ -1555,12 +1570,14 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       el.title = '已尝试：'+SYNC_STATE.tried.join(' / ')+'，均不可达。可能是网络限制，换网络或稍后重试。';
     }
   }
+  let _syncing = null; // 防止并发 syncFromServer 竞态（cloudPull 与 boot 定时器同时触发时只跑一次）
   async function syncFromServer(){
+    if (_syncing) return _syncing;
+    _syncing = (async ()=>{
     try{
       const data = await fetchSync();
       if (!data) return;
       const todayData = data[today()];
-      S._lastSyncData = data; // 诊断：保存最近一次同步的原始数据
       if (!todayData) return;
       let synced = 0;
       (todayData.done||[]).forEach(id=>{
@@ -1630,8 +1647,9 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         else if (contentChanged>0) toast(`📚 知识库/淘宝创新已更新 ${contentChanged} 条`);
         else if (tplChanged>0) toast(`🔄 任务已更新为最新`);
       }
-    console.log('[syncFromServer] tbArc='+Object.keys(S.tbArchive||{})+' bsArc='+Object.keys(S.bsArchive||{})+' kbArc='+Object.keys(S.kbArchive||{}));
     }catch(e){}
+  })();
+  return _syncing;
   }
 
   // 判定 bsToday 是否有效：至少一场且 topic 非空(防止 cron 写入空壳覆盖有效内容)
@@ -1664,7 +1682,6 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     if (!todayData) return 0;
     let changed = 0;
     const d = today();
-    console.log("[mergeDailyContent] d="+d+" tbToday="+(typeof todayData.tbToday)+" bsToday="+(typeof todayData.bsToday)+" kbAppend="+(typeof todayData.kbAppend));
     // 淘宝创新：当天4类内容(覆盖)。写入前先做一次健身内容分流，避免服务端把副业内容写进淘宝分类
     if (todayData.tbToday && typeof todayData.tbToday==='object'){
       if (!S.tbArchive) S.tbArchive = {};
