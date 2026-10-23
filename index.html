@@ -1560,6 +1560,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       const data = await fetchSync();
       if (!data) return;
       const todayData = data[today()];
+      S._lastSyncData = data; // 诊断：保存最近一次同步的原始数据
       if (!todayData) return;
       let synced = 0;
       (todayData.done||[]).forEach(id=>{
@@ -1629,6 +1630,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         else if (contentChanged>0) toast(`📚 知识库/淘宝创新已更新 ${contentChanged} 条`);
         else if (tplChanged>0) toast(`🔄 任务已更新为最新`);
       }
+    console.log('[syncFromServer] tbArc='+Object.keys(S.tbArchive||{})+' bsArc='+Object.keys(S.bsArchive||{})+' kbArc='+Object.keys(S.kbArchive||{}));
     }catch(e){}
   }
 
@@ -1662,6 +1664,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     if (!todayData) return 0;
     let changed = 0;
     const d = today();
+    console.log("[mergeDailyContent] d="+d+" tbToday="+(typeof todayData.tbToday)+" bsToday="+(typeof todayData.bsToday)+" kbAppend="+(typeof todayData.kbAppend));
     // 淘宝创新：当天4类内容(覆盖)。写入前先做一次健身内容分流，避免服务端把副业内容写进淘宝分类
     if (todayData.tbToday && typeof todayData.tbToday==='object'){
       if (!S.tbArchive) S.tbArchive = {};
