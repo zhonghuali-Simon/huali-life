@@ -1298,9 +1298,11 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     }
     save();
   }
-  function save(){
+  let _syncStaging = null;
+  function save(strict=false){
+    if (_syncStaging && !strict){ _syncStaging.dirty=true; return; }
     try{ localStorage.setItem(KEY, JSON.stringify(S)); }
-    catch(e){ BOOT_STATE.storageError='写入失败'; }
+    catch(e){ BOOT_STATE.storageError='写入失败'; if (strict) throw e; }
     try{ scheduleCloudPush(); }catch(e){}
   }
 
@@ -1376,10 +1378,11 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         // 不含今天已同步的 tbArchive/bsArchive/kbArchive。先保存再恢复，避免 wipe。
         const _savedArchives = {
           tbArchive: S.tbArchive, bsArchive: S.bsArchive, kbArchive: S.kbArchive,
-          _tbDate, _bsDate, _kbViewDate
+          serverSync: S._serverSync, _tbDate, _bsDate, _kbViewDate
         };
         S = remote;
         const dd = defaultState(); for (const k of Object.keys(dd)) if (S[k]===undefined) S[k]=dd[k];
+        if ((_savedArchives.serverSync?.revision||0) > (S._serverSync?.revision||0)) S._serverSync = _savedArchives.serverSync;
         // 恢复归档：按日期合并，本地有而远端没有的日期保留（防止远端旧快照覆盖今天新同步的数据）
         ['tbArchive','bsArchive','kbArchive'].forEach(k=>{
           if (_savedArchives[k]){
@@ -1395,8 +1398,8 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         if (_savedArchives._kbViewDate) _kbViewDate = _savedArchives._kbViewDate;
         localStorage.setItem(KEY, JSON.stringify(S));
         renderAll();
-        // 云端快照可能是旧设备的,不含今天新下发的脑洞/知识库/淘宝创新;覆盖后必须立刻回源重并一次
-        _cloudPulling = false;
+        // 等针对旧状态的请求退出，再对新状态完整回源。
+        if (_syncing) await _syncing;
         try{ await syncFromServer(); }catch(e){}
         if(!silent) toast('☁️ 已从云端拉取最新（其他设备的更新）','gold');
         cloudStatus('⬇️ 已拉取云端更新 · '+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}));
@@ -1425,6 +1428,10 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   // 共享合并：新增缺失任务 + 覆盖未完成任务的内容 + 移除模板中已删且未完成的任务（保留已完成）
   function mergeTpl(tplString){
     const tplTasks = parseTpl(tplString);
+    const tplFields = new Map(tplString.split('\n').filter(l=>l.trim()).map(l=>{
+      const cells=l.split('|').map(x=>x.trim());
+      return [cells[0],cells];
+    }));
     const tplIds = new Set(tplTasks.map(t=>t.id));
     const existMap = new Map(S.tasks.map(t=>[t.id,t]));
     // 永久删除黑名单：ID + 标题指纹（防止cron换ID后又冒出来）
@@ -1458,7 +1465,10 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
           const o = ov[nt.id]; if (o){ Object.assign(cur, o); cur._userEdited=true; }
           return;
         }
-        if (cur.title!==nt.title || cur.desc!==nt.desc || cur.pts!==nt.pts || cur.group!==nt.group){
+        const fields = tplFields.get(nt.id)||[];
+        if (!fields[4]) nt.pts=cur.pts;
+        if (!fields[5]) nt.dims=cur.dims;
+        if (cur.title!==nt.title || cur.desc!==nt.desc || cur.pts!==nt.pts || cur.group!==nt.group || JSON.stringify(cur.dims)!==JSON.stringify(nt.dims)){
           cur.title=nt.title; cur.desc=nt.desc; cur.pts=nt.pts; cur.dims=nt.dims; cur.group=nt.group;
           updated++;
         }
@@ -1523,11 +1533,11 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   }
   async function fetchSync(){
     SYNC_STATE.tried = [];
-    let best = null, bestName = '', bestScore = -1;
+    let best = null, bestName = '', bestScore = -1, bestRevision = -1;
     const d = today();
     function freshnessScore(data){
-      const row = data && data[d];
-      if (!row || typeof row !== 'object') return 0;
+      const row = todaySyncData(data);
+      if (!row) return 0;
       let score = 0;
       if ((row.tpl||'').trim()) score++;
       if (row.kbAppend && typeof row.kbAppend === 'object') score++;
@@ -1538,19 +1548,24 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     }
     for (const [name, mk] of SYNC_SOURCES){
       const data = await fetchOnce(mk(), 8000);
-      if (data && typeof data === 'object'){
+      if (validSyncPayload(data)){
+        const revision = data._revision||0;
+        if (revision < (S._serverSync?.revision||0)){
+          SYNC_STATE.tried.push(name+'(旧版本)');
+          continue;
+        }
         const score = freshnessScore(data);
-        if (score > bestScore){ best = data; bestName = name; bestScore = score; }
-        // 当日五个数据域齐全才停止；旧缓存即使可访问，也继续尝试后续源。
+        if (revision > bestRevision || (revision === bestRevision && score > bestScore)){
+          best = data; bestName = name; bestScore = score; bestRevision = revision;
+        }
         if (score >= 5) break;
-        SYNC_STATE.tried.push(name+'(旧缓存)');
+        SYNC_STATE.tried.push(name+'(不完整)');
         continue;
       }
       SYNC_STATE.tried.push(name);
     }
     if (best){
-      SYNC_STATE.ok = true; SYNC_STATE.source = bestName; SYNC_STATE.at = Date.now();
-      renderSyncBadge();
+      SYNC_STATE.ok = false; SYNC_STATE.source = bestName; SYNC_STATE.at = Date.now();
       return best;
     }
     SYNC_STATE.ok = false; SYNC_STATE.source = ''; SYNC_STATE.at = Date.now();
@@ -1574,15 +1589,81 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
       el.title = '已尝试：'+SYNC_STATE.tried.join(' / ')+'，均不可达。可能是网络限制，换网络或稍后重试。';
     }
   }
-  let _syncing = null; // 防止并发 syncFromServer 竞态（cloudPull 与 boot 定时器同时触发时只跑一次）
+  function todaySyncData(data){
+    const dayNode = isRecord(data) && data[today()];
+    if (!isRecord(dayNode)) return null;
+    // 每小时任务刷新只改顶层 TODAY.tpl/manualTasks；内容仍在日期节点。
+    return {
+      ...dayNode,
+      tpl: typeof data['TODAY.tpl']==='string' ? data['TODAY.tpl'] : dayNode.tpl,
+      manualTasks: Array.isArray(data.manualTasks) ? data.manualTasks : dayNode.manualTasks
+    };
+  }
+
+  function validSyncPayload(data){
+    if (!isRecord(data) || !Number.isSafeInteger(data._revision) || data._revision<=0) return false;
+    const td = todaySyncData(data);
+    if (!td) return false;
+    const validTpl = tpl=>typeof tpl==='string' && tpl.split('\n').filter(l=>l.trim()).every(l=>{
+      const p=l.split('|').map(x=>x.trim());
+      return p.length>=4 && p.slice(0,3).every(Boolean);
+    });
+    if (td.tpl!==undefined && !validTpl(td.tpl)) return false;
+    if (td.manualTasks!==undefined && (!Array.isArray(td.manualTasks) || !td.manualTasks.every(validTpl))) return false;
+    for (const [key,row] of Object.entries(data)){
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) continue;
+      if (!isRecord(row)) return false;
+      if (key===today() && row.done!==undefined && (!Array.isArray(row.done) || !row.done.every(x=>typeof x==='string'))) return false;
+      if (key===today() && row.bonus!==undefined && (!Array.isArray(row.bonus) || !row.bonus.every(b=>isRecord(b) &&
+          (b.pts===undefined || (Number.isFinite(b.pts) && b.pts>=0)) &&
+          (b.dims===undefined || (isRecord(b.dims) && Object.values(b.dims).every(Number.isFinite)))))) return false;
+      if (row.kbAppend!==undefined){
+        const ka=normKbAppend(row.kbAppend);
+        if (!isRecord(ka) || !Object.values(ka).every(entries=>Array.isArray(entries) && entries.every(isRecord))) return false;
+      }
+      for (const field of ['stockToday','tbToday','kbReseed']){
+        if (row[field]!==undefined && !isRecord(row[field])) return false;
+      }
+      if (row.tbToday && !['taobao','internet','crossover','fitness'].every(cat=>
+          row.tbToday[cat]===undefined || (Array.isArray(row.tbToday[cat]) && row.tbToday[cat].every(isRecord)))) return false;
+      if (row.bsToday){
+        const meetings=Array.isArray(row.bsToday)?row.bsToday:[row.bsToday];
+        if (!meetings.every(m=>isRecord(m) && typeof m.topic==='string')) return false;
+      }
+    }
+    return true;
+  }
+  async function syncDigest(data){
+    const canonical = v=>Array.isArray(v)?v.map(canonical):isRecord(v)?
+      Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v;
+    const bytes=new TextEncoder().encode(JSON.stringify(canonical(data)));
+    const hash=await crypto.subtle.digest('SHA-256',bytes);
+    return Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  let _syncing = null;
   async function syncFromServer(){
     if (_syncing) return _syncing;
     _syncing = (async ()=>{
+    let rollback = null, views = null, badges = null, committed = false;
     try{
+      const syncDay = today(), syncState = S;
+      if (S.date !== syncDay) return {ok:false, reason:'dayChanged'};
       const data = await fetchSync();
-      if (!data) return;
-      const todayData = data[today()];
-      if (!todayData) return;
+      if (!data) return {ok:false};
+      const digest = await syncDigest(data);
+      if (S !== syncState) return {ok:false, reason:'stateChanged'};
+      if (today() !== syncDay || S.date !== syncDay) return {ok:false, reason:'dayChanged'};
+      const accepted = S._serverSync;
+      if (accepted && (data._revision < accepted.revision ||
+          (data._revision===accepted.revision && digest!==accepted.digest))) return {ok:false, reason:'staleVersion'};
+      const todayData = todaySyncData(data);
+      if (!todayData) return {ok:false};
+      rollback = JSON.parse(JSON.stringify(S));
+      views = {_tbDate,_bsDate,_kbViewDate};
+      badges = {queue:_badgeQueue.slice(), showing:_badgeShowing};
+      _syncStaging = {dirty:false};
+      // 同步提交前只排队，不展示尚未持久化的新奖励。
+      _badgeShowing = true;
       let synced = 0;
       (todayData.done||[]).forEach(id=>{
         const t = S.tasks.find(x=>x.id===id);
@@ -1609,11 +1690,11 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         });
       }
       // 同步模板更新：立即合并新增/更新未完成任务（人工任务始终补回）
-      let tplChanged = 0;
+      let tplChanged = 0, taskChanges = {added:0,updated:0,removed:0};
       if (todayData.tpl || (todayData.manualTasks||[]).length){
         S.tpl = withManualTasks(todayData.tpl, todayData);
-        const r = mergeTpl(S.tpl);
-        tplChanged = r.added + r.updated + r.removed;
+        taskChanges = mergeTpl(S.tpl);
+        tplChanged = taskChanges.added + taskChanges.updated + taskChanges.removed;
       }
       // 同步知识库/淘宝创新每日上新
       let contentChanged = mergeDailyContent(todayData);
@@ -1644,15 +1725,48 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
         const next = JSON.stringify(bs);
         if (prev !== next){ S.bsArchive[dk] = JSON.parse(next); contentChanged++; }
       });
-      if (synced>0 || tplChanged>0 || contentChanged>0){
-        checkBadges();
-        save(); renderAll();
+      const revisionChanged = S._serverSync?.revision !== data._revision;
+      S._serverSync = {revision:data._revision,digest};
+      const changed = synced>0 || tplChanged>0 || contentChanged>0;
+      if (changed){ checkBadges(); renderAll(); }
+      if (changed || revisionChanged || _syncStaging.dirty) save(true);
+      committed = true;
+      _syncStaging = null;
+      _badgeShowing = badges.showing;
+      SYNC_STATE.ok = true;
+      // 提交后的通知异常不能回滚已持久化状态，也不能误报同步失败。
+      try{
         if (synced>0) toast(`🤖 已自动同步 ${synced} 项`);
         else if (contentChanged>0) toast(`📚 知识库/淘宝创新已更新 ${contentChanged} 条`);
         else if (tplChanged>0) toast(`🔄 任务已更新为最新`);
+      }catch(e){}
+      try{ if (!_badgeShowing && _badgeQueue.length>badges.queue.length) showNextBadge(); }catch(e){}
+      try{ renderSyncBadge(); }catch(e){}
+      return {ok:true, tasks:taskChanges};
+    }catch(e){
+      if (rollback && !committed){
+        S = JSON.parse(JSON.stringify(rollback));
+        _tbDate=views._tbDate; _bsDate=views._bsDate; _kbViewDate=views._kbViewDate;
+        _badgeQueue = badges.queue.slice(); _badgeShowing = true;
+        // 回滚刷新仍处于 staging；渲染迁移不得落盘，刷新失败不覆盖原错误。
+        try{ renderAll(); }catch(renderError){}
+        finally{
+          S = rollback;
+          _tbDate=views._tbDate; _bsDate=views._bsDate; _kbViewDate=views._kbViewDate;
+          _badgeQueue = badges.queue; _badgeShowing = badges.showing;
+        }
       }
-    }catch(e){}
-  })();
+      return {ok:committed, error:e};
+    }finally{
+      _syncStaging = null;
+    }
+  })().then(result=>{
+    if (!result.ok){
+      SYNC_STATE.ok=false; SYNC_STATE.at=Date.now();
+      try{ renderSyncBadge(); }catch(e){}
+    }
+    return result;
+  }).finally(()=>{ _syncing = null; });
   return _syncing;
   }
 
@@ -1749,15 +1863,15 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   // 手动刷新：从云端拉取AI整理的最新任务模板
   async function refreshTasks(){
     toast('🔄 正在拉取最新任务…');
-    const data = await fetchSync();
-    if (!data){ toast('⚠️ 拉取失败（已试 '+(SYNC_STATE.tried.join('/')||'全部源')+'），可能是网络受限', 'gold'); return; }
-    const todayData = data[today()];
-    let r = {added:0,updated:0,removed:0};
-    if (todayData && (todayData.tpl || (todayData.manualTasks||[]).length)){
-      S.tpl = withManualTasks(todayData.tpl, todayData);
-      r = mergeTpl(S.tpl);
+    // 等旧同步完成后再拉新数据；整个拉取与合并共用同一把锁。
+    if (_syncing) await _syncing;
+    const result = await syncFromServer();
+    if (!result || !result.ok){
+      if (result && result.reason==='dayChanged') toast('日期已切换，请重新打开页面；原进度已保留', 'gold');
+      else toast('⚠️ 拉取失败（已试 '+(SYNC_STATE.tried.join('/')||'全部源')+'），可能是网络受限', 'gold');
+      return;
     }
-    await syncFromServer();
+    const r = result.tasks;
     save(); renderAll();
     const parts=[]; if(r.added)parts.push(`新增${r.added}`); if(r.updated)parts.push(`更新${r.updated}`); if(r.removed)parts.push(`移除${r.removed}`);
     if (parts.length) toast(`✅ 任务已刷新：${parts.join(' · ')}条`, 'gold');
@@ -2809,10 +2923,24 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
   // 健身/户外/自媒体副业内容不该混在淘宝运营分类里，一次性把历史归档拆干净。
   // 宁可宽松：只要沾健身/到店/自媒体就归到「健身事业」，即使它讲的是淘宝广告产品，
   // 因为那也是服务健身副业的思考，用户明确要求淘宝三类里一条健身内容都不要出现。
-  const _FIT_RE = /出个汗|Sughan|私教|教练|健身|运动健康|体测|体态|增肌|减脂|训练营|训练百科|飞盘|瑜伽|普拉提|蛋白粉|撸铁|体验课|到店|会员卡|露营|徒步|自媒体|个人IP|涨粉|口播/i;
+  const _FIT_RE = /出个汗|Sughan|私教|教练|健身|运动健康|体测|体态|增肌|减脂|训练营|训练百科|集中训|碎片化运动|微训练|力量训练|肌肉|泡沫轴|运动后|飞盘|瑜伽|普拉提|蛋白粉|撸铁|体验课|到店|会员卡|露营|徒步|自媒体|个人IP|涨粉|口播/i;
+  function tbText(value){
+    if (typeof value === 'string') return value.trim();
+    if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+    if (Array.isArray(value)) return value.map(tbText).filter(Boolean).join('；');
+    if (isRecord(value)) return tbText(value.zh || value.en || value.text || value.summary || value.one || value.title);
+    return '';
+  }
+  function tbPoints(it){
+    const value = it.points || it.action || it.detail || [];
+    return (Array.isArray(value) ? value : [value]).map(tbText).filter(Boolean);
+  }
+  function tbEscape(value){
+    return tbText(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
   function _isFitItem(it){
-    if (!it) return false;
-    const s = [it.title, it.summary, (it.points||[]).join(' ')].join(' ');
+    if (!isRecord(it)) return false;
+    const s = [tbText(it.title), tbText(it.summary || it.one), ...tbPoints(it)].join(' ');
     return _FIT_RE.test(s);
   }
   function _tbSplitDay(day){
@@ -2828,7 +2956,7 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     return moved;
   }
   // 分流规则每次收紧都要提升版本号，否则老设备上的历史归档不会用新规则重扫一遍
-  const TB_FIT_SPLIT_VER = 2;
+  const TB_FIT_SPLIT_VER = 3;
   function migrateTbFitness(){
     if (S.cfg && (S.cfg.tbFitSplit|0) >= TB_FIT_SPLIT_VER) return 0;
     let moved = 0;
@@ -2893,18 +3021,16 @@ T-301 | 成长线 | 知识库精读3条+脑洞会议复盘 | 读完当日知识�
     }
     items.forEach(f=>{
       const itemType = f.type || ({crossover:'💡 思路',fitness:'🏋️ 副业'}[_tbCat] || '📰 新闻');
-      // 兼容旧结构(只有 action)与任何字段缺失：绝不能因为一条数据没有 points 就让整页空白
-      const pts = Array.isArray(f.points) ? f.points
-                : (f.points ? [f.points]
-                : (f.action ? [f.action] : (f.detail ? [f.detail] : [])));
+      const pts = tbPoints(f);
+      const summary = tbEscape(f.summary || f.one);
       html += `<div style="padding:14px 0;border-bottom:1px solid rgba(0,255,159,.06)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-          <span style="font-size:10px;padding:2px 8px;background:rgba(${catInfo.bg},.12);color:${catInfo.color};border:1px solid rgba(${catInfo.bg},.25)">${itemType}</span>
-          <span style="font-size:14px;font-weight:600;color:var(--glow)">${f.title}</span>
+          <span style="font-size:10px;padding:2px 8px;background:rgba(${catInfo.bg},.12);color:${catInfo.color};border:1px solid rgba(${catInfo.bg},.25)">${tbEscape(itemType)}</span>
+          <span style="font-size:14px;font-weight:600;color:var(--glow)">${tbEscape(f.title)}</span>
         </div>
-        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${f.summary}</div>
+        ${summary ? `<div style="font-size:12px;color:var(--sub);margin-bottom:8px">${summary}</div>` : ''}
         <ul style="margin:0;padding-left:16px;font-size:12px;color:var(--text);line-height:2">
-          ${pts.map(p=>`<li>${p}</li>`).join('')}
+          ${pts.map(p=>`<li>${tbEscape(p)}</li>`).join('')}
         </ul>
       </div>`;
     });
