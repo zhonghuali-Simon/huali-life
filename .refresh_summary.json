@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-23",
+  "work_lines": 8,
+  "resident_lines": 37,
+  "manual_tasks": 1,
+  "manual_task_ids": [
+    "T-801"
+  ],
+  "protected_hash": "fd6902ad65a4546d3256fa17f0f13fc45b9e9710f23a27af3f405d0deed72dad",
+  "disappeared_ids": [],
+  "manual_disappeared": []
+}
